@@ -1,7 +1,45 @@
 // used for rendering equations (optional)
 import 'katex/dist/katex.min.css'
+// Prism core를 먼저 등록해야 syntax components의 global Prism 참조 동작
+import 'prismjs'
 // used for code syntax highlighting (optional)
 import 'prismjs/themes/prism-coy.css'
+// Prism syntax 정적 등록 — FolioCode가 직접 Prism 쓰니까 사용 언어 미리 등록.
+// starter-kit이 dynamic으로 lazy-load하던 걸 우리는 static으로 바꿔
+// SSR 시점에 syntax highlighting 동작 보장. 추가 언어가 필요하면 여기에.
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-c'
+import 'prismjs/components/prism-coffeescript'
+import 'prismjs/components/prism-cpp'
+import 'prismjs/components/prism-csharp'
+import 'prismjs/components/prism-diff'
+import 'prismjs/components/prism-docker'
+import 'prismjs/components/prism-git'
+import 'prismjs/components/prism-go'
+import 'prismjs/components/prism-graphql'
+import 'prismjs/components/prism-handlebars'
+import 'prismjs/components/prism-java'
+import 'prismjs/components/prism-js-templates'
+import 'prismjs/components/prism-kotlin'
+import 'prismjs/components/prism-less'
+import 'prismjs/components/prism-makefile'
+import 'prismjs/components/prism-markdown'
+import 'prismjs/components/prism-markup'
+import 'prismjs/components/prism-markup-templating'
+import 'prismjs/components/prism-objectivec'
+import 'prismjs/components/prism-ocaml'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-reason'
+import 'prismjs/components/prism-rust'
+import 'prismjs/components/prism-sass'
+import 'prismjs/components/prism-scss'
+import 'prismjs/components/prism-solidity'
+import 'prismjs/components/prism-sql'
+import 'prismjs/components/prism-stylus'
+import 'prismjs/components/prism-swift'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-wasm'
+import 'prismjs/components/prism-yaml'
 // core styles shared by all of react-notion-x (required)
 import 'react-notion-x/src/styles.css'
 // 폰트 임베드 (Pretendard) — 토큰보다 먼저 로드해야 @font-face가 토큰에 적용됨

@@ -1,0 +1,59 @@
+/* 레퍼런스 서비스 풍 코드 블록 스타일 */
+
+.container {
+  position: relative;
+  margin: var(--folio-space-3) 0;
+  background-color: var(--folio-surface-muted);
+  border-radius: var(--folio-radius-md);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--folio-space-2) var(--folio-space-3);
+  border-bottom: 1px solid var(--folio-divider);
+  font-family: var(--folio-font-mono);
+  font-size: 12px;
+  color: var(--folio-text-muted);
+}
+
+.language {
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+.copyButton {
+  background: transparent;
+  border: 1px solid var(--folio-border);
+  border-radius: var(--folio-radius-sm);
+  padding: 2px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--folio-text-muted);
+  cursor: pointer;
+  transition: background-color var(--folio-transition-base),
+    color var(--folio-transition-base);
+}
+
+.copyButton:hover {
+  background-color: var(--folio-bg);
+  color: var(--folio-text);
+}
+
+.pre {
+  margin: 0;
+  padding: var(--folio-space-3);
+  font-family: var(--folio-font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
+  background-color: transparent;
+}
+
+.pre code {
+  font-family: inherit;
+  background: transparent;
+  padding: 0;
+}

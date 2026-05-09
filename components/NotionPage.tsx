@@ -25,6 +25,8 @@ import { useDarkMode } from '@/lib/use-dark-mode'
 import { Footer } from './Footer'
 import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
+import { Callout as FolioCallout } from './folio/Callout'
+import { Code as FolioCode } from './folio/Code'
 import { Page404 } from './Page404'
 import { PageAside } from './PageAside'
 import { PageHead } from './PageHead'
@@ -34,76 +36,8 @@ import styles from './styles.module.css'
 // dynamic imports for optional components
 // -----------------------------------------------------------------------------
 
-const Code = dynamic(() =>
-  import('react-notion-x/build/third-party/code').then(async (m) => {
-    // add / remove any prism syntaxes here
-    await Promise.allSettled([
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-markup-templating.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-markup.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-bash.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-c.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-cpp.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-csharp.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-docker.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-java.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-js-templates.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-coffeescript.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-diff.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-git.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-go.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-graphql.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-handlebars.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-less.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-makefile.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-markdown.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-objectivec.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-ocaml.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-python.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-reason.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-rust.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-sass.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-scss.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-solidity.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-sql.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-stylus.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-swift.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-wasm.js'),
-      // @ts-expect-error Ignore prisma types
-      import('prismjs/components/prism-yaml.js')
-    ])
-    return m.Code
-  })
-)
+// Prism syntax 등록은 _app.tsx에서 정적 import로 처리.
+// react-notion-x default Code는 사용 안 함 (FolioCode로 교체).
 
 const Collection = dynamic(() =>
   import('react-notion-x/build/third-party/collection').then(
@@ -195,7 +129,9 @@ export function NotionPage({
     () => ({
       nextLegacyImage: Image,
       nextLink: Link,
-      Code,
+      // 레퍼런스 서비스 풍 자체 컴포넌트로 교체 (Code/Callout). 나머지는 react-notion-x default.
+      Code: FolioCode,
+      Callout: FolioCallout,
       Collection,
       Equation,
       Pdf,
