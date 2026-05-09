@@ -21,8 +21,8 @@ import 'styles/prism-theme.css'
 
 import type { AppProps } from 'next/app'
 import * as Fathom from 'fathom-client'
-import { ThemeProvider } from 'next-themes'
 import { useRouter } from 'next/router'
+import { ThemeProvider } from 'next-themes'
 import { posthog } from 'posthog-js'
 import * as React from 'react'
 

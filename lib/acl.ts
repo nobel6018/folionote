@@ -1,3 +1,5 @@
+import { type Block } from 'notion-types'
+
 import { type PageProps } from './types'
 
 export async function pageAcl({
@@ -35,7 +37,9 @@ export async function pageAcl({
     }
   }
 
-  const rootValue = recordMap.block[rootKey]?.value
+  // react-notion-x v7.10에서 record value가 union (Block | { role, value })으로
+  // 확장됨. cast로 narrow.
+  const rootValue = recordMap.block[rootKey]?.value as Block | undefined
   const rootSpaceId = rootValue?.space_id
 
   if (

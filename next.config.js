@@ -6,11 +6,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 })
 
 export default withBundleAnalyzer({
-  // TODO: react-notion-x v7.10.0의 union 타입(Block | { role, value })에
-  // starter-kit 코드가 아직 대응 안 됨. 일시적으로 type/lint 우회 후 사후 정리 (Task #22).
-  typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
-
   staticPageGenerationTimeout: 300,
   images: {
     remotePatterns: [

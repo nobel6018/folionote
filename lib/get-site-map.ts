@@ -1,3 +1,4 @@
+import { type Block } from 'notion-types'
 import { getAllPagesInSpace, getPageProperty, uuidToId } from 'notion-utils'
 import pMemoize from 'p-memoize'
 
@@ -60,7 +61,8 @@ async function getAllPagesImpl(
         throw new Error(`Error loading page "${pageId}"`)
       }
 
-      const block = recordMap.block[pageId]?.value
+      // react-notion-x v7.10 union 타입 narrow.
+      const block = recordMap.block[pageId]?.value as Block | undefined
       if (
         !(getPageProperty<boolean | null>('Public', block!, recordMap) ?? true)
       ) {
