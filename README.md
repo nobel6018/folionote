@@ -66,10 +66,10 @@ pnpm vercel deploy
 
 ## 문서
 
-- [getting-started](docs/getting-started.md) — Notion 페이지 준비 → 환경변수 → 배포까지 단계별
+- [getting-started](docs/getting-started.md) — 5단계 Quick start
 - [configuration](docs/configuration.md) — `site.config.ts` 옵션 전체
-- [customization](docs/customization.md) — CSS 커스터마이징 (디자인 토큰)
-- [deployment](docs/deployment.md) — Vercel 배포 + Cloudflare DNS
+- [customization](docs/customization.md) — 디자인 토큰 + 자체 컴포넌트
+- [deployment](docs/deployment.md) — Vercel + DNS (Cloudflare/Route 53) + 도메인 이전
 
 ## 이 사이트
 
