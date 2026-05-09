@@ -52,10 +52,13 @@ export default siteConfig({
   // 'custom' 모드: 사이트 헤더에 navigationLinks + 다크모드 토글 노출 (레퍼런스 서비스 스타일 헤더).
   // 'default' 모드는 react-notion-x 기본 헤더만 사용 (토글 없음 → footer 깊숙이 묻힘).
   navigationStyle: 'custom',
-  navigationLinks: [
-    // 레퍼런스 사이트 매핑 (사용자 본인 사이트 기준 데모). fork 후 본인 페이지 ID로 교체.
-    { title: '개발', url: '/devs' },
-    { title: 'AWS', url: '/aws' },
-    { title: '독서', url: '/books' }
-  ]
+
+  // 사이트 헤더에 노출할 nav 링크. 비워 두면 다크모드 토글만 노출.
+  //
+  // 본인 사이트로 운영 시 다음 두 가지 중 하나로 셋업:
+  //   1) pageId 사용 — 자식 페이지 노션 UUID로 직접 매핑. 가장 안정적.
+  //      { title: '개발', pageId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }
+  //   2) url 사용 — pretty URL로 매핑. pageUrlOverrides에도 같은 매핑 필요.
+  //      { title: '개발', url: '/devs' }  // pageUrlOverrides: { '/devs': 'pageId' }
+  navigationLinks: []
 })
