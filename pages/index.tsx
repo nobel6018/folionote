@@ -7,7 +7,11 @@ export const getStaticProps = async () => {
   try {
     const props = await resolveNotionPage(domain)
 
-    return { props }
+    return {
+      props,
+      // ISR: 10분마다 backend 재검증 (메인 페이지의 collection list 갱신).
+      revalidate: 600
+    }
   } catch (err) {
     console.error('page error', domain, err)
 

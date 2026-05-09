@@ -223,10 +223,10 @@ export function NotionPage({
   }, [site, recordMap, lite])
 
   const keys = Object.keys(recordMap?.block || {})
-  const block = recordMap?.block?.[keys[0]!]?.value
+  // react-notion-x v7.10에서 record value 타입이 union으로 확장됨
+  // (Block | { role, value }). root block은 항상 PageBlock이므로 cast.
+  const block = recordMap?.block?.[keys[0]!]?.value as PageBlock | undefined
 
-  // const isRootPage =
-  //   parsePageId(block?.id) === parsePageId(site?.rootNotionPageId)
   const isBlogPost =
     block?.type === 'page' && block?.parent_table === 'collection'
 
@@ -250,7 +250,7 @@ export function NotionPage({
     return <Loading />
   }
 
-  if (error || !site || !block) {
+  if (error || !site || !block || !recordMap) {
     return <Page404 site={site} pageId={pageId} error={error} />
   }
 
