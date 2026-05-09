@@ -15,15 +15,28 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     }
   }
 
-  const siteMap = await getSiteMap()
-
   // cache for up to 8 hours
   res.setHeader(
     'Cache-Control',
     'public, max-age=28800, stale-while-revalidate=28800'
   )
   res.setHeader('Content-Type', 'text/xml')
-  res.write(createSitemap(siteMap))
+
+  try {
+    const siteMap = await getSiteMap()
+    res.write(createSitemap(siteMap))
+  } catch (err) {
+    // getSiteMap이 Notion API rate limit 등으로 실패하면 minimal sitemap fallback.
+    // 500 대신 valid XML 응답해서 search engine에 root만이라도 노출.
+    console.error('sitemap error', err)
+    res.write(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${host}</loc></url>
+  <url><loc>${host}/</loc></url>
+</urlset>
+`)
+  }
+
   res.end()
 
   return {
