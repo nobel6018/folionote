@@ -1,0 +1,86 @@
+# folionote
+
+> Inspired by 노션을 웹으로 배포하는 상용 서비스. An independent, open-source reimplementation — Notion 페이지를 정적 사이트로 배포하는 Next.js 기반 OSS 프로젝트.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnobel6018%2Ffolionote)
+
+## 무엇인가
+
+상용 서비스는 Notion 페이지를 자기 도메인의 정적 사이트로 배포해주는 한국 SaaS다. folionote는 그 핵심 기능 — *Notion 페이지를 예쁘게 정적 렌더링 + pretty URL + 다크모드 + 네비게이션* — 을 본인이 호스팅할 수 있는 OSS로 다시 만든 것.
+
+이 프로젝트는 [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) (by Travis Fischer)을 베이스로 fork됐고, 레퍼런스 서비스의 시각 디자인과 사용성에서 영감을 받았다. **레퍼런스 서비스의 코드/CSS를 직접 카피하지 않았다** — 디자인 토큰만 추출해서 새로 구현한 독립 프로젝트.
+
+## 주요 기능
+
+- **Notion → 정적 사이트** (SSG + ISR via Next.js)
+- **Pretty URL** (`/about`, `/posts/my-post` 등 사용자 정의)
+- **다크모드 3-state** (system / dark / light, OS 변경 자동 반영, localStorage 우선)
+- **네비게이션 바** (config 기반)
+- **OG/SEO/sitemap 자동 생성**
+- **Vercel 원클릭 배포**
+
+## 빠른 시작
+
+### 1. Notion 준비
+
+1. 사이트로 만들 Notion 페이지를 준비하고 *Share → Anyone with link*로 공개
+2. 페이지 URL에서 page ID 추출 (URL 끝의 32자 hex)
+
+예: `https://www.notion.so/My-Site-67890abcdef1234567890abcdef12345` → page ID는 `67890abcdef1234567890abcdef12345`
+
+### 2. 클론 + 설정
+
+```bash
+git clone https://github.com/nobel6018/folionote.git my-site
+cd my-site
+pnpm install
+```
+
+`site.config.ts`에서 자기 페이지 ID와 사이트 정보 입력:
+
+```ts
+export default siteConfig({
+  rootNotionPageId: 'YOUR_NOTION_PAGE_ID',
+  name: 'My Site',
+  domain: 'mysite.com',
+  author: 'Your Name',
+  // ...
+})
+```
+
+### 3. 로컬 실행
+
+```bash
+pnpm dev   # http://localhost:3000
+```
+
+### 4. 배포
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnobel6018%2Ffolionote)
+
+또는:
+```bash
+pnpm build
+pnpm vercel deploy
+```
+
+## 문서
+
+- [getting-started](docs/getting-started.md) — Notion 페이지 준비 → 환경변수 → 배포까지 단계별
+- [configuration](docs/configuration.md) — `site.config.ts` 옵션 전체
+- [customization](docs/customization.md) — CSS 커스터마이징 (디자인 토큰)
+- [deployment](docs/deployment.md) — Vercel 배포 + Cloudflare DNS
+
+## 이 사이트
+
+이 레포의 `site.config.ts` 기본값은 [레퍼런스 사이트](https://레퍼런스 사이트)로 설정돼 있다 — 작성자(Lee, YoungHoon)의 기술 블로그. **fork 후 본인 값으로 반드시 수정해야 한다.**
+
+## 라이선스
+
+MIT — [LICENSE](LICENSE) 참고. `nextjs-notion-starter-kit` 원본의 MIT 저작권 표시 보존됨.
+
+## 크레딧
+
+- 디자인 영감: 노션을 웹으로 배포하는 상용 서비스 (레퍼런스 서비스)
+- 베이스 프로젝트: [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) by Travis Fischer
+- Notion 렌더링: [`react-notion-x`](https://github.com/NotionX/react-notion-x)

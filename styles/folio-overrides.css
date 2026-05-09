@@ -1,0 +1,220 @@
+/**
+ * react-notion-x 표준 .notion-* 클래스에 레퍼런스 서비스 풍 시각 디자인 적용.
+ * folio-tokens.css의 변수만 사용. 색/숫자 하드코딩 금지 (변수 추가가 더 깔끔).
+ *
+ * @see analysis/class-mapping.md  (레퍼런스 서비스 ↔ react-notion-x 매핑)
+ * @see analysis/recommendations.md (Phase 2 디자인 전략)
+ */
+
+/* ── 페이지 컨테이너 max-width ──────────────────────────── */
+.notion-page {
+  max-width: var(--folio-page-max-width);
+  margin: 0 auto;
+  padding-left: var(--folio-space-3);
+  padding-right: var(--folio-space-3);
+  padding-bottom: var(--folio-page-content-padding-bottom);
+}
+
+/* ── 커버 이미지: 풀폭 + 평면 (레퍼런스 서비스 스타일) ──────────── */
+/* react-notion-x 기본은 .notion-page max-width 안에 cover가 갇혀 있고 둥근 모서리.
+ * negative margin + 100vw로 viewport 전체로 빼내고, span/img까지 모두 평면. */
+.notion-page-cover-wrapper,
+.notion-page-cover-wrapper span,
+.notion-page-cover-wrapper img,
+.notion-page-cover {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.notion-page-cover-wrapper {
+  margin-left: calc(50% - 50vw) !important;
+  margin-right: calc(50% - 50vw) !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+
+.notion-page-cover-wrapper span,
+.notion-page-cover-wrapper img,
+.notion-page-cover {
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+
+/* ── 페이지 아이콘 좌측 정렬 + 사각형 (레퍼런스 서비스 스타일) ──── */
+/* react-notion-x 기본은 cover 위 *수평 중앙* + 124x124 큰 원형/이미지.
+ * 레퍼런스 서비스는 좌측 + 작은 사각형. */
+.notion-page-icon-hero {
+  left: 0 !important;
+  transform: none !important;
+  margin-left: var(--folio-space-3) !important;
+  justify-content: flex-start !important;
+}
+
+.notion-page-icon-hero.notion-page-icon-image {
+  width: 124px !important;
+  height: 124px !important;
+  margin-left: var(--folio-space-3) !important;
+}
+
+/* react-notion-x + starter-kit 모두 페이지 아이콘에 다양한 셀렉터로
+ * border-radius를 부여하므로 가능한 모든 셀렉터를 override. */
+.notion-page-icon-hero,
+.notion-page-icon-hero span,
+.notion-page-icon-hero img,
+.notion-page-icon-hero .notion-page-icon,
+.notion-page-icon-hero.notion-page-icon-image,
+.notion-page-icon-hero.notion-page-icon-image span,
+.notion-page-icon-hero.notion-page-icon-image img,
+img.notion-page-icon,
+svg.notion-page-icon {
+  border-radius: var(--folio-radius-md) !important;
+}
+
+/* ── 페이지 타이틀 좌측 정렬 ───────────────────────────── */
+.notion-title {
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+
+.notion-page-content {
+  font-size: var(--folio-font-size-base);
+  line-height: var(--folio-line-height-normal);
+}
+
+/* ── 페이지 타이틀 ──────────────────────────────────────── */
+.notion-title {
+  font-family: var(--folio-font-sans);
+  font-size: var(--folio-page-header-font-size);
+  font-weight: 700;
+  letter-spacing: var(--folio-letter-spacing-tight);
+  line-height: var(--folio-line-height-tight);
+}
+
+/* ── 본문 heading ──────────────────────────────────────── */
+.notion-h1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: var(--folio-line-height-tight);
+  margin-top: var(--folio-space-5);
+  margin-bottom: var(--folio-space-3);
+}
+.notion-h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: var(--folio-space-4);
+  margin-bottom: var(--folio-space-2);
+}
+.notion-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: var(--folio-space-3);
+  margin-bottom: var(--folio-space-2);
+}
+
+/* ── 본문 텍스트 ──────────────────────────────────────── */
+.notion-text {
+  line-height: var(--folio-line-height-normal);
+}
+
+/* ── Callout ────────────────────────────────────────────── */
+.notion-callout {
+  background-color: var(--folio-callout-bg);
+  border-radius: var(--folio-radius-md);
+  padding: var(--folio-space-3);
+}
+
+/* ── Bookmark ───────────────────────────────────────────── */
+.notion-bookmark {
+  border-radius: var(--folio-radius-md);
+  border: 1px solid var(--folio-border);
+  transition: background-color var(--folio-transition-base);
+}
+.notion-bookmark:hover {
+  background-color: var(--folio-surface-muted);
+}
+.notion-bookmark-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+.notion-bookmark-description {
+  font-size: 12px;
+  color: var(--folio-text-muted);
+}
+.notion-bookmark-link-text {
+  font-size: 12px;
+  color: var(--folio-text-subtle);
+  letter-spacing: var(--folio-letter-spacing-tight);
+}
+
+/* ── Code block ─────────────────────────────────────────── */
+.notion-code {
+  font-family: var(--folio-font-mono);
+  background-color: var(--folio-surface-muted);
+  border-radius: var(--folio-radius-md);
+  padding: var(--folio-space-3);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notion-inline-code {
+  font-family: var(--folio-font-mono);
+  background-color: rgba(135, 131, 120, 0.15);
+  color: #eb5757;
+  padding: 1px 4px;
+  border-radius: var(--folio-radius-sm);
+  font-size: 0.9em;
+}
+.dark-mode .notion-inline-code {
+  color: #ef6262;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Collection card (갤러리 뷰) ────────────────────────── */
+.notion-collection-card {
+  border-radius: var(--folio-radius-lg);
+  box-shadow: var(--folio-shadow-sm);
+  transition: transform var(--folio-transition-base),
+    box-shadow var(--folio-transition-base);
+}
+.notion-collection-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--folio-shadow-md);
+}
+.notion-collection-card-cover {
+  border-top-left-radius: var(--folio-radius-lg);
+  border-top-right-radius: var(--folio-radius-lg);
+  overflow: hidden;
+}
+
+/* ── Quote ──────────────────────────────────────────────── */
+.notion-quote {
+  border-left: 3px solid var(--folio-text);
+  padding-left: var(--folio-space-3);
+  font-style: normal;
+  color: var(--folio-text-muted);
+}
+
+/* ── Divider ────────────────────────────────────────────── */
+.notion-hr {
+  border: none;
+  border-top: 1px solid var(--folio-divider);
+  margin: var(--folio-space-4) 0;
+}
+
+/* ── Link 호버 (레퍼런스 서비스 풍 underline transition) ──────────── */
+.notion-link {
+  position: relative;
+  border-bottom: 1px solid var(--folio-border);
+  transition: border-color var(--folio-transition-base);
+}
+.notion-link:hover {
+  border-bottom-color: var(--folio-text);
+}
+
+/* ── Image (둥근 모서리) ────────────────────────────────── */
+.notion-asset-wrapper {
+  margin: var(--folio-space-4) 0;
+}
+.notion-asset-wrapper-image img {
+  border-radius: var(--folio-radius-md);
+}
