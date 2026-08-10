@@ -110,6 +110,14 @@ export const navigationLinks: Array<NavigationLink | undefined> = getSiteConfig(
 // Optional site search
 export const isSearchEnabled: boolean = getSiteConfig('isSearchEnabled', true)
 
+// 날짜 표시 형식 (@see lib/format-date.ts)
+export const dateFormat: string = getSiteConfig('dateFormat', 'YYYY/MM/DD')
+
+export const isCollectionViewTabsEnabled: boolean = getSiteConfig(
+  'isCollectionViewTabsEnabled',
+  true
+)
+
 // ----------------------------------------------------------------------------
 
 // Optional redis instance for persisting preview images

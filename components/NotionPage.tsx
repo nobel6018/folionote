@@ -17,6 +17,7 @@ import { useSearchParam } from 'react-use'
 
 import type * as types from '@/lib/types'
 import * as config from '@/lib/config'
+import { formatNotionDate } from '@/lib/format-date'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
 import { searchNotion } from '@/lib/search-notion'
@@ -39,10 +40,9 @@ import styles from './styles.module.css'
 // Prism syntax 등록은 _app.tsx에서 정적 import로 처리.
 // react-notion-x default Code는 사용 안 함 (FolioCode로 교체).
 
+// 컬렉션 제목 색상을 살리기 위해 레퍼런스 서비스 래퍼를 사용 (@see components/folio/Collection.tsx)
 const Collection = dynamic(() =>
-  import('react-notion-x/build/third-party/collection').then(
-    (m) => m.Collection
-  )
+  import('./folio/Collection').then((m) => m.Collection)
 )
 const Equation = dynamic(() =>
   import('react-notion-x/build/third-party/equation').then((m) => m.Equation)
@@ -89,17 +89,15 @@ const propertyLastEditedTimeValue = (
 }
 
 const propertyDateValue = (
-  { data, schema, pageHeader }: any,
+  { data }: any,
   defaultFn: () => React.ReactNode
 ) => {
-  if (pageHeader && schema?.name?.toLowerCase() === 'published') {
-    const publishDate = data?.[0]?.[1]?.[0]?.[1]?.start_date
+  // react-notion-x 기본 렌더는 영문 로케일 고정이라 한국어 사이트에서 어긋난다.
+  // site.config.ts의 dateFormat을 따르도록 통일한다. (@see lib/format-date.ts)
+  const startDate = data?.[0]?.[1]?.[0]?.[1]?.start_date
 
-    if (publishDate) {
-      return `${formatDate(publishDate, {
-        month: 'long'
-      })}`
-    }
+  if (startDate) {
+    return formatNotionDate(startDate)
   }
 
   return defaultFn()
@@ -250,7 +248,7 @@ export function NotionPage({
         rootDomain={site.domain}
         fullPage={!isLiteMode}
         previewImages={!!recordMap.preview_images}
-        showCollectionViewDropdown={false}
+        showCollectionViewDropdown={config.isCollectionViewTabsEnabled}
         showTableOfContents={showTableOfContents}
         minTableOfContentsItems={minTableOfContentsItems}
         defaultPageIcon={config.defaultPageIcon}

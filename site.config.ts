@@ -47,7 +47,17 @@ export default siteConfig({
   //   '/bar': '0be6efce9daf42688f65c76b89f8eb27'
   // }
   includeNotionIdInUrls: true,
-  pageUrlOverrides: null,
+
+  // pretty URL 매핑. 키가 경로, 값이 Notion 블록 ID(하이픈 없는 32자 hex).
+  // navigationLinks에서 url로 참조하는 경로는 여기에도 반드시 있어야 한다.
+  pageUrlOverrides: {
+    '/devs': 'df93c7ac0dfd4fdf8a9bdc367cdca3ec',
+    '/clouds': 'de87b7bd73cb416392a9df715e0a9c0e',
+    '/books': '5b5cb9bdc8204dcdabc57ceb7b91f858'
+  },
+
+  // 컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)
+  dateFormat: 'YYYY/MM/DD',
 
   // 'custom' 모드: 사이트 헤더에 navigationLinks + 다크모드 토글 노출 (레퍼런스 서비스 스타일 헤더).
   // 'default' 모드는 react-notion-x 기본 헤더만 사용 (토글 없음 → footer 깊숙이 묻힘).
@@ -60,5 +70,9 @@ export default siteConfig({
   //      { title: '개발', pageId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }
   //   2) url 사용 — pretty URL로 매핑. pageUrlOverrides에도 같은 매핑 필요.
   //      { title: '개발', url: '/devs' }  // pageUrlOverrides: { '/devs': 'pageId' }
-  navigationLinks: []
+  navigationLinks: [
+    { title: '개발', url: '/devs' },
+    { title: 'AWS', url: '/clouds' },
+    { title: '독서', url: '/books' }
+  ]
 })

@@ -3,7 +3,7 @@ import {
   type SearchParams,
   type SearchResults
 } from 'notion-types'
-import { mergeRecordMaps } from 'notion-utils'
+import { getBlockValue, mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
@@ -42,8 +42,25 @@ const getNavigationLinkPages = pMemoize(
   }
 )
 
+/**
+ * 이름을 지정하지 않은 컬렉션 뷰는 Notion이 `name: ''`로 내려준다.
+ * react-notion-x는 이때 `"Table view"`처럼 " view"를 붙여 폴백하는데,
+ * Notion UI와 레퍼런스 서비스는 타입 이름만 쓴다("Table", "List").
+ * 뷰 탭 라벨을 맞추기 위해 빈 이름을 타입 이름으로 채운다.
+ */
+function fillEmptyCollectionViewNames(recordMap: ExtendedRecordMap) {
+  for (const record of Object.values(recordMap.collection_view || {})) {
+    const view = getBlockValue(record)
+    if (view && !view.name) {
+      view.name = view.type.charAt(0).toUpperCase() + view.type.slice(1)
+    }
+  }
+}
+
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId)
+
+  fillEmptyCollectionViewNames(recordMap)
 
   if (navigationStyle !== 'default') {
     // ensure that any pages linked to in the custom navigation header have

@@ -23,9 +23,16 @@
   --folio-page-cover-height: 30vh;    /* 페이지 상단 커버 높이 */
   --folio-page-content-padding-bottom: 10vh;
 
+  /* 사이트 헤더 2행 구조 (레퍼런스 서비스 실측: nav 48px + 브레드크럼 40px) */
+  --folio-nav-row-height: 48px;
+  --folio-breadcrumb-row-height: 40px;
+
   /* react-notion-x 변수 매핑 */
   --notion-max-width: var(--folio-content-max-width);
-  --notion-header-height: 54px;
+  /* 본문 min-height 계산(100vh - 헤더)에 쓰이므로 두 행 합계로 맞춘다 */
+  --notion-header-height: calc(
+    var(--folio-nav-row-height) + var(--folio-breadcrumb-row-height)
+  );
 
   /* ── Typography ────────────────────────────────────────────────── */
   --folio-font-sans:
@@ -51,6 +58,7 @@
 
   /* ── Color (light) ─────────────────────────────────────────────── */
   --folio-bg: #fffefc;                /* body background, 레퍼런스 서비스 기본 */
+  --folio-header-bg: #ffffff;         /* 헤더는 body보다 살짝 밝은 순백 */
   --folio-surface: #ffffff;           /* 카드/팝오버 */
   --folio-surface-muted: #f7f6f3;     /* code block bg light */
   --folio-callout-bg: rgb(241, 241, 239); /* callout default */
@@ -69,9 +77,25 @@
   --folio-space-6: 48px;
 
   /* ── Radius ────────────────────────────────────────────────────── */
-  --folio-radius-sm: 3px;             /* small icons */
-  --folio-radius-md: 4px;             /* callout, code bg */
-  --folio-radius-lg: 8px;             /* button, input, card */
+  --folio-radius-sm: 3px;             /* small icons, tag pill */
+  --folio-radius-md: 4px;             /* callout, code bg, collection card */
+  --folio-radius-lg: 8px;             /* button, input */
+
+  /* ── Collection card (갤러리 뷰) ───────────────────────────────── */
+  /* 레퍼런스 서비스는 카드 테두리를 border가 아니라 spread 1px 그림자로 그린다.
+   * 덕분에 radius가 어긋나지 않고 레이아웃 폭도 밀리지 않는다. */
+  --folio-card-ring: 0 0 0 1px rgba(15, 15, 15, 0.1);
+  --folio-card-shadow: var(--folio-card-ring), 0 2px 4px rgba(15, 15, 15, 0.1);
+  --folio-card-shadow-hover: var(--folio-card-ring), 0 4px 8px rgba(15, 15, 15, 0.14);
+  --folio-card-cover-aspect: 16 / 9;
+  --folio-card-min-width: 280px;      /* 이 폭 미만이면 1열로 떨어짐 */
+  --folio-card-gap: 16px;
+  --folio-card-body-padding: 8px 10px 6px;
+  --folio-card-title-font-size: 14px;
+  --folio-card-meta-font-size: 12px;
+
+  /* 페이지 속성 목록의 이름 열 폭 (레퍼런스 서비스 실측 172px) */
+  --folio-property-name-width: 172px;
 
   /* ── Shadow (레퍼런스 서비스는 거의 flat — 1단계만) ──────────────────────── */
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -95,6 +119,7 @@
 /* ── Dark mode (next-themes가 html에 .dark-mode 클래스 부여) ───── */
 .dark-mode {
   --folio-bg: #1a1d1f;
+  --folio-header-bg: #1f2325;
   --folio-surface: #22262a;
   --folio-surface-muted: #2d3439;
   --folio-callout-bg: rgba(255, 255, 255, 0.04);
@@ -105,4 +130,9 @@
   --folio-divider: rgba(255, 255, 255, 0.08);
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --folio-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+  /* 다크에서 검은 ring은 배경에 묻히므로 밝은 ring으로 뒤집는다 */
+  --folio-card-ring: 0 0 0 1px rgba(255, 255, 255, 0.11);
+  --folio-card-shadow: var(--folio-card-ring), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --folio-card-shadow-hover: var(--folio-card-ring), 0 4px 8px rgba(0, 0, 0, 0.5);
 }

@@ -6,9 +6,50 @@
  * @see analysis/recommendations.md (Phase 2 디자인 전략)
  */
 
+/* ── 사이트 헤더 (2행: nav + 브레드크럼) ────────────────── */
+/* 레퍼런스 서비스 실측: nav 48px + 브레드크럼 40px. react-notion-x는 헤더를 1행 고정
+ * 높이로 두고 .notion-nav-header를 absolute로 깔기 때문에 둘 다 풀어야 한다. */
+.folio-header {
+  height: auto;
+  min-height: 0;
+  background: var(--folio-header-bg);
+  /* starter-kit 원본은 반투명 + blur(글래스) 헤더였지만 레퍼런스 서비스는 불투명 단색 */
+  backdrop-filter: none;
+}
+
+.folio-header .folio-nav-row {
+  position: static;
+  height: var(--folio-nav-row-height);
+  padding: 0 12px;
+  gap: var(--folio-space-3);
+}
+
+.folio-site-name {
+  font-weight: 600;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.folio-breadcrumb-row {
+  display: flex;
+  align-items: center;
+  height: var(--folio-breadcrumb-row-height);
+  padding: 0 var(--folio-space-2);
+  border-top: 1px solid var(--folio-divider);
+  overflow-x: auto;
+}
+
+/* 브레드크럼 행에서는 마지막 항목(현재 페이지)만 강조 없이 흐르게 */
+.folio-breadcrumb-row .breadcrumbs {
+  min-width: 0;
+  font-size: 14px;
+}
+
 /* ── 페이지 컨테이너 max-width ──────────────────────────── */
+/* 레퍼런스 서비스 실측: 본문 컬럼은 708px(--content-max-width) 고정. 좌우 16px 거터를
+ * 더한 값을 max-width로 줘야 패딩이 본문 폭을 깎지 않는다. */
 .notion-page {
-  max-width: var(--folio-page-max-width);
+  max-width: calc(var(--folio-content-max-width) + 2 * var(--folio-space-3));
   margin: 0 auto;
   padding-left: var(--folio-space-3);
   padding-right: var(--folio-space-3);
@@ -16,48 +57,41 @@
 }
 
 /* ── 커버 이미지: 풀폭 + 평면 (레퍼런스 서비스 스타일) ──────────── */
-/* react-notion-x 기본은 .notion-page max-width 안에 cover가 갇혀 있고 둥근 모서리.
- * negative margin + 100vw로 viewport 전체로 빼내고, span/img까지 모두 평면. */
+/* react-notion-x 기본은 커버가 .notion-page max-width 안에 갇혀 있다.
+ * negative margin + 100vw로 viewport 전체로 빼낸다. */
 .notion-page-cover-wrapper,
 .notion-page-cover-wrapper span,
 .notion-page-cover-wrapper img,
 .notion-page-cover {
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  border-radius: 0;
+  box-shadow: none;
+  width: 100vw;
+  max-width: 100vw;
 }
 
 .notion-page-cover-wrapper {
-  margin-left: calc(50% - 50vw) !important;
-  margin-right: calc(50% - 50vw) !important;
-  width: 100vw !important;
-  max-width: 100vw !important;
-}
-
-.notion-page-cover-wrapper span,
-.notion-page-cover-wrapper img,
-.notion-page-cover {
-  width: 100vw !important;
-  max-width: 100vw !important;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 
 /* ── 페이지 아이콘 좌측 정렬 + 사각형 (레퍼런스 서비스 스타일) ──── */
 /* react-notion-x 기본은 cover 위 *수평 중앙* + 124x124 큰 원형/이미지.
  * 레퍼런스 서비스는 좌측 + 작은 사각형. */
 .notion-page-icon-hero {
-  left: 0 !important;
-  transform: none !important;
-  margin-left: var(--folio-space-3) !important;
-  justify-content: flex-start !important;
+  left: 0;
+  transform: none;
+  margin-left: var(--folio-space-3);
+  justify-content: flex-start;
 }
 
 .notion-page-icon-hero.notion-page-icon-image {
-  width: 124px !important;
-  height: 124px !important;
-  margin-left: var(--folio-space-3) !important;
+  width: 124px;
+  height: 124px;
+  margin-left: var(--folio-space-3);
 }
 
-/* react-notion-x + starter-kit 모두 페이지 아이콘에 다양한 셀렉터로
- * border-radius를 부여하므로 가능한 모든 셀렉터를 override. */
+/* react-notion-x가 페이지 아이콘에 여러 셀렉터로 border-radius를 부여하므로
+ * 해당 셀렉터를 모두 덮어 사각형(4px)으로 맞춘다. */
 .notion-page-icon-hero,
 .notion-page-icon-hero span,
 .notion-page-icon-hero img,
@@ -70,12 +104,6 @@ svg.notion-page-icon {
   border-radius: var(--folio-radius-md) !important;
 }
 
-/* ── 페이지 타이틀 좌측 정렬 ───────────────────────────── */
-.notion-title {
-  text-align: left !important;
-  margin-left: 0 !important;
-}
-
 .notion-page-content {
   font-size: var(--folio-font-size-base);
   line-height: var(--folio-line-height-normal);
@@ -83,11 +111,51 @@ svg.notion-page-icon {
 
 /* ── 페이지 타이틀 ──────────────────────────────────────── */
 .notion-title {
+  display: block;
+  text-align: left;
+  margin-left: 0;
   font-family: var(--folio-font-sans);
   font-size: var(--folio-page-header-font-size);
   font-weight: 700;
   letter-spacing: var(--folio-letter-spacing-tight);
   line-height: var(--folio-line-height-tight);
+}
+
+/* ── 페이지 속성 목록 (Created / Tags 등) ────────────────── */
+/* 레퍼런스 서비스 실측: "이름 | 값" 2열, 좌측 정렬. 이름 열은 172px 고정에 흐린 글자색. */
+.notion-collection-page-properties .notion-collection-row-property {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.notion-collection-page-properties .notion-collection-column-title {
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-1);
+  flex: 0 0 var(--folio-property-name-width);
+  max-width: var(--folio-property-name-width);
+  color: var(--folio-text-muted);
+  font-size: 14px;
+}
+
+.notion-collection-page-properties .notion-collection-column-title-body {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notion-collection-page-properties .notion-collection-row-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.notion-collection-page-properties .notion-property {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--folio-space-1);
 }
 
 /* ── 본문 heading ──────────────────────────────────────── */
@@ -169,21 +237,162 @@ svg.notion-page-icon {
   background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* ── Collection header (제목 + 뷰 탭) ───────────────────── */
+/* 뷰 탭/헤더가 본문 폭을 되찾게 하고, 제목 색상 변수를 흘려보낸다
+ * (@see components/folio/Collection.tsx) */
+.folio-collection {
+  width: 100%;
+  align-self: stretch;
+}
+
+.folio-collection .notion-collection-header-title {
+  color: var(--folio-collection-title-color, inherit);
+}
+
+/* 레퍼런스 서비스 실측: 구분선은 뷰 탭 아래에만 있고 제목에는 없다.
+ * 제목은 22px/700, 아이콘과 한 글자 정도 간격. */
+.notion-collection-header {
+  width: 100%;
+  margin-bottom: var(--folio-space-3);
+}
+
+.notion-collection-header-title {
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-1);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: var(--folio-line-height-tight);
+}
+
+.notion-collection-header-title .notion-page-title-icon {
+  width: 1em;
+  height: 1em;
+  font-size: 1em;
+}
+
+.notion-collection-view-tabs-row {
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-3);
+  width: 100%;
+  border-bottom: 1px solid var(--folio-divider);
+  margin-bottom: var(--folio-space-3);
+  overflow-x: auto;
+}
+
+/* 활성 탭의 2px 밑줄이 탭 행의 1px 구분선 위에 겹쳐 앉게 한다 (Notion/레퍼런스 서비스 동일) */
+.notion-collection-view-tabs-content-item {
+  background: none;
+  border: 0 none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: var(--folio-space-1) 2px;
+  color: var(--folio-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--folio-transition-base),
+    border-color var(--folio-transition-base);
+}
+.notion-collection-view-tabs-content-item:hover {
+  color: var(--folio-text);
+}
+.notion-collection-view-tabs-content-item-active {
+  color: var(--folio-text);
+  border-bottom-color: var(--folio-text);
+  font-weight: 500;
+}
+
+.notion-collection-view-type {
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-1);
+}
+
 /* ── Collection card (갤러리 뷰) ────────────────────────── */
+/* 레퍼런스 서비스 실측: 708px 본문에 346px 카드 2열 + 16px gap.
+ * 카드는 radius 4px + spread 1px 그림자 링, 커버는 16:9 평면. */
+.notion-gallery-grid {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(var(--folio-card-min-width), 1fr)
+  );
+  grid-gap: var(--folio-card-gap);
+  gap: var(--folio-card-gap);
+  /* react-notion-x는 그리드 위에 구분선을 넣지만 레퍼런스 서비스는 뷰 탭 아래에만 둔다 */
+  border-top: 0 none;
+  /* 카드 높이를 행 최대값에 맞추지 않고 내용만큼 (레퍼런스 서비스는 카드마다 높이가 다르다) */
+  grid-auto-rows: auto;
+}
+
 .notion-collection-card {
-  border-radius: var(--folio-radius-lg);
-  box-shadow: var(--folio-shadow-sm);
-  transition: transform var(--folio-transition-base),
-    box-shadow var(--folio-transition-base);
+  border-radius: var(--folio-radius-md);
+  background: var(--folio-surface);
+  box-shadow: var(--folio-card-shadow);
+  overflow: hidden;
+  transition: box-shadow var(--folio-transition-base);
 }
 .notion-collection-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--folio-shadow-md);
+  box-shadow: var(--folio-card-shadow-hover);
 }
+
+/* react-notion-x는 커버에 고정 px 높이를 주지만 레퍼런스 서비스는 16:9 비율 고정 */
 .notion-collection-card-cover {
-  border-top-left-radius: var(--folio-radius-lg);
-  border-top-right-radius: var(--folio-radius-lg);
-  overflow: hidden;
+  aspect-ratio: var(--folio-card-cover-aspect);
+  height: auto;
+  border-radius: 0;
+  border-bottom: 0 none;
+  box-shadow: none;
+}
+.notion-collection-card-cover img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+
+.notion-collection-card-body {
+  padding: var(--folio-card-body-padding);
+}
+
+/* 카드 제목: 레퍼런스 서비스는 14px/500. starter-kit 원본은 2em(=32px)이라 과했다 */
+.notion-gallery-grid .notion-page-title-text {
+  font-size: var(--folio-card-title-font-size);
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: unset;
+  border-bottom: 0 none;
+}
+
+/* 페이지 이모지 아이콘은 레퍼런스 서비스 카드에서 제목 앞에 그대로 노출된다
+ * (starter-kit 원본은 display:none으로 숨겼음) */
+.notion-gallery-grid .notion-page-icon-inline {
+  display: inline-flex;
+  width: 1.15em;
+  height: 1.15em;
+  margin-right: 0.35em;
+}
+
+/* 날짜/태그 등 메타 프로퍼티 */
+.notion-gallery-grid .notion-collection-card-property {
+  font-size: var(--folio-card-meta-font-size);
+  line-height: 1.2;
+  white-space: unset;
+  text-overflow: unset;
+  color: var(--folio-text);
+}
+.notion-gallery-grid .notion-collection-card-property:not(:first-child) {
+  margin-top: var(--folio-space-1);
+}
+
+/* 태그 칩: 18px 높이 pill. 배경색은 Notion이 인라인으로 넣어준다 */
+.notion-gallery-grid .notion-property-multi_select-item {
+  border-radius: var(--folio-radius-sm);
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  font-size: var(--folio-card-meta-font-size);
 }
 
 /* ── Quote ──────────────────────────────────────────────── */
