@@ -414,6 +414,7 @@ svg.notion-page-icon {
 /* ── 맨 위로 버튼 ────────────────────────────────────────── */
 .folio-back-to-top {
   position: fixed;
+  bottom: var(--folio-back-to-top-bottom, 16px);
   z-index: 250;
   display: inline-flex;
   align-items: center;
@@ -457,6 +458,81 @@ svg.notion-page-icon {
 .folio-back-to-top-hidden {
   opacity: 0;
   visibility: hidden;
+}
+
+/* ── 하단 네비게이터 (모바일 탭바) ───────────────────────── */
+/* 좁은 화면에서만 보인다. 데스크탑은 상단 nav가 그 역할을 한다. */
+.folio-bottom-nav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 240;
+  background: var(--folio-header-bg);
+  border-top: 1px solid var(--folio-divider);
+  /* 홈 인디케이터가 있는 기기에서 탭이 가리지 않게 */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.notion-header .folio-bottom-nav-item,
+.folio-bottom-nav-item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--folio-space-2) var(--folio-space-1);
+  color: var(--folio-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  border-bottom: 0 none;
+}
+
+.folio-bottom-nav-item-active {
+  color: var(--folio-bottom-nav-active-color);
+}
+
+.folio-bottom-nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.folio-bottom-nav-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 780px) {
+  .folio-bottom-nav {
+    display: flex;
+  }
+
+  /* 탭바가 하단에 깔리므로 본문 끝과 떠 있는 것들을 그만큼 밀어올린다 */
+  .folio-bottom-nav-offset .notion-page {
+    padding-bottom: calc(
+      var(--folio-page-content-padding-bottom) + var(--folio-bottom-nav-height)
+    );
+  }
+
+  .folio-bottom-nav-offset .folio-cta {
+    bottom: calc(var(--folio-cta-bottom, 16px) + var(--folio-bottom-nav-height));
+  }
+
+  .folio-bottom-nav-offset .folio-back-to-top {
+    bottom: calc(
+      var(--folio-back-to-top-bottom, 16px) + var(--folio-bottom-nav-height)
+    );
+  }
+
+  .folio-bottom-nav-offset .folio-popups {
+    bottom: calc(var(--folio-space-3) + var(--folio-bottom-nav-height));
+  }
 }
 
 /* ── 팝업 ────────────────────────────────────────────────── */
@@ -540,6 +616,7 @@ svg.notion-page-icon {
   position: fixed;
   left: 0;
   right: 0;
+  bottom: var(--folio-cta-bottom, 16px);
   z-index: 240;
   display: flex;
   justify-content: center;

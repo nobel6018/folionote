@@ -90,11 +90,15 @@ export function ScrollWidgets() {
             backToTop.fitToContent && 'folio-back-to-top-fit',
             !isBackToTopVisible && 'folio-back-to-top-hidden'
           )}
-          style={{
-            bottom: backToTop.bottomOffset,
-            [backToTop.position === 'left' ? 'marginLeft' : 'marginRight']:
-              backToTop.sideOffset
-          }}
+          // 하단 여백을 CSS 변수로 넘긴다. 인라인 bottom으로 박으면 하단 탭바가
+          // 있을 때 CSS에서 그만큼 밀어올릴 수 없다.
+          style={
+            {
+              '--folio-back-to-top-bottom': `${backToTop.bottomOffset}px`,
+              [backToTop.position === 'left' ? 'marginLeft' : 'marginRight']:
+                backToTop.sideOffset
+            } as React.CSSProperties
+          }
           onClick={onBackToTop}
           aria-label='맨 위로'
           // 숨겨진 동안 키보드 포커스가 잡히지 않게 한다

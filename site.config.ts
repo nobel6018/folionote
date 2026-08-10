@@ -89,6 +89,16 @@ export default siteConfig({
   // ],
   // popupOptions: { mainPageOnly: true },
 
+  // 모바일 하단 탭바. 생략하면 노출하지 않는다(좁은 화면에서만 보인다).
+  //
+  // bottomNavigation: {
+  //   color: '#53a1c9',
+  //   links: [
+  //     { title: '홈', url: '/', icon: '🏠' },
+  //     { title: '개발', url: '/devs', icon: '💻' }
+  //   ]
+  // },
+
   // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {

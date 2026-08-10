@@ -15,6 +15,7 @@ import {
 } from './get-config-value'
 import {
   type BackToTopConfig,
+  type BottomNavigationConfig,
   type ColorTheme,
   type CtaConfig,
   type FontConfig,
@@ -216,6 +217,26 @@ export const font = (() => {
     ),
     mono: rawFont?.mono ?? null
   }
+})()
+
+const rawBottomNav: BottomNavigationConfig | null = getSiteConfig(
+  'bottomNavigation',
+  null
+)
+
+/** 하단 탭바. 링크가 하나도 없으면 바 자체를 그리지 않는다 */
+export const bottomNavigation = (() => {
+  if (!rawBottomNav || rawBottomNav.enabled === false) {
+    return null
+  }
+
+  const links = (rawBottomNav.links || []).filter(
+    (link) => link?.title && (link.url || link.pageId)
+  )
+
+  return links.length
+    ? { color: rawBottomNav.color ?? '#53a1c9', links }
+    : null
 })()
 
 const rawPopups: PopupConfig[] | null = getSiteConfig('popups', null)

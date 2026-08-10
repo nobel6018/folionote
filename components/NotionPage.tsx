@@ -26,6 +26,7 @@ import { useDarkMode } from '@/lib/use-dark-mode'
 import { Footer } from './Footer'
 import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
+import { BottomNavigation } from './folio/BottomNavigation'
 import { Callout as FolioCallout } from './folio/Callout'
 import { Code as FolioCode } from './folio/Code'
 import { CtaButton } from './folio/CtaButton'
@@ -242,10 +243,16 @@ export function NotionPage({
           <ScrollWidgets />
           <CtaButton />
           <Popups />
+          <BottomNavigation />
         </>
       )}
 
       {isLiteMode && <BodyClassName className='notion-lite' />}
+
+      {/* 하단 탭바가 있으면 본문/위젯 하단 여백을 확보한다 (@see folio-overrides.css) */}
+      {!isLiteMode && config.bottomNavigation && (
+        <BodyClassName className='folio-bottom-nav-offset' />
+      )}
       {/* dark-mode body class는 next-themes(ThemeProvider)가 html element에 부여 */}
 
       <NotionRenderer

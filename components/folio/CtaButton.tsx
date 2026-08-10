@@ -19,7 +19,14 @@ export function CtaButton() {
     : cta.background
 
   return (
-    <div className='folio-cta' style={{ bottom: cta.bottomOffset }}>
+    // 하단 여백을 CSS 변수로 넘긴다. 인라인 bottom으로 박으면 하단 탭바가 있을 때
+    // CSS에서 그만큼 밀어올릴 수 없다.
+    <div
+      className='folio-cta'
+      style={
+        { '--folio-cta-bottom': `${cta.bottomOffset}px` } as React.CSSProperties
+      }
+    >
       <a
         className='folio-cta-button'
         href={cta.href}

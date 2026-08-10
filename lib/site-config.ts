@@ -62,6 +62,7 @@ export interface SiteConfig {
   cta?: CtaConfig
   popups?: PopupConfig[]
   popupOptions?: PopupOptions
+  bottomNavigation?: BottomNavigationConfig
 }
 
 export interface NavigationLink {
@@ -103,6 +104,20 @@ export interface FontConfig {
   ja?: FontChoice
   /** 코드블록 등에 쓰는 고정폭 폰트 스택 (CSS font-family 문자열) */
   mono?: string
+}
+
+/** 모바일 하단 탭바 항목 */
+export interface BottomNavigationLink extends NavigationLink {
+  /** 라벨 위에 띄울 이모지 (선택) */
+  icon?: string
+}
+
+/** 모바일 하단 탭바 (레퍼런스 서비스 어드민의 스타일 > 하단 네비게이터) */
+export interface BottomNavigationConfig {
+  enabled?: boolean
+  /** 현재 페이지 항목을 강조할 색. 어드민 기본값은 `#53A1C9` */
+  color?: string
+  links?: BottomNavigationLink[]
 }
 
 /** 사이트 팝업 하나 (레퍼런스 서비스 어드민의 스타일 > 팝업 설정) */
