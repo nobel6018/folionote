@@ -18,6 +18,7 @@
 - **네비게이션 바** (config 기반)
 - **OG/SEO/sitemap 자동 생성**
 - **Vercel 원클릭 배포**
+- **설정 화면** (`/admin`, 개발 서버 전용) — 폼으로 편집 + 실시간 미리보기
 
 ## 빠른 시작
 
@@ -53,6 +54,9 @@ export default siteConfig({
 ```bash
 pnpm dev   # http://localhost:3000
 ```
+
+설정은 <http://localhost:3000/admin>에서 폼으로 편집할 수 있다. 저장하면
+`site.config.ts`가 다시 쓰이고 미리보기가 갱신된다(개발 서버 전용).
 
 ### 4. 배포
 

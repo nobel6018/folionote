@@ -1,0 +1,231 @@
+/* /admin 화면 스타일. 개발 서버에서만 쓰이므로 사이트 디자인과 독립적이다. */
+
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  height: 100vh;
+  font-family: var(--folio-font-sans, system-ui, sans-serif);
+  color: #22262a;
+  background: #f6f7f8;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.panelBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 16px 24px;
+}
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.section {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sectionTitle {
+  margin: 0 0 8px;
+  font-size: 13px
+  ;
+  font-weight: 700;
+  color: #4b5257;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: #4b5257;
+}
+
+.fieldHint {
+  font-size: 11px;
+  color: #8b9196;
+}
+
+.input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  background: #fff;
+  color: inherit;
+}
+.input:focus {
+  outline: 2px solid #669dfd;
+  outline-offset: -1px;
+}
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.colorSwatch {
+  flex-shrink: 0;
+  width: 32px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.button {
+  padding: 8px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.button:hover {
+  background: #f2f4f6;
+}
+
+.buttonPrimary {
+  border-color: transparent;
+  background: #2e3439;
+  color: #fff;
+}
+.buttonPrimary:hover {
+  background: #40484e;
+}
+.buttonPrimary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.status {
+  flex: 1 1 auto;
+  font-size: 12px;
+  color: #6b7276;
+}
+.statusError {
+  color: #d5433a;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.previewBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #6b7276;
+}
+
+.previewFrame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: 0 none;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+}
+
+.navLinkRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.iconButton {
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.notice {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fff8e1;
+  border: 1px solid #f0d999;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #6b5a1f;
+}
+
+.code {
+  width: 100%;
+  height: 240px;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  overflow: auto;
+  background: #fbfbfc;
+}
