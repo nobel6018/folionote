@@ -60,6 +60,8 @@ export interface SiteConfig {
   backToTop?: BackToTopConfig
   font?: FontConfig
   cta?: CtaConfig
+  popups?: PopupConfig[]
+  popupOptions?: PopupOptions
 }
 
 export interface NavigationLink {
@@ -101,6 +103,28 @@ export interface FontConfig {
   ja?: FontChoice
   /** 코드블록 등에 쓰는 고정폭 폰트 스택 (CSS font-family 문자열) */
   mono?: string
+}
+
+/** 사이트 팝업 하나 (레퍼런스 서비스 어드민의 스타일 > 팝업 설정) */
+export interface PopupConfig {
+  /**
+   * "다시 보지 않기" 상태를 기억하는 키. 내용을 바꿀 때 id도 바꿔야
+   * 이미 닫은 방문자에게 새 내용이 보인다.
+   */
+  id: string
+  title?: string
+  body?: string
+  /** 이미지 URL (`public/` 기준 또는 절대 URL) */
+  image?: string
+  /** 팝업 전체를 감쌀 링크 */
+  href?: string
+  newTab?: boolean
+}
+
+/** 팝업 공통 설정 */
+export interface PopupOptions {
+  /** 메인 페이지에서만 노출 (어드민 "메인 페이지만 보이기") */
+  mainPageOnly?: boolean
 }
 
 /** 화면 하단에 떠 있는 CTA 버튼 (레퍼런스 서비스 어드민의 스타일 > CTA 버튼) */

@@ -29,6 +29,7 @@ import { NotionPageHeader } from './NotionPageHeader'
 import { Callout as FolioCallout } from './folio/Callout'
 import { Code as FolioCode } from './folio/Code'
 import { CtaButton } from './folio/CtaButton'
+import { Popups } from './folio/Popups'
 import { ScrollWidgets } from './folio/ScrollWidgets'
 import { Page404 } from './Page404'
 import { PageAside } from './PageAside'
@@ -240,6 +241,7 @@ export function NotionPage({
         <>
           <ScrollWidgets />
           <CtaButton />
+          <Popups />
         </>
       )}
 

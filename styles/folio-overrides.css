@@ -459,6 +459,81 @@ svg.notion-page-icon {
   visibility: hidden;
 }
 
+/* ── 팝업 ────────────────────────────────────────────────── */
+/* 좌하단에 쌓는다. CTA 버튼(가운데 하단)과 자리가 겹치지 않게. */
+.folio-popups {
+  position: fixed;
+  left: var(--folio-space-3);
+  bottom: var(--folio-space-3);
+  z-index: 260;
+  display: flex;
+  flex-direction: column;
+  gap: var(--folio-space-2);
+  max-width: min(320px, calc(100vw - 2 * var(--folio-space-3)));
+}
+
+.folio-popup {
+  position: relative;
+  background: var(--folio-surface);
+  border-radius: var(--folio-radius-lg);
+  box-shadow: var(--folio-card-shadow);
+  overflow: hidden;
+}
+
+.folio-popup-close {
+  position: absolute;
+  top: var(--folio-space-1);
+  right: var(--folio-space-1);
+  z-index: 1;
+  display: inline-flex;
+  background: var(--folio-surface);
+  border: 0 none;
+  border-radius: 50%;
+  padding: 2px;
+  cursor: pointer;
+  color: var(--folio-text-muted);
+}
+
+.folio-popup-body {
+  display: block;
+  color: inherit;
+  border-bottom: 0 none;
+}
+
+.folio-popup-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.folio-popup-title {
+  display: block;
+  padding: var(--folio-space-3) var(--folio-space-3) 0;
+  font-size: 15px;
+}
+
+.folio-popup-text {
+  margin: 0;
+  padding: var(--folio-space-1) var(--folio-space-3) var(--folio-space-3);
+  font-size: 14px;
+  color: var(--folio-text-muted);
+}
+
+.folio-popup-dismiss {
+  width: 100%;
+  background: none;
+  border: 0 none;
+  border-top: 1px solid var(--folio-divider);
+  padding: var(--folio-space-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  color: var(--folio-text-subtle);
+}
+.folio-popup-dismiss:hover {
+  color: var(--folio-text-muted);
+}
+
 /* ── CTA 버튼 ────────────────────────────────────────────── */
 /* 본문 폭 안에서 가운데. 맨 위로 버튼(z 250)보다 아래에 둬서 겹치면 그쪽이 위로 */
 .folio-cta {

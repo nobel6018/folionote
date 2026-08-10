@@ -19,6 +19,8 @@ import {
   type CtaConfig,
   type FontConfig,
   type NavigationLink,
+  type PopupConfig,
+  type PopupOptions,
   type ScrollProgressBarConfig,
   type SiteLogo
 } from './site-config'
@@ -215,6 +217,18 @@ export const font = (() => {
     mono: rawFont?.mono ?? null
   }
 })()
+
+const rawPopups: PopupConfig[] | null = getSiteConfig('popups', null)
+const rawPopupOptions: PopupOptions | null = getSiteConfig('popupOptions', null)
+
+/** 팝업. id가 없거나 보여줄 내용이 하나도 없는 항목은 버린다 */
+export const popups: PopupConfig[] = (rawPopups || []).filter(
+  (popup) => popup?.id && (popup.title || popup.body || popup.image)
+)
+
+export const popupOptions: PopupOptions = {
+  mainPageOnly: rawPopupOptions?.mainPageOnly ?? false
+}
 
 const rawCta: CtaConfig | null = getSiteConfig('cta', null)
 

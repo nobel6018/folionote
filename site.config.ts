@@ -80,6 +80,15 @@ export default siteConfig({
   //   newTab: true
   // },
 
+  // 팝업. 생략하면 노출하지 않는다.
+  // id는 "다시 보지 않기" 기록 키라서, 내용을 바꾸면 id도 같이 바꿔야
+  // 이미 닫은 방문자에게 새 내용이 보인다.
+  //
+  // popups: [
+  //   { id: 'notice-1', title: '공지', body: '새 글을 올렸습니다.', href: '/devs' }
+  // ],
+  // popupOptions: { mainPageOnly: true },
+
   // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {
