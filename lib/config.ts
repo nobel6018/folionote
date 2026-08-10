@@ -170,6 +170,12 @@ export const customThemeColors: {
       }
     : null
 
+// 공유 버튼 (레퍼런스 서비스 어드민의 "공유 버튼 표시")
+export const isShareButtonEnabled: boolean = getSiteConfig(
+  'isShareButtonEnabled',
+  true
+)
+
 /**
  * 테마 토글 노출 여부. system 모드에서만 의미가 있다
  * (한쪽으로 고정했거나 커스텀 색을 쓰면 토글이 색을 뒤엎어 버린다).

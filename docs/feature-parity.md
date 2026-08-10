@@ -43,7 +43,7 @@
 | 색상 테마 라이트 / 다크 | O | `colorTheme.mode`. 기본 `system`(3-state) |
 | 색상 테마 커스텀 (배경 + 폰트 색) | O | `colorTheme: { mode: 'custom', background, foreground }` |
 | 테마 선택 버튼 표시 | O | 테마를 고정하거나 custom을 쓰면 자동으로 감춘다 |
-| 공유 버튼 표시 | X | |
+| 공유 버튼 표시 | O | `isShareButtonEnabled`. 헤더 + 모바일 드로어 |
 | 검색 버튼 표시 | O | `isSearchEnabled` |
 | 페이지 경로 표시 | 토글 없음 | 항상 표시 |
 | 복제 버튼 표시 | X | |

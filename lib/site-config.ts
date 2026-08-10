@@ -51,6 +51,9 @@ export interface SiteConfig {
   isCollectionSearchEnabled?: boolean
 
   colorTheme?: ColorTheme
+
+  /** 헤더/모바일 드로어에 현재 페이지 공유 버튼 노출 여부 */
+  isShareButtonEnabled?: boolean
 }
 
 export interface NavigationLink {

@@ -12,6 +12,7 @@ import { Header, Search, useNotionContext } from 'react-notion-x'
 
 import {
   isSearchEnabled,
+  isShareButtonEnabled,
   isThemeToggleEnabled,
   logo,
   name,
@@ -21,6 +22,7 @@ import {
 import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Breadcrumbs } from './folio/Breadcrumbs'
+import { ShareButton } from './folio/ShareButton'
 import styles from './styles.module.css'
 
 function ToggleThemeButton() {
@@ -198,6 +200,12 @@ export function NotionPageHeader({
         <div className='folio-nav-links'>{renderNavLinks()}</div>
 
         <div className='notion-nav-header-rhs breadcrumbs'>
+          {isShareButtonEnabled && (
+            <div className='folio-desktop-only'>
+              <ShareButton />
+            </div>
+          )}
+
           {isThemeToggleEnabled && (
             <div className='folio-desktop-only'>
               <ToggleThemeButton />
@@ -231,8 +239,12 @@ export function NotionPageHeader({
           {/* 레퍼런스 서비스 실측: 우측에서 열리는 사이드 패널(뷰포트 80%, 최대 312px, 전체 높이).
               상단에 테마 토글과 닫기, 아래에 좌측 정렬 링크 + 셰브론. */}
           <nav className='folio-menu-drawer' aria-label='사이트 메뉴'>
+            {/* 레퍼런스 서비스 드로어 상단: 좌측에 공유 + 테마, 우측에 닫기 */}
             <div className='folio-menu-drawer-header'>
-              {isThemeToggleEnabled ? <ToggleThemeButton /> : <span />}
+              <div className='folio-menu-drawer-tools'>
+                {isShareButtonEnabled && <ShareButton showLabel={true} />}
+                {isThemeToggleEnabled && <ToggleThemeButton />}
+              </div>
 
               <button
                 type='button'

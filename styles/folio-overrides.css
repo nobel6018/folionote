@@ -116,6 +116,24 @@
   flex-shrink: 0;
 }
 
+.folio-menu-drawer-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-2);
+}
+
+/* 공유 버튼: 드로어에서는 아이콘 + 라벨, 헤더에서는 아이콘만 */
+.notion-header .folio-share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--folio-space-1);
+  background: none;
+  border: 0 none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
 .folio-menu-drawer-close {
   display: inline-flex;
   align-items: center;
