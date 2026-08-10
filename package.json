@@ -25,16 +25,17 @@
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check"
   },
   "dependencies": {
-    "next-themes": "^0.4.6",
     "@keyvhq/core": "^1.6.9",
     "@keyvhq/redis": "^1.6.10",
     "@react-icons/all-files": "^4.1.0",
     "classnames": "^2.5.1",
     "expiry-map": "^2.0.0",
     "fathom-client": "^3.4.1",
+    "ioredis": "^6.0.0",
     "ky": "^1.8.1",
     "lqip-modern": "^2.2.1",
     "next": "^15.5.3",
+    "next-themes": "^0.4.6",
     "notion-client": "^7.7.0",
     "notion-types": "^7.7.0",
     "notion-utils": "^7.7.0",

@@ -460,6 +460,39 @@ svg.notion-page-icon {
   visibility: hidden;
 }
 
+/* ── 페이지뷰 카운트 ─────────────────────────────────────── */
+/* 어드민의 세 가지 표시 스타일에 대응 */
+.folio-pageview {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--folio-space-2);
+  margin: 0 auto var(--folio-space-4);
+  font-size: 13px;
+  color: var(--folio-text-muted);
+}
+
+.folio-pageview-inline,
+.folio-pageview-stacked {
+  padding: var(--folio-space-2) var(--folio-space-3);
+  border: 1px solid var(--folio-border);
+  border-radius: var(--folio-radius-md);
+}
+
+.folio-pageview-stacked {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.folio-pageview-plain {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.folio-pageview-value {
+  font-weight: 700;
+  color: var(--folio-text);
+}
+
 /* ── 하단 네비게이터 (모바일 탭바) ───────────────────────── */
 /* 좁은 화면에서만 보인다. 데스크탑은 상단 nav가 그 역할을 한다. */
 .folio-bottom-nav {

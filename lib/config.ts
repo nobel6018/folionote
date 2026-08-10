@@ -20,6 +20,7 @@ import {
   type CtaConfig,
   type FontConfig,
   type NavigationLink,
+  type PageViewCountConfig,
   type PopupConfig,
   type PopupOptions,
   type ScrollProgressBarConfig,
@@ -218,6 +219,22 @@ export const font = (() => {
     mono: rawFont?.mono ?? null
   }
 })()
+
+const rawPageViewCount: PageViewCountConfig | null = getSiteConfig(
+  'pageViewCount',
+  null
+)
+
+/**
+ * 페이지뷰 카운트. 기본은 꺼짐이다. Redis 없이는 셀 수 없어서
+ * (@see lib/pageview-store.ts) 켜려면 REDIS_* 환경변수까지 설정해야 한다.
+ */
+export const pageViewCount = {
+  enabled: rawPageViewCount?.enabled ?? false,
+  style: rawPageViewCount?.style ?? 'inline',
+  // "오늘"을 어느 타임존으로 볼지. UTC로 두면 한국 사이트에서 오전 9시에 날짜가 바뀐다
+  timeZone: rawPageViewCount?.timeZone ?? 'UTC'
+}
 
 const rawBottomNav: BottomNavigationConfig | null = getSiteConfig(
   'bottomNavigation',

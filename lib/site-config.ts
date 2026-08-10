@@ -63,6 +63,7 @@ export interface SiteConfig {
   popups?: PopupConfig[]
   popupOptions?: PopupOptions
   bottomNavigation?: BottomNavigationConfig
+  pageViewCount?: PageViewCountConfig
 }
 
 export interface NavigationLink {
@@ -104,6 +105,23 @@ export interface FontConfig {
   ja?: FontChoice
   /** 코드블록 등에 쓰는 고정폭 폰트 스택 (CSS font-family 문자열) */
   mono?: string
+}
+
+/**
+ * 페이지뷰 카운트 (레퍼런스 서비스 어드민의 "페이지뷰 카운트").
+ *
+ * 집계 저장소가 필요해서 `isRedisEnabled`와 함께만 동작한다. 서버리스에서
+ * 인메모리 카운터는 인스턴스마다 따로 세고 재시작마다 사라져 숫자가 의미를 잃는다.
+ */
+export interface PageViewCountConfig {
+  enabled?: boolean
+  /** 어드민의 세 가지 표시 스타일에 대응. 기본 `inline` */
+  style?: 'inline' | 'stacked' | 'plain'
+  /**
+   * "Today"를 어느 타임존 기준으로 묶을지. 기본 `UTC`.
+   * 한국 사이트라면 `Asia/Seoul`로 둬야 자정에 날짜가 바뀐다.
+   */
+  timeZone?: string
 }
 
 /** 모바일 하단 탭바 항목 */

@@ -30,6 +30,7 @@ import { BottomNavigation } from './folio/BottomNavigation'
 import { Callout as FolioCallout } from './folio/Callout'
 import { Code as FolioCode } from './folio/Code'
 import { CtaButton } from './folio/CtaButton'
+import { PageViewCount } from './folio/PageViewCount'
 import { Popups } from './folio/Popups'
 import { ScrollWidgets } from './folio/ScrollWidgets'
 import { Page404 } from './Page404'
@@ -182,7 +183,15 @@ export function NotionPage({
     [block, recordMap, isBlogPost]
   )
 
-  const footer = React.useMemo(() => <Footer />, [])
+  const footer = React.useMemo(
+    () => (
+      <>
+        <PageViewCount pageId={pageId} />
+        <Footer />
+      </>
+    ),
+    [pageId]
+  )
 
   if (router.isFallback) {
     return <Loading />

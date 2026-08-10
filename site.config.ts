@@ -99,6 +99,12 @@ export default siteConfig({
   //   ]
   // },
 
+  // 페이지뷰 카운트. 기본은 꺼짐이다.
+  // 켜려면 isRedisEnabled: true + REDIS_* 환경변수까지 필요하다. 서버리스에서
+  // 인메모리 카운터는 인스턴스마다 따로 세고 재시작마다 사라져 숫자가 의미를 잃는다.
+  //
+  // pageViewCount: { enabled: true, style: 'inline', timeZone: 'Asia/Seoul' },
+
   // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {
