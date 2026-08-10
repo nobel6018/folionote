@@ -11,10 +11,13 @@
 :root {
   /* ── Brand (사이트마다 사용자 지정) ─────────────────────────────── */
   --folio-brand-primary: #2e3439;     /* 기본 텍스트/포인트 (light) */
-  --folio-brand-accent: #77a4fe;      /* selection / 호버 underline 등 */
+  /* 레퍼런스 서비스는 brand 색을 두 개로 나눠 쓴다. 어드민에서 확인한 대응:
+   * accent = 상단 메뉴바 "마우스 오버 효과" 색, selection = 텍스트 선택 배경 */
+  --folio-brand-accent: #669dfd;
+  --folio-brand-selection: #77a4fe;
 
   /* react-notion-x 호환을 위한 별칭 (레퍼런스 서비스 인라인에서 발견된 변수) */
-  --background-color: var(--folio-brand-accent);
+  --background-color: var(--folio-brand-selection);
   --color: var(--folio-brand-accent);
 
   /* ── Layout ────────────────────────────────────────────────────── */
@@ -26,6 +29,8 @@
   /* 사이트 헤더 2행 구조 (레퍼런스 서비스 실측: nav 48px + 브레드크럼 40px) */
   --folio-nav-row-height: 48px;
   --folio-breadcrumb-row-height: 40px;
+  /* 레퍼런스 서비스 어드민의 상단 메뉴바 "마우스 오버 효과" 색 */
+  --folio-nav-hover-color: var(--folio-brand-accent);
 
   /* react-notion-x 변수 매핑 */
   --notion-max-width: var(--folio-content-max-width);

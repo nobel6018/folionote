@@ -25,9 +25,20 @@
 }
 
 .folio-site-name {
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   color: inherit;
+}
+
+/* 레퍼런스 서비스 실측: nav 링크는 14px/700. 호버 시 어드민의 "마우스 오버 효과" 색으로 */
+.folio-nav-row .notion-page-link,
+.folio-nav-row > a {
+  font-weight: 700;
+  transition: color var(--folio-transition-base);
+}
+.folio-nav-row .notion-page-link:hover,
+.folio-nav-row > a:hover {
+  color: var(--folio-nav-hover-color);
 }
 
 .folio-breadcrumb-row {
