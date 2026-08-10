@@ -65,6 +65,7 @@ import { posthog } from 'posthog-js'
 import * as React from 'react'
 
 import { CustomThemeStyles } from '@/components/CustomThemeStyles'
+import { FontStyles } from '@/components/FontStyles'
 import { bootstrap } from '@/lib/bootstrap-client'
 import {
   colorThemeMode,
@@ -128,6 +129,7 @@ export default function App({ Component, pageProps }: AppProps) {
       // 않도록 light에 고정하고 색은 CustomThemeStyles가 덮는다.
       forcedTheme={forcedTheme}
     >
+      <FontStyles />
       <CustomThemeStyles />
 
       <Component {...pageProps} />

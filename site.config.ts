@@ -64,6 +64,12 @@ export default siteConfig({
   //
   // colorTheme: { mode: 'custom', background: '#CCDDFF', foreground: '#3C3C3C' },
 
+  // 본문 폰트. 생략하면 Pretendard(한글 + 라틴, OFL) 한 종을 쓴다.
+  // 어드민처럼 언어별로 나눠 지정하면 글자마다 해당 폰트로 갈라진다.
+  // 레지스트리 키 목록과 직접 임베드 방법은 lib/fonts.ts 참고.
+  //
+  // font: { ko: 'nanum-myeongjo', en: 'lato', ja: 'noto-serif-jp' },
+
   // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {

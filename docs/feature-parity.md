@@ -58,14 +58,27 @@
 
 ## 스타일 > 폰트
 
-레퍼런스 서비스는 Ko / En / Ja를 따로 지정한다. 한국어 17종 이상을 임베드해서 제공한다
+레퍼런스 서비스는 Ko / En / Ja를 따로 지정하고 한국어 17종 이상을 자체 CDN에서 제공한다
 (TmoneyRoundWind, Noto Sans KR, Gothic A1, Nanum Gothic, Nanum Myeongjo,
 NEXON Lv1 Gothic, NanumSquare, NanumSquareRound, S-CoreDream, Arita-dotum,
 Chosunilbo_myungjo, GyeonggiBatang, Cafe24Oneprettynight, Spoqa Han Sans,
 RIDIBatang, Gmarket Sans, DungGeunMo 등).
 
-folionote는 Pretendard 한 종을 `--folio-font-sans`로 고정한다. 사용자가 토큰을
-바꿔 쓸 수는 있지만 폰트 목록과 언어별 분리는 없다.
+folionote도 `font: { ko, en, ja }`로 언어별 지정을 받는다. 세 폰트를 font-family
+스택으로 합치면 브라우저가 글자마다 그 글자를 가진 폰트를 골라 쓴다.
+
+| 항목 | 상태 | 메모 |
+|---|---|---|
+| 언어별(Ko/En/Ja) 지정 | O | `font.ko` / `font.en` / `font.ja` |
+| 폰트 목록 제공 | 부분 | `lib/fonts.ts`에 22종. OFL/Apache로 CDN 배포가 명확한 것만 |
+| 고정폭 폰트 | O | `font.mono` |
+
+레퍼런스 서비스 목록 중 TmoneyRoundWind, NanumSquare, S-CoreDream, Gmarket Sans, RIDIBatang
+등은 상업적 이용은 무료지만 재배포 조건이 제각각이라 OSS 기본 레지스트리에
+넣지 않았다. 쓰려면 `{ family, url }`로 직접 지정한다.
+
+선택한 폰트만 받는다. `styles/fonts.css`에 `@import`로 박아 두면 어떤 폰트를
+고르든 Pretendard까지 항상 함께 내려받게 되므로, 설정을 보고 `<link>`로 넣는다.
 
 ## 스타일 > 데이터베이스
 

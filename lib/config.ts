@@ -7,6 +7,7 @@
 import { parsePageId } from 'notion-utils'
 import { type PostHogConfig } from 'posthog-js'
 
+import { quoteFamily, resolveFont } from './fonts'
 import {
   getEnv,
   getRequiredSiteConfig,
@@ -15,6 +16,7 @@ import {
 import {
   type BackToTopConfig,
   type ColorTheme,
+  type FontConfig,
   type NavigationLink,
   type ScrollProgressBarConfig,
   type SiteLogo
@@ -177,6 +179,41 @@ export const isShareButtonEnabled: boolean = getSiteConfig(
   'isShareButtonEnabled',
   true
 )
+
+const rawFont: FontConfig | null = getSiteConfig('font', null)
+
+/**
+ * 실제로 받아야 할 폰트 스타일시트와 최종 font-family 스택.
+ *
+ * 기본값은 Pretendard 한 종이다(한글 + 라틴을 함께 담고 OFL). ko/en/ja를 각각
+ * 지정하면 en → ko → ja 순으로 스택을 만들어 글자별로 갈라지게 한다.
+ */
+export const font = (() => {
+  const choices = [rawFont?.en, rawFont?.ko, rawFont?.ja].filter(Boolean)
+  const entries = (choices.length ? choices : ['pretendard']).map((choice) =>
+    resolveFont(choice!)
+  )
+
+  // 같은 폰트를 두 번 요청하지 않도록 URL을 중복 제거
+  const urls = [...new Set(entries.map((e) => e.url).filter(Boolean))]
+
+  const systemFallback = [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'system-ui',
+    "'Segoe UI'",
+    "'Apple SD Gothic Neo'",
+    'sans-serif'
+  ]
+
+  return {
+    urls: urls as string[],
+    sans: [...entries.map((e) => quoteFamily(e.family)), ...systemFallback].join(
+      ', '
+    ),
+    mono: rawFont?.mono ?? null
+  }
+})()
 
 const rawScrollProgressBar: ScrollProgressBarConfig | null = getSiteConfig(
   'scrollProgressBar',

@@ -1,11 +1,10 @@
 /**
- * 폰트 임베드
+ * 폰트
  *
- * 기본은 Pretendard Variable (한글/라틴 모두 지원, OFL 라이선스).
- * dynamic-subset 패턴: 페이지에서 사용된 글자만 unicode-range로 다운로드 → 빠름.
+ * 실제 웹폰트는 site.config.ts의 `font` 설정에 따라 런타임에 <link>로 받는다
+ * (@see components/FontStyles.tsx, lib/fonts.ts). 여기에 @import로 박아 두면
+ * 사용자가 어떤 폰트를 고르든 Pretendard까지 항상 함께 내려받게 된다.
  *
- * 사이트마다 다른 폰트를 쓰고 싶으면 이 파일을 수정하거나, site.config.ts에
- * fontFamily 옵션을 추가해 folio-tokens.css의 --folio-font-sans를 override.
+ * 기본값은 Pretendard Variable (한글 + 라틴, OFL).
+ * 레지스트리에 없는 폰트는 site.config.ts에서 { family, url }로 지정한다.
  */
-
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');

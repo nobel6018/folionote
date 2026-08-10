@@ -1,4 +1,5 @@
 import type * as types from './types'
+import { type FontChoice } from './fonts'
 
 export interface SiteConfig {
   rootNotionPageId: string
@@ -57,6 +58,7 @@ export interface SiteConfig {
 
   scrollProgressBar?: ScrollProgressBarConfig
   backToTop?: BackToTopConfig
+  font?: FontConfig
 }
 
 export interface NavigationLink {
@@ -78,6 +80,26 @@ export interface ColorTheme {
   background?: string
   /** `custom` 모드의 본문 글자색 */
   foreground?: string
+}
+
+/**
+ * 본문 폰트 (레퍼런스 서비스 어드민의 스타일 > 폰트).
+ *
+ * 어드민처럼 Ko/En/Ja를 따로 지정한다. 세 폰트는 font-family 스택으로 합쳐지고,
+ * 브라우저가 글자마다 그 글자를 가진 폰트를 골라 쓴다. 라틴은 en, 한글은 ko,
+ * 가나는 ja가 담당하게 하려면 en을 먼저 두면 된다.
+ *
+ * 값은 `lib/fonts.ts`의 레지스트리 키(`'noto-sans-kr'`)이거나,
+ * 직접 임베드할 폰트의 `{ family, url }`이다.
+ *
+ * @see lib/fonts.ts
+ */
+export interface FontConfig {
+  ko?: FontChoice
+  en?: FontChoice
+  ja?: FontChoice
+  /** 코드블록 등에 쓰는 고정폭 폰트 스택 (CSS font-family 문자열) */
+  mono?: string
 }
 
 /** 페이지 상단의 읽기 진행률 바 (레퍼런스 서비스 어드민의 "스크롤 프로그레스 바") */
