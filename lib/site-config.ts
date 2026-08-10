@@ -54,6 +54,9 @@ export interface SiteConfig {
 
   /** 헤더/모바일 드로어에 현재 페이지 공유 버튼 노출 여부 */
   isShareButtonEnabled?: boolean
+
+  scrollProgressBar?: ScrollProgressBarConfig
+  backToTop?: BackToTopConfig
 }
 
 export interface NavigationLink {
@@ -75,6 +78,28 @@ export interface ColorTheme {
   background?: string
   /** `custom` 모드의 본문 글자색 */
   foreground?: string
+}
+
+/** 페이지 상단의 읽기 진행률 바 (레퍼런스 서비스 어드민의 "스크롤 프로그레스 바") */
+export interface ScrollProgressBarConfig {
+  enabled?: boolean
+  /** 채워지는 색. 레퍼런스 서비스 어드민 기본값은 `#007FB8` */
+  color?: string
+}
+
+/** 맨 위로 버튼 (레퍼런스 서비스 어드민의 "페이지 맨 위로 버튼") */
+export interface BackToTopConfig {
+  enabled?: boolean
+  /** 좌우 위치. 기본 `right` */
+  position?: 'left' | 'right'
+  /** 화면 끝이 아니라 본문 폭에 맞춰 붙인다 (어드민 "화면 너비에 맞추기") */
+  fitToContent?: boolean
+  /** 좌우 여백(px). 기본 0 */
+  sideOffset?: number
+  /** 하단 여백(px). 기본 16 */
+  bottomOffset?: number
+  /** 이만큼 스크롤한 뒤 나타난다(px). 기본 400 */
+  showAfter?: number
 }
 
 /**

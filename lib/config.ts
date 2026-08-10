@@ -13,8 +13,10 @@ import {
   getSiteConfig
 } from './get-config-value'
 import {
+  type BackToTopConfig,
   type ColorTheme,
   type NavigationLink,
+  type ScrollProgressBarConfig,
   type SiteLogo
 } from './site-config'
 import {
@@ -175,6 +177,28 @@ export const isShareButtonEnabled: boolean = getSiteConfig(
   'isShareButtonEnabled',
   true
 )
+
+const rawScrollProgressBar: ScrollProgressBarConfig | null = getSiteConfig(
+  'scrollProgressBar',
+  null
+)
+
+export const scrollProgressBar = {
+  enabled: rawScrollProgressBar?.enabled ?? true,
+  // 레퍼런스 서비스 어드민 기본값
+  color: rawScrollProgressBar?.color ?? '#007fb8'
+}
+
+const rawBackToTop: BackToTopConfig | null = getSiteConfig('backToTop', null)
+
+export const backToTop = {
+  enabled: rawBackToTop?.enabled ?? true,
+  position: rawBackToTop?.position ?? 'right',
+  fitToContent: rawBackToTop?.fitToContent ?? false,
+  sideOffset: rawBackToTop?.sideOffset ?? 0,
+  bottomOffset: rawBackToTop?.bottomOffset ?? 16,
+  showAfter: rawBackToTop?.showAfter ?? 400
+}
 
 /**
  * 테마 토글 노출 여부. system 모드에서만 의미가 있다
