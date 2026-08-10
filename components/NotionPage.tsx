@@ -28,6 +28,7 @@ import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
 import { Callout as FolioCallout } from './folio/Callout'
 import { Code as FolioCode } from './folio/Code'
+import { CtaButton } from './folio/CtaButton'
 import { ScrollWidgets } from './folio/ScrollWidgets'
 import { Page404 } from './Page404'
 import { PageAside } from './PageAside'
@@ -235,7 +236,12 @@ export function NotionPage({
       />
 
       {/* lite 모드(oembed 임베드)에서는 위젯이 방해만 되므로 뺀다 */}
-      {!isLiteMode && <ScrollWidgets />}
+      {!isLiteMode && (
+        <>
+          <ScrollWidgets />
+          <CtaButton />
+        </>
+      )}
 
       {isLiteMode && <BodyClassName className='notion-lite' />}
       {/* dark-mode body class는 next-themes(ThemeProvider)가 html element에 부여 */}

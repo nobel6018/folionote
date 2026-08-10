@@ -16,6 +16,7 @@ import {
 import {
   type BackToTopConfig,
   type ColorTheme,
+  type CtaConfig,
   type FontConfig,
   type NavigationLink,
   type ScrollProgressBarConfig,
@@ -214,6 +215,23 @@ export const font = (() => {
     mono: rawFont?.mono ?? null
   }
 })()
+
+const rawCta: CtaConfig | null = getSiteConfig('cta', null)
+
+/** CTA 버튼. 설정이 없거나 enabled: false거나 문구/링크가 비면 null */
+export const cta =
+  rawCta && rawCta.enabled !== false && rawCta.text && rawCta.href
+    ? {
+        text: rawCta.text,
+        href: rawCta.href,
+        bottomOffset: rawCta.bottomOffset ?? 16,
+        background: rawCta.background ?? '#ffffff',
+        gradient: rawCta.gradient ?? null,
+        color: rawCta.color ?? '#000000',
+        shadowColor: rawCta.shadowColor ?? 'rgba(55, 53, 47, 0.25)',
+        newTab: rawCta.newTab ?? false
+      }
+    : null
 
 const rawScrollProgressBar: ScrollProgressBarConfig | null = getSiteConfig(
   'scrollProgressBar',

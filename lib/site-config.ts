@@ -59,6 +59,7 @@ export interface SiteConfig {
   scrollProgressBar?: ScrollProgressBarConfig
   backToTop?: BackToTopConfig
   font?: FontConfig
+  cta?: CtaConfig
 }
 
 export interface NavigationLink {
@@ -100,6 +101,25 @@ export interface FontConfig {
   ja?: FontChoice
   /** 코드블록 등에 쓰는 고정폭 폰트 스택 (CSS font-family 문자열) */
   mono?: string
+}
+
+/** 화면 하단에 떠 있는 CTA 버튼 (레퍼런스 서비스 어드민의 스타일 > CTA 버튼) */
+export interface CtaConfig {
+  enabled?: boolean
+  /** 버튼에 쓸 문구 */
+  text: string
+  href: string
+  /** 하단 공백(px). 기본 16 */
+  bottomOffset?: number
+  /** 단일 배경색. 기본 흰색 */
+  background?: string
+  /** 지정하면 두 색의 좌우 그라데이션을 쓴다 (배경색보다 우선) */
+  gradient?: [string, string]
+  /** 글자색. 기본 검정 */
+  color?: string
+  /** 그림자 색. 기본 rgba(55,53,47,0.25) */
+  shadowColor?: string
+  newTab?: boolean
 }
 
 /** 페이지 상단의 읽기 진행률 바 (레퍼런스 서비스 어드민의 "스크롤 프로그레스 바") */

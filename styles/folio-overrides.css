@@ -459,6 +459,37 @@ svg.notion-page-icon {
   visibility: hidden;
 }
 
+/* ── CTA 버튼 ────────────────────────────────────────────── */
+/* 본문 폭 안에서 가운데. 맨 위로 버튼(z 250)보다 아래에 둬서 겹치면 그쪽이 위로 */
+.folio-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 240;
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--folio-space-3);
+  pointer-events: none;
+}
+
+.folio-cta-button {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: var(--folio-content-max-width);
+  padding: var(--folio-space-3) var(--folio-space-5);
+  border-radius: var(--folio-radius-lg);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 0 none;
+  transition: transform var(--folio-transition-base);
+}
+.folio-cta-button:hover {
+  transform: translateY(-1px);
+}
+
 /* ── 컬렉션 내 검색 ──────────────────────────────────────── */
 /* 레퍼런스 서비스는 뷰 탭 행의 오른쪽 끝에 검색을 둔다. 탭 행은 react-notion-x가 클래스
  * 없는 래퍼 안에 그리므로 끼어들 수 없어, 래퍼 기준 우측 상단에 얹는다. */
