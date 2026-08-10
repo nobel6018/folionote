@@ -59,6 +59,15 @@ export default siteConfig({
   // 컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)
   dateFormat: 'YYYY/MM/DD',
 
+  // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
+  // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
+  logo: {
+    light: '/logo.png',
+    height: 20,
+    href: '/',
+    alt: '이도'
+  },
+
   // 'custom' 모드: 사이트 헤더에 navigationLinks + 다크모드 토글 노출 (레퍼런스 서비스 스타일 헤더).
   // 'default' 모드는 react-notion-x 기본 헤더만 사용 (토글 없음 → footer 깊숙이 묻힘).
   navigationStyle: 'custom',

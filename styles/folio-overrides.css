@@ -30,15 +30,131 @@
   color: inherit;
 }
 
-/* 레퍼런스 서비스 실측: nav 링크는 14px/700. 호버 시 어드민의 "마우스 오버 효과" 색으로 */
-.folio-nav-row .notion-page-link,
-.folio-nav-row > a {
+/* ── 로고 이미지 ─────────────────────────────────────────── */
+/* 라이트/다크 두 장을 그려 두고 CSS로 전환한다 (@see components/NotionPageHeader.tsx) */
+.folio-logo-link {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.folio-logo {
+  width: auto;
+  object-fit: contain;
+}
+
+.folio-logo-dark {
+  display: none;
+}
+.dark-mode .folio-logo-light {
+  display: none;
+}
+.dark-mode .folio-logo-dark {
+  display: block;
+}
+
+/* ── nav 링크 ────────────────────────────────────────────── */
+/* 레퍼런스 서비스 실측: 링크는 14px/700에 균등 배치. 호버 색은 어드민의 "마우스 오버 효과" */
+.folio-nav-links {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  justify-content: space-around;
+  min-width: 0;
+}
+
+.folio-nav-links a {
   font-weight: 700;
+  white-space: nowrap;
   transition: color var(--folio-transition-base);
 }
-.folio-nav-row .notion-page-link:hover,
-.folio-nav-row > a:hover {
+.folio-nav-links a:hover,
+.folio-menu-drawer a:hover {
   color: var(--folio-nav-hover-color);
+}
+
+/* ── 모바일 메뉴 (햄버거 + 드로어) ───────────────────────── */
+/* react-notion-x의 `.notion-header .button`이 display:flex를 걸어 두므로
+ * 같은 2-class 셀렉터로 받아야 숨기기가 먹는다 (이 파일이 나중에 로드된다). */
+.notion-header .folio-menu-toggle {
+  display: none;
+  background: none;
+  border: 0 none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.folio-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 300;
+}
+
+/* 레퍼런스 서비스 실측: 뷰포트 80%(최대 312px) 폭의 우측 전체 높이 패널 */
+.folio-menu-drawer {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 301;
+  width: 80%;
+  max-width: 312px;
+  flex-direction: column;
+  background: var(--folio-header-bg);
+  box-shadow: var(--folio-shadow-md);
+  overflow-y: auto;
+}
+
+.folio-menu-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--folio-nav-row-height);
+  padding: 0 var(--folio-space-3);
+  flex-shrink: 0;
+}
+
+.folio-menu-drawer-close {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 0 none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  font-size: 1.5em;
+}
+
+.notion-header .folio-menu-drawer-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--folio-space-4) var(--folio-space-3);
+  font-weight: 700;
+  border-top: 1px solid var(--folio-divider);
+}
+
+.folio-menu-drawer-chevron {
+  flex-shrink: 0;
+  color: var(--folio-text-subtle);
+}
+
+/* 좁은 화면: nav 링크를 감추고 햄버거로 넘긴다 (leedo 모바일과 동일) */
+@media only screen and (max-width: 780px) {
+  .folio-nav-links,
+  .folio-desktop-only {
+    display: none;
+  }
+
+  .notion-header .folio-menu-toggle {
+    display: inline-flex;
+  }
+
+  .folio-menu-drawer {
+    display: flex;
+  }
 }
 
 .folio-breadcrumb-row {

@@ -33,6 +33,7 @@ export interface SiteConfig {
 
   navigationStyle?: types.NavigationStyle
   navigationLinks?: Array<NavigationLink>
+  logo?: SiteLogo
 
   /**
    * 컬렉션 카드/페이지의 날짜 표시 형식. Notion은 date 속성의 표시 형식을
@@ -52,6 +53,25 @@ export interface NavigationLink {
   pageId?: string
   url?: string
 }
+
+/**
+ * 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크에 같은 이미지를 쓴다.
+ * 지정하지 않으면 사이트 이름(`name`)을 텍스트로 노출한다.
+ */
+export type SiteLogo =
+  | string
+  | {
+      /** 라이트 테마 이미지 경로 (`public/` 기준 또는 절대 URL) */
+      light: string
+      /** 다크 테마 이미지. 없으면 light를 그대로 쓴다 */
+      dark?: string
+      /** 이미지 높이(px). 폭은 비율에 맞춰 자동. 레퍼런스 서비스 어드민의 "로고 크기" */
+      height?: number
+      /** 클릭 시 이동 경로. 기본 `/` */
+      href?: string
+      /** 대체 텍스트. 기본값은 사이트 이름 */
+      alt?: string
+    }
 
 export const siteConfig = (config: SiteConfig): SiteConfig => {
   return config

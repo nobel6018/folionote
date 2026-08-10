@@ -65,9 +65,3 @@
 .notion-search .noResultsDetail {
   color: var(--fg-color-2);
 }
-
-@media only screen and (max-width: 600px) {
-  .notion-search-button {
-    display: none !important;
-  }
-}

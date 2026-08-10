@@ -12,7 +12,7 @@ import {
   getRequiredSiteConfig,
   getSiteConfig
 } from './get-config-value'
-import { type NavigationLink } from './site-config'
+import { type NavigationLink, type SiteLogo } from './site-config'
 import {
   type NavigationStyle,
   type PageUrlOverridesInverseMap,
@@ -106,6 +106,31 @@ export const navigationLinks: Array<NavigationLink | undefined> = getSiteConfig(
   'navigationLinks',
   null
 )
+
+const rawLogo: SiteLogo | null = getSiteConfig('logo', null)
+
+/**
+ * 헤더 로고를 항상 같은 형태로 정규화한다. 지정이 없으면 null이고,
+ * 이때 헤더는 사이트 이름 텍스트로 대체한다.
+ */
+export const logo: {
+  light: string
+  dark: string
+  height: number
+  href: string
+  alt: string
+} | null = rawLogo
+  ? {
+      light: typeof rawLogo === 'string' ? rawLogo : rawLogo.light,
+      dark:
+        typeof rawLogo === 'string'
+          ? rawLogo
+          : (rawLogo.dark ?? rawLogo.light),
+      height: (typeof rawLogo === 'string' ? undefined : rawLogo.height) ?? 20,
+      href: (typeof rawLogo === 'string' ? undefined : rawLogo.href) ?? '/',
+      alt: (typeof rawLogo === 'string' ? undefined : rawLogo.alt) ?? name
+    }
+  : null
 
 // Optional site search
 export const isSearchEnabled: boolean = getSiteConfig('isSearchEnabled', true)
