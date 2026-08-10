@@ -40,9 +40,9 @@
 
 | 레퍼런스 서비스 설정 | folionote | 메모 |
 |---|---|---|
-| 색상 테마 라이트 / 다크 | O | 3-state (system 포함) |
-| 색상 테마 커스텀 (배경 + 폰트 색) | X | 어드민은 `#CCDDFF` / `#3C3C3C` 처럼 직접 지정 |
-| 테마 선택 버튼 표시 | O | |
+| 색상 테마 라이트 / 다크 | O | `colorTheme.mode`. 기본 `system`(3-state) |
+| 색상 테마 커스텀 (배경 + 폰트 색) | O | `colorTheme: { mode: 'custom', background, foreground }` |
+| 테마 선택 버튼 표시 | O | 테마를 고정하거나 custom을 쓰면 자동으로 감춘다 |
 | 공유 버튼 표시 | X | |
 | 검색 버튼 표시 | O | `isSearchEnabled` |
 | 페이지 경로 표시 | 토글 없음 | 항상 표시 |

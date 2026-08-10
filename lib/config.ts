@@ -12,7 +12,11 @@ import {
   getRequiredSiteConfig,
   getSiteConfig
 } from './get-config-value'
-import { type NavigationLink, type SiteLogo } from './site-config'
+import {
+  type ColorTheme,
+  type NavigationLink,
+  type SiteLogo
+} from './site-config'
 import {
   type NavigationStyle,
   type PageUrlOverridesInverseMap,
@@ -148,6 +152,29 @@ export const isCollectionSearchEnabled: boolean = getSiteConfig(
   'isCollectionSearchEnabled',
   true
 )
+
+const rawColorTheme: ColorTheme | null = getSiteConfig('colorTheme', null)
+
+export const colorThemeMode: NonNullable<ColorTheme['mode']> =
+  rawColorTheme?.mode ?? 'system'
+
+/** custom 모드에서 주입할 색. 다른 모드에서는 null */
+export const customThemeColors: {
+  background: string
+  foreground: string
+} | null =
+  colorThemeMode === 'custom'
+    ? {
+        background: rawColorTheme?.background || '#ffffff',
+        foreground: rawColorTheme?.foreground || '#37352f'
+      }
+    : null
+
+/**
+ * 테마 토글 노출 여부. system 모드에서만 의미가 있다
+ * (한쪽으로 고정했거나 커스텀 색을 쓰면 토글이 색을 뒤엎어 버린다).
+ */
+export const isThemeToggleEnabled: boolean = colorThemeMode === 'system'
 
 // ----------------------------------------------------------------------------
 

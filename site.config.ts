@@ -59,6 +59,11 @@ export default siteConfig({
   // 컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)
   dateFormat: 'YYYY/MM/DD',
 
+  // 색상 테마. 기본은 'system'(OS 설정을 따르고 헤더에 토글 노출).
+  // 'light'/'dark'로 고정하거나 'custom'으로 색을 직접 지정하면 토글이 사라진다.
+  //
+  // colorTheme: { mode: 'custom', background: '#CCDDFF', foreground: '#3C3C3C' },
+
   // 헤더 좌측 로고. 문자열 하나만 주면 라이트/다크 공용.
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {

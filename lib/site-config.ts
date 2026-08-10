@@ -49,12 +49,29 @@ export interface SiteConfig {
 
   /** 컬렉션 안에서 카드를 걸러내는 검색 노출 여부 */
   isCollectionSearchEnabled?: boolean
+
+  colorTheme?: ColorTheme
 }
 
 export interface NavigationLink {
   title: string
   pageId?: string
   url?: string
+}
+
+/**
+ * 사이트 색상 테마. 레퍼런스 서비스 어드민의 "색상 테마"(라이트 / 다크 / 커스텀)에 대응.
+ *
+ * - `system`(기본): OS 설정을 따르고 헤더에 테마 토글을 노출한다
+ * - `light` / `dark`: 한쪽으로 고정하고 토글을 감춘다
+ * - `custom`: 배경/글자색을 직접 지정한다. 토글은 감춘다
+ */
+export interface ColorTheme {
+  mode?: 'system' | 'light' | 'dark' | 'custom'
+  /** `custom` 모드의 배경색 */
+  background?: string
+  /** `custom` 모드의 본문 글자색 */
+  foreground?: string
 }
 
 /**

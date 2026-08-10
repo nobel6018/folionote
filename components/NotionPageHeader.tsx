@@ -12,6 +12,7 @@ import { Header, Search, useNotionContext } from 'react-notion-x'
 
 import {
   isSearchEnabled,
+  isThemeToggleEnabled,
   logo,
   name,
   navigationLinks,
@@ -197,9 +198,11 @@ export function NotionPageHeader({
         <div className='folio-nav-links'>{renderNavLinks()}</div>
 
         <div className='notion-nav-header-rhs breadcrumbs'>
-          <div className='folio-desktop-only'>
-            <ToggleThemeButton />
-          </div>
+          {isThemeToggleEnabled && (
+            <div className='folio-desktop-only'>
+              <ToggleThemeButton />
+            </div>
+          )}
 
           {isSearchEnabled && <Search block={block} title={null} />}
 
@@ -229,7 +232,7 @@ export function NotionPageHeader({
               상단에 테마 토글과 닫기, 아래에 좌측 정렬 링크 + 셰브론. */}
           <nav className='folio-menu-drawer' aria-label='사이트 메뉴'>
             <div className='folio-menu-drawer-header'>
-              <ToggleThemeButton />
+              {isThemeToggleEnabled ? <ToggleThemeButton /> : <span />}
 
               <button
                 type='button'

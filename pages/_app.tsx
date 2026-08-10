@@ -64,8 +64,10 @@ import { ThemeProvider } from 'next-themes'
 import { posthog } from 'posthog-js'
 import * as React from 'react'
 
+import { CustomThemeStyles } from '@/components/CustomThemeStyles'
 import { bootstrap } from '@/lib/bootstrap-client'
 import {
+  colorThemeMode,
   fathomConfig,
   fathomId,
   isServer,
@@ -76,6 +78,13 @@ import {
 if (!isServer) {
   bootstrap()
 }
+
+const forcedTheme =
+  colorThemeMode === 'light' || colorThemeMode === 'custom'
+    ? 'light'
+    : colorThemeMode === 'dark'
+      ? 'dark'
+      : undefined
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -115,7 +124,12 @@ export default function App({ Component, pageProps }: AppProps) {
       value={{ light: 'light-mode', dark: 'dark-mode' }}
       storageKey='theme'
       disableTransitionOnChange
+      // light/dark로 고정한 경우 그 테마만 쓴다. custom은 다크 팔레트가 끼어들지
+      // 않도록 light에 고정하고 색은 CustomThemeStyles가 덮는다.
+      forcedTheme={forcedTheme}
     >
+      <CustomThemeStyles />
+
       <Component {...pageProps} />
     </ThemeProvider>
   )
