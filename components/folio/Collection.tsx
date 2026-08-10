@@ -3,6 +3,10 @@ import { getBlockCollectionId, getBlockValue } from 'notion-utils'
 import * as React from 'react'
 import { Collection as NotionCollection } from 'react-notion-x/build/third-party/collection'
 
+import { isCollectionSearchEnabled } from '@/lib/config'
+
+import { CollectionSearch } from './CollectionSearch'
+
 type CollectionProps = React.ComponentProps<typeof NotionCollection>
 
 /**
@@ -39,10 +43,52 @@ function getTextColor(name?: Decoration[]): string | undefined {
  *
  * @see styles/folio-overrides.css 의 .folio-collection
  */
+/** 갤러리 카드, 리스트 행, 테이블 행 — 검색으로 걸러낼 대상 */
+const ITEM_SELECTOR =
+  '.notion-collection-card, .notion-list-item, .notion-table-row'
+
 export function Collection({ block, className, ctx }: CollectionProps) {
+  const [query, setQuery] = React.useState('')
+  const containerRef = React.useRef<HTMLDivElement>(null)
+
+  /**
+   * 질의에 맞지 않는 항목에 클래스를 붙여 감춘다.
+   *
+   * recordMap을 걸러 react-notion-x에 넘기는 방식이 더 React답지만, 키 입력마다
+   * recordMap을 깊은 복사해 컬렉션 전체를 다시 렌더해야 하고 react-notion-x
+   * 내부 구조에 의존하게 된다. 정적 사이트에서 136장을 거르는 데는 과하다.
+   *
+   * 레퍼런스 서비스와 같게 제목만이 아니라 태그, 날짜 등 카드에 보이는 모든 텍스트를 본다.
+   */
+  const applyFilter = React.useCallback(() => {
+    const root = containerRef.current
+    if (!root) return
+
+    const needle = query.trim().toLowerCase()
+    for (const item of root.querySelectorAll<HTMLElement>(ITEM_SELECTOR)) {
+      const matched =
+        !needle || (item.textContent || '').toLowerCase().includes(needle)
+      item.classList.toggle('folio-collection-item-hidden', !matched)
+    }
+  }, [query])
+
+  React.useEffect(() => {
+    applyFilter()
+
+    const root = containerRef.current
+    if (!root) return
+
+    // 뷰 전환이나 지연 렌더로 항목이 새로 붙어도 필터를 유지한다.
+    // classList 변경은 attributes 변화라 childList만 관찰하면 자기 자신을
+    // 다시 트리거하지 않는다.
+    const observer = new MutationObserver(applyFilter)
+    observer.observe(root, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [applyFilter])
+
   const inner = <NotionCollection block={block} className={className} ctx={ctx} />
 
-  // page 타입은 컬렉션 제목이 아니라 페이지 속성 목록이라 색 처리가 필요 없다
+  // page 타입은 컬렉션 제목이 아니라 페이지 속성 목록이라 색/검색이 필요 없다
   if (block.type === 'page') {
     return inner
   }
@@ -55,6 +101,7 @@ export function Collection({ block, className, ctx }: CollectionProps) {
 
   return (
     <div
+      ref={containerRef}
       className='folio-collection'
       style={
         color
@@ -64,6 +111,10 @@ export function Collection({ block, className, ctx }: CollectionProps) {
           : undefined
       }
     >
+      {isCollectionSearchEnabled && (
+        <CollectionSearch query={query} onQueryChange={setQuery} />
+      )}
+
       {inner}
     </div>
   )

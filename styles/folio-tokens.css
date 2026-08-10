@@ -32,8 +32,13 @@
   /* 레퍼런스 서비스 어드민의 상단 메뉴바 "마우스 오버 효과" 색 */
   --folio-nav-hover-color: var(--folio-brand-accent);
 
-  /* react-notion-x 변수 매핑 */
-  --notion-max-width: var(--folio-content-max-width);
+  /* react-notion-x 변수 매핑.
+   * react-notion-x는 이 값으로 페이지 컨테이너 폭을 제한하는데, 컨테이너가
+   * border-box에 좌우 패딩을 가지므로 "본문 폭 + 거터"를 넣어야 안쪽이
+   * --folio-content-max-width(708px)로 떨어진다. 본문 폭만 넣으면 32px 좁아진다. */
+  --notion-max-width: calc(
+    var(--folio-content-max-width) + 2 * var(--folio-space-3)
+  );
   /* 본문 min-height 계산(100vh - 헤더)에 쓰이므로 두 행 합계로 맞춘다 */
   --notion-header-height: calc(
     var(--folio-nav-row-height) + var(--folio-breadcrumb-row-height)
@@ -101,6 +106,9 @@
 
   /* 페이지 속성 목록의 이름 열 폭 (레퍼런스 서비스 실측 172px) */
   --folio-property-name-width: 172px;
+
+  /* 컬렉션 뷰 탭 행 높이. 검색 입력을 이 행에 맞춰 얹는다 */
+  --folio-collection-tabs-height: 34px;
 
   /* ── Shadow (레퍼런스 서비스는 거의 flat — 1단계만) ──────────────────────── */
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);

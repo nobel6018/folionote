@@ -143,6 +143,12 @@ export const isCollectionViewTabsEnabled: boolean = getSiteConfig(
   true
 )
 
+// 컬렉션 내 검색 (레퍼런스 서비스 어드민의 "검색 기능 숨기기"에 대응)
+export const isCollectionSearchEnabled: boolean = getSiteConfig(
+  'isCollectionSearchEnabled',
+  true
+)
+
 // ----------------------------------------------------------------------------
 
 // Optional redis instance for persisting preview images

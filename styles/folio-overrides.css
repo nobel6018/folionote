@@ -172,11 +172,10 @@
   font-size: 14px;
 }
 
-/* ── 페이지 컨테이너 max-width ──────────────────────────── */
-/* 레퍼런스 서비스 실측: 본문 컬럼은 708px(--content-max-width) 고정. 좌우 16px 거터를
- * 더한 값을 max-width로 줘야 패딩이 본문 폭을 깎지 않는다. */
+/* ── 페이지 컨테이너 ────────────────────────────────────── */
+/* 레퍼런스 서비스 실측: 본문 컬럼은 708px 고정. 폭 제한은 --notion-max-width가 하고
+ * (folio-tokens.css 참고) 여기서는 거터와 하단 여백만 맡는다. */
 .notion-page {
-  max-width: calc(var(--folio-content-max-width) + 2 * var(--folio-space-3));
   margin: 0 auto;
   padding-left: var(--folio-space-3);
   padding-right: var(--folio-space-3);
@@ -368,8 +367,74 @@ svg.notion-page-icon {
 /* 뷰 탭/헤더가 본문 폭을 되찾게 하고, 제목 색상 변수를 흘려보낸다
  * (@see components/folio/Collection.tsx) */
 .folio-collection {
+  position: relative;
   width: 100%;
   align-self: stretch;
+}
+
+/* ── 컬렉션 내 검색 ──────────────────────────────────────── */
+/* 레퍼런스 서비스는 뷰 탭 행의 오른쪽 끝에 검색을 둔다. 탭 행은 react-notion-x가 클래스
+ * 없는 래퍼 안에 그리므로 끼어들 수 없어, 래퍼 기준 우측 상단에 얹는다. */
+.folio-collection-search {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--folio-space-1);
+  height: var(--folio-collection-tabs-height);
+  max-width: 60%;
+  background: none;
+  border: 0 none;
+  padding: 0;
+  font-size: 14px;
+  color: var(--folio-text-subtle);
+}
+
+.folio-collection-search-collapsed {
+  cursor: pointer;
+  transition: color var(--folio-transition-base);
+}
+.folio-collection-search-collapsed:hover {
+  color: var(--folio-text-muted);
+}
+
+.folio-collection-search-icon {
+  flex-shrink: 0;
+}
+
+.folio-collection-search-input {
+  min-width: 0;
+  flex: 1 1 auto;
+  background: none;
+  border: 0 none;
+  outline: none;
+  color: var(--folio-text);
+  font-family: inherit;
+  font-size: 14px;
+}
+.folio-collection-search-input::placeholder {
+  color: var(--folio-text-subtle);
+}
+
+.folio-collection-search-clear {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 0 none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--folio-text-subtle);
+  transition: color var(--folio-transition-base);
+}
+.folio-collection-search-clear:hover {
+  color: var(--folio-text-muted);
+}
+
+/* 검색에 걸리지 않은 항목. display:none이면 그리드 자리도 사라져 재배치된다 */
+.folio-collection-item-hidden {
+  display: none !important;
 }
 
 .folio-collection .notion-collection-header-title {

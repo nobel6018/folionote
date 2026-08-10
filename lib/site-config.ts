@@ -46,6 +46,9 @@ export interface SiteConfig {
 
   /** 컬렉션 뷰가 여러 개일 때 헤더에 뷰 전환 탭 노출 여부 */
   isCollectionViewTabsEnabled?: boolean
+
+  /** 컬렉션 안에서 카드를 걸러내는 검색 노출 여부 */
+  isCollectionSearchEnabled?: boolean
 }
 
 export interface NavigationLink {
