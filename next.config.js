@@ -30,6 +30,17 @@ export default withBundleAnalyzer({
   },
   trailingSlash: true,
 
+  // RSS는 pages/feed.tsx가 그리므로 실제 경로가 /feed/ 하나뿐이다. 그런데 관행상
+  // /feed.xml과 /rss.xml을 먼저 찾는 리더가 많고, 그 경로가 [pageId] 라우트에
+  // 잡혀서 HTML 페이지를 200으로 돌려주고 있었다(피드가 아닌데 성공으로 보인다).
+  // 같은 핸들러로 넘긴다.
+  async rewrites() {
+    return [
+      { source: '/feed.xml', destination: '/feed' },
+      { source: '/rss.xml', destination: '/feed' }
+    ]
+  },
+
   // See https://react-tweet.vercel.app/next#troubleshooting
   transpilePackages: ['react-tweet']
 })

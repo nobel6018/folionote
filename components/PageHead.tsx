@@ -52,7 +52,8 @@ export function PageHead({
       />
 
       <meta name='robots' content='index,follow' />
-      <meta property='og:type' content='website' />
+      {/* 글은 article이어야 한다. 전부 website로 내보내고 있었다. */}
+      <meta property='og:type' content={isBlogPost ? 'article' : 'website'} />
 
       {site && (
         <>

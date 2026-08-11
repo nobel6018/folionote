@@ -3,6 +3,7 @@ import { type Block, type ExtendedRecordMap } from 'notion-types'
 import {
   getBlockParentPage,
   getBlockTitle,
+  getBlockValue,
   getPageProperty,
   idToUuid
 } from 'notion-utils'
@@ -29,7 +30,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const feed = new RSS({
     title: config.name,
     site_url: config.host,
-    feed_url: `${config.host}/feed.xml`,
+    // 자기 자신을 가리키는 주소. 실제 라우트는 /feed/ 다 (trailingSlash: true).
+    // /feed.xml로 적어놨는데 그건 rewrite로 넘어오는 별칭일 뿐이라, 리더가
+    // 정규 주소로 기억하는 값은 실제 경로여야 한다.
+    feed_url: `${config.host}/feed/`,
     language: config.language,
     ttl: ttlMinutes
   })
@@ -39,9 +43,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const recordMap = siteMap.pageMap[pageId] as ExtendedRecordMap
     if (!recordMap) continue
 
-    const keys = Object.keys(recordMap?.block || {})
-    // react-notion-x v7.10 union 타입 narrow.
-    const block = recordMap?.block?.[keys[0]!]?.value as Block | undefined
+    // v7.10부터 record 값이 `Block | { role, value }` union이라 `.value`만 꺼내면
+    // bare Block인 경우 undefined가 된다. 그 탓에 모든 페이지가 아래 `continue`에
+    // 걸려서 RSS가 항목 0개로 나갔다. getBlockValue로 풀어야 한다.
+    // keys[0]에 의존하지 않고 pageId로 직접 집는다.
+    const block = getBlockValue(recordMap?.block?.[pageId]) as Block | undefined
     if (!block) continue
 
     const parentPage = getBlockParentPage(block, recordMap)
