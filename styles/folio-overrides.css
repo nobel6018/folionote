@@ -391,13 +391,16 @@ svg.notion-page-icon {
 }
 
 /* ── 스크롤 프로그레스 바 ────────────────────────────────── */
-/* 헤더(z-index 200)보다 위에 얹어 sticky 헤더에 가리지 않게 한다 */
+/* 레퍼런스 서비스는 화면 최상단이 아니라 sticky 헤더의 아래 끝에 바를 붙인다.
+ * 헤더(z-index 200)보다 위에 얹어 가리지 않게 한다. */
 .folio-scroll-progress {
   position: fixed;
-  top: 0;
+  top: calc(
+    var(--notion-header-height) - var(--folio-scroll-progress-height)
+  );
   left: 0;
   right: 0;
-  height: 3px;
+  height: var(--folio-scroll-progress-height);
   z-index: 250;
   pointer-events: none;
 }

@@ -1,6 +1,6 @@
 import cs from 'classnames'
 import dynamic from 'next/dynamic'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { type PageBlock } from 'notion-types'
@@ -130,7 +130,10 @@ export function NotionPage({
 
   const components = React.useMemo<Partial<NotionComponents>>(
     () => ({
-      nextLegacyImage: Image,
+      // next/legacy/image는 200px rootMargin IntersectionObserver로 지연 로딩해서
+      // 스크롤을 조금만 빨리 내려도 카드가 블러인 채로 남는다. 최신 next/image는
+      // 브라우저 네이티브 lazy를 쓰고, 네이티브는 회선 속도에 맞춰 훨씬 미리 받는다.
+      nextImage: Image,
       nextLink: Link,
       // 레퍼런스 서비스 풍 자체 컴포넌트로 교체 (Code/Callout). 나머지는 react-notion-x default.
       Code: FolioCode,

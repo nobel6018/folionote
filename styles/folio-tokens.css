@@ -113,6 +113,9 @@
   /* 모바일 하단 탭바 높이. 본문 하단 여백과 떠 있는 위젯을 이만큼 밀어올린다 */
   --folio-bottom-nav-height: 56px;
 
+  /* 스크롤 진행률 바 두께. 헤더 아래 끝에 붙이는 계산에도 쓰인다 */
+  --folio-scroll-progress-height: 3px;
+
   /* ── Shadow (레퍼런스 서비스는 거의 flat — 1단계만) ──────────────────────── */
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --folio-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
