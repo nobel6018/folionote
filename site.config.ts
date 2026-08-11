@@ -13,6 +13,9 @@ export default siteConfig({
   domain: 'leedo.me',
   author: '이영훈',
 
+  // 사이트 언어. html lang과 UI 라벨(코드 복사 버튼 등)에 쓰인다
+  language: 'ko',
+
   // open graph metadata (optional)
   description: '이도(李裪) - 이영훈의 기술 블로그',
 

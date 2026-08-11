@@ -347,8 +347,18 @@ svg.notion-page-icon {
   border-color: var(--folio-table-border);
 }
 
+/* 칸 안쪽 여백을 왼쪽만 준다.
+ *
+ * Notion은 열 너비를 저장해 두고(여기서는 120px) 레퍼런스 서비스는 칸 패딩 없이 그 폭을
+ * 글자에 다 쓴다. react-notion-x는 td에 좌우 8px씩 패딩을 줘서 내용 폭이 104px로
+ * 줄어드는데, "msgpack(기존)"의 실측 폭이 107.5px라 한 글자씩 줄이 깨지고 칸
+ * 높이가 35px → 68px로 늘어났다(글꼴 폭은 양쪽이 동일하다).
+ * 왼쪽 들여쓰기만 남겨 보기엔 같게 두고 폭은 되찾는다. */
 .notion-simple-table td {
   border-color: var(--folio-table-border);
+  padding: 7px 0 7px 9px;
+  /* 본문 줄높이(1.6)를 그대로 쓰면 칸이 41px로 커진다. 레퍼런스 서비스는 20px = 35px 높이 */
+  line-height: 20px;
 }
 
 .notion-simple-table-header-row td,

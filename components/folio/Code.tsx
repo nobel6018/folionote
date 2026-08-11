@@ -1,8 +1,12 @@
+import { IoCheckmarkOutline } from '@react-icons/all-files/io5/IoCheckmarkOutline'
+import { IoCopyOutline } from '@react-icons/all-files/io5/IoCopyOutline'
 import { type CodeBlock as CodeBlockType } from 'notion-types'
 import { getBlockTitle } from 'notion-utils'
 import Prism from 'prismjs'
 import * as React from 'react'
 import { useNotionContext } from 'react-notion-x'
+
+import { language as siteLanguage } from '@/lib/config'
 
 import styles from './Code.module.css'
 
@@ -29,9 +33,18 @@ export function Code({
 }: CodeProps) {
   const { recordMap } = useNotionContext()
   const code = getBlockTitle(block, recordMap) ?? ''
-  const language = String(
+
+  // Notion이 저장한 표기("TypeScript")를 라벨에 그대로 쓴다. 레퍼런스 서비스도 그렇게 보여준다.
+  // Prism 문법 키는 소문자여야 하므로 둘을 나눠 둔다.
+  const languageLabel = String(
     block?.properties?.language?.[0]?.[0] ?? defaultLanguage
-  ).toLowerCase()
+  )
+  const language = languageLabel.toLowerCase()
+
+  // 버튼 라벨은 사이트 언어를 따른다 (레퍼런스 서비스도 사이트 언어로 보여준다)
+  const copyLabels = siteLanguage.startsWith('ko')
+    ? { idle: '복사', done: '복사됨' }
+    : { idle: 'Copy', done: 'Copied' }
 
   const [hasCopied, setHasCopied] = React.useState(false)
 
@@ -59,15 +72,18 @@ export function Code({
 
   return (
     <div className={`${styles.container} notion-code ${className ?? ''}`}>
+      {/* 레퍼런스 서비스와 같은 배치: 언어는 좌측 상단(Notion에 저장된 표기 그대로),
+          복사 버튼은 우측 상단에 아이콘 + 라벨 */}
       <div className={styles.header}>
-        <span className={styles.language}>{language}</span>
+        <span className={styles.language}>{languageLabel}</span>
         <button
           type='button'
           className={styles.copyButton}
           onClick={onCopy}
-          aria-label={hasCopied ? 'Copied to clipboard' : 'Copy code'}
+          aria-label={hasCopied ? '코드를 복사했습니다' : '코드 복사'}
         >
-          {hasCopied ? '복사됨' : 'Copy'}
+          {hasCopied ? <IoCheckmarkOutline /> : <IoCopyOutline />}
+          <span>{hasCopied ? copyLabels.done : copyLabels.idle}</span>
         </button>
       </div>
       <pre className={`${styles.pre} language-${language}`}>
