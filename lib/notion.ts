@@ -88,5 +88,34 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
 }
 
 export async function search(params: SearchParams): Promise<SearchResults> {
-  return notion.search(params)
+  const results = await notion.search(params)
+
+  flattenSearchRecordMap(results)
+
+  return results
+}
+
+/**
+ * 검색 응답의 블록을 한 겹 벗겨 react-notion-x가 읽을 수 있는 모양으로 만든다.
+ *
+ * Notion이 주는 검색 recordMap의 블록은 `{ value: { value: Block, role } }`로
+ * 한 번 더 감싸여 있다. 그런데 react-notion-x의 검색 다이얼로그는
+ * `recordMap.block[id].value`를 곧바로 Block으로 보고 제목을 뽑고, 제목이 없으면
+ * **그 결과를 버린다**. 그래서 API가 결과를 제대로 돌려줘도 화면에는
+ * "No results"만 뜬다.
+ *
+ * 페이지 렌더 경로는 notion-utils의 `getBlockValue()`가 이 union을 풀어주지만
+ * 검색 다이얼로그는 그 함수를 쓰지 않는다. 그래서 여기서 미리 펴 둔다.
+ */
+function flattenSearchRecordMap(results: SearchResults) {
+  const blocks = results?.recordMap?.block
+  if (!blocks) return
+
+  for (const [id, record] of Object.entries(blocks)) {
+    const value: any = (record as any)?.value
+
+    if (value && typeof value === 'object' && 'value' in value) {
+      blocks[id] = { ...(record as any), value: value.value }
+    }
+  }
 }

@@ -4,6 +4,8 @@ import { cs, useNotionContext } from 'react-notion-x'
 
 import { bottomNavigation } from '@/lib/config'
 
+import { SiteLink } from './SiteLink'
+
 /**
  * 모바일 하단 탭바 (레퍼런스 서비스 어드민의 스타일 > 하단 네비게이터, PRO 기능).
  *
@@ -56,9 +58,9 @@ export function BottomNavigation() {
         }
 
         return (
-          <components.Link href={href} key={index} className={className}>
+          <SiteLink href={href} key={index} className={className}>
             {children}
-          </components.Link>
+          </SiteLink>
         )
       })}
     </nav>

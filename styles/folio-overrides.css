@@ -776,7 +776,11 @@ svg.notion-page-icon {
   width: 100%;
   border-bottom: 1px solid var(--folio-divider);
   margin-bottom: var(--folio-space-3);
-  overflow-x: auto;
+  /* 세로를 명시적으로 hidden으로 막는다. overflow-x만 지정하면 CSS 규칙상
+   * overflow-y가 visible로 남지 못하고 auto가 되는데, 활성 탭의 -1px
+   * margin 때문에 내용이 1px 넘쳐서 세로 스크롤바 트랙이 그려진다
+   * (macOS "항상 스크롤바 표시"에서 회색 띠로 보인다). */
+  overflow: auto hidden;
 }
 
 /* 활성 탭의 2px 밑줄이 탭 행의 1px 구분선 위에 겹쳐 앉게 한다 (Notion/레퍼런스 서비스 동일) */

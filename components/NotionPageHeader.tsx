@@ -23,6 +23,7 @@ import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Breadcrumbs } from './folio/Breadcrumbs'
 import { ShareButton } from './folio/ShareButton'
+import { SiteLink } from './folio/SiteLink'
 import styles from './styles.module.css'
 
 function ToggleThemeButton() {
@@ -59,22 +60,16 @@ function ToggleThemeButton() {
  * 보고 src를 바꾸면 SSR 결과와 어긋나거나 첫 페인트에 잘못된 로고가 깜빡인다.
  */
 function SiteBrand({ onNavigate }: { onNavigate?: () => void }) {
-  const { components } = useNotionContext()
-
   if (!logo) {
     return (
-      <components.Link
-        href='/'
-        className='folio-site-name'
-        onClick={onNavigate}
-      >
+      <SiteLink href='/' className='folio-site-name' onClick={onNavigate}>
         {name}
-      </components.Link>
+      </SiteLink>
     )
   }
 
   return (
-    <components.Link
+    <SiteLink
       href={logo.href}
       className='folio-logo-link'
       onClick={onNavigate}
@@ -92,7 +87,7 @@ function SiteBrand({ onNavigate }: { onNavigate?: () => void }) {
         style={{ height: logo.height }}
         aria-hidden={true}
       />
-    </components.Link>
+    </SiteLink>
   )
 }
 
@@ -176,14 +171,14 @@ export function NotionPageHeader({
         }
 
         return (
-          <components.Link
-            href={link.url}
+          <SiteLink
+            href={link.url!}
             key={index}
             className={className}
             onClick={closeMenu}
           >
             {children}
-          </components.Link>
+          </SiteLink>
         )
       })
       .filter(Boolean)
