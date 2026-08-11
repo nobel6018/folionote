@@ -267,6 +267,21 @@ svg.notion-page-icon {
   line-height: var(--folio-line-height-normal);
 }
 
+/* 본문 컬럼을 순수 본문 폭으로 되돌린다.
+ *
+ * react-notion-x는 페이지 컨테이너와 본문 래퍼가 같은 --notion-max-width를 쓴다.
+ * 컨테이너는 border-box에 좌우 16px 패딩이 있어 "본문 폭 + 거터"(740px)를 받아야
+ * 안쪽이 708px이 되는데, 본문 래퍼는 패딩이 없어 그 값을 그대로 폭으로 쓴다.
+ * 그래서 토큰만으로는 둘을 동시에 만족시킬 수 없어 여기서 따로 조인다. */
+/* aside(목차)가 있는 페이지에서는 react-notion-x가
+ * `.notion-page-content-has-aside .notion-page-content-inner`로 폭을 못박으므로
+ * 같은 2-class 셀렉터로 받아야 한다. */
+.notion-page-content-inner,
+.notion-page-content-has-aside .notion-page-content-inner {
+  width: var(--folio-content-max-width);
+  max-width: var(--folio-content-max-width);
+}
+
 /* ── 페이지 타이틀 ──────────────────────────────────────── */
 .notion-title {
   display: block;
