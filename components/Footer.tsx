@@ -5,39 +5,16 @@ import { FaMastodon } from '@react-icons/all-files/fa/FaMastodon'
 import { FaTwitter } from '@react-icons/all-files/fa/FaTwitter'
 import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube'
 import { FaZhihu } from '@react-icons/all-files/fa/FaZhihu'
-import { IoDesktopOutline } from '@react-icons/all-files/io5/IoDesktopOutline'
-import { IoMoonSharp } from '@react-icons/all-files/io5/IoMoonSharp'
-import { IoSunnyOutline } from '@react-icons/all-files/io5/IoSunnyOutline'
 import * as React from 'react'
 
 import * as config from '@/lib/config'
-import { useDarkMode } from '@/lib/use-dark-mode'
 
 import styles from './styles.module.css'
 
 // TODO: merge the data and icons from PageSocial with the social links in Footer
 
 export function FooterImpl() {
-  const { preference, hasMounted, cycleTheme } = useDarkMode()
   const currentYear = new Date().getFullYear()
-
-  const onCycleTheme = React.useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      cycleTheme()
-    },
-    [cycleTheme]
-  )
-
-  const themeIcon =
-    preference === 'dark' ? (
-      <IoMoonSharp />
-    ) : preference === 'light' ? (
-      <IoSunnyOutline />
-    ) : (
-      <IoDesktopOutline />
-    )
-  const themeTitle = `Theme: ${preference} (click to change)`
 
   return (
     <footer className={styles.footer}>
@@ -45,19 +22,8 @@ export function FooterImpl() {
         Copyright {currentYear} {config.author}
       </div>
 
-      <div className={styles.settings}>
-        {hasMounted && (
-          <a
-            className={styles.toggleDarkMode}
-            href='#'
-            role='button'
-            onClick={onCycleTheme}
-            title={themeTitle}
-          >
-            {themeIcon}
-          </a>
-        )}
-      </div>
+      {/* 테마 토글은 헤더(와 모바일 드로어)에 이미 있다. 레퍼런스 서비스도 푸터에는 두지 않아서
+          여기서는 뺐다. 같은 버튼이 두 곳에 있으면 하단에서 자리만 차지한다. */}
 
       <div className={styles.social}>
         {config.twitter && (

@@ -188,7 +188,14 @@ export function NotionPageHeader({
   // 레퍼런스 서비스 구조: 1행은 로고 + nav 링크 + 도구를 균등 배치, 2행은 전체 경로.
   // 좁은 화면에서는 nav 링크를 감추고 햄버거 드로어로 넘긴다.
   return (
-    <header className='notion-header folio-header'>
+    <header
+      className={cs(
+        'notion-header',
+        'folio-header',
+        // 드로어가 열린 동안 헤더를 스크롤 위젯 위로 올린다 (@see folio-overrides.css)
+        isMenuOpen && 'folio-header-menu-open'
+      )}
+    >
       <div className='notion-nav-header folio-nav-row'>
         <SiteBrand />
 
