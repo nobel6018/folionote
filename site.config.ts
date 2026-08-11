@@ -112,6 +112,7 @@ export default siteConfig({
   // 생략하면 사이트 이름(name)이 텍스트로 노출된다.
   logo: {
     light: '/logo.png',
+    dark: '/logo-dark.png',
     height: 20,
     href: '/',
     alt: '이도'
