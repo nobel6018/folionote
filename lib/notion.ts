@@ -57,10 +57,57 @@ function fillEmptyCollectionViewNames(recordMap: ExtendedRecordMap) {
   }
 }
 
+/**
+ * 사람 멘션(`@이름`)을 평범한 텍스트로 바꿔 놓는다.
+ *
+ * Notion은 멘션을 `['‣', [['u', userId]]]` 데코레이션으로 준다. react-notion-x는
+ * 이걸 아바타 + 이름으로 그리려 하는데, **프로필 사진이 없으면 통째로 null을
+ * 반환해** 멘션이 화면에서 사라진다. 우리 워크스페이스 사용자에는 사진이 없어서
+ * "2024-03-29 @이영훈"이 "2024-03-29"로만 보였다.
+ *
+ * 레퍼런스 서비스는 아바타 없이 흐린 `@이름` 텍스트로만 그린다. 같은 결과를 내려고
+ * 데코레이션 자체를 텍스트로 바꾼다. react-notion-x의 Text에는 이 부분을
+ * 갈아끼울 수 있는 컴포넌트 훅이 없어서 데이터 쪽에서 처리한다.
+ */
+function renderUserMentionsAsText(recordMap: ExtendedRecordMap) {
+  const users = recordMap.notion_user
+  if (!users) return
+
+  for (const record of Object.values(recordMap.block || {})) {
+    const properties = getBlockValue(record)?.properties
+    if (!properties) continue
+
+    for (const decorations of Object.values(properties)) {
+      if (!Array.isArray(decorations)) continue
+
+      for (const [index, entry] of decorations.entries()) {
+        const decoration = entry as any
+        const annotations = decoration?.[1]
+        if (decoration?.[0] !== '‣' || !annotations) continue
+
+        const mention = annotations.find(
+          (annotation: any) => annotation?.[0] === 'u'
+        )
+        if (!mention) continue
+
+        const user: any = getBlockValue(users[mention[1] as string] as any)
+        const name =
+          user?.name ||
+          [user?.given_name, user?.family_name].filter(Boolean).join(' ')
+
+        if (name) {
+          decorations[index] = [`@${name}`, [['h', 'gray']]] as any
+        }
+      }
+    }
+  }
+}
+
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId)
 
   fillEmptyCollectionViewNames(recordMap)
+  renderUserMentionsAsText(recordMap)
 
   if (navigationStyle !== 'default') {
     // ensure that any pages linked to in the custom navigation header have

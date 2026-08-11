@@ -116,6 +116,16 @@
   /* 스크롤 진행률 바 두께. 헤더 아래 끝에 붙이는 계산에도 쓰인다 */
   --folio-scroll-progress-height: 3px;
 
+  /* ── 코드 블록 (레퍼런스 서비스 실측) ────────────────────────────── */
+  --folio-code-bg: #f7f6f3;
+  --folio-code-color: rgb(63, 68, 71);
+  --folio-code-font-size: 13.6px;
+  --folio-code-line-height: 20.4px;
+  --folio-code-padding: 34px 16px 32px 32px;
+
+  /* Notion 파랑 배경. 레퍼런스 서비스는 Notion 기본값(221,235,241)보다 옅게 쓴다 */
+  --notion-blue_background: rgb(231, 243, 248);
+
   /* ── Shadow (레퍼런스 서비스는 거의 flat — 1단계만) ──────────────────────── */
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --folio-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -154,4 +164,7 @@
   --folio-card-ring: 0 0 0 1px rgba(255, 255, 255, 0.11);
   --folio-card-shadow: var(--folio-card-ring), 0 2px 4px rgba(0, 0, 0, 0.4);
   --folio-card-shadow-hover: var(--folio-card-ring), 0 4px 8px rgba(0, 0, 0, 0.5);
+
+  --folio-code-bg: #2d3439;
+  --folio-code-color: #e8e9ea;
 }

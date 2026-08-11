@@ -1,116 +1,25 @@
-/* prism theme adjustments */
+/**
+ * Prism 보정.
+ *
+ * 라이트 모드의 토큰 색은 `prism-coy`(_app.tsx에서 임포트) 기본값을 그대로 쓴다.
+ * 레퍼런스 서비스가 쓰는 팔레트와 같기 때문이다(keyword #0077aa, string #690, function
+ * #DD4A68, comment slategray, number #905). starter-kit 원본이 이 자리에 자기
+ * Tailwind 팔레트를 덮어써서 코드 색이 전혀 달랐는데, 그 규칙들은 걷어냈다.
+ *
+ * 여기 남은 건 prism-coy가 코드 블록에 씌우는 자체 장식(흰 배경, 좌측 테두리,
+ * :before/:after 그림자)을 벗기는 일이다. 컨테이너 모양은
+ * `components/folio/Code.module.css`가 담당한다.
+ *
+ * 다크 모드는 prism-coy가 상정하지 않은 환경이라 대비를 위해 토큰 색을 따로 준다.
+ */
 
-.notion-code {
-  background-color: rgba(249, 250, 251, 1);
-  border: 1px solid rgba(229, 231, 235, 1);
-  border-radius: 0.375rem;
-  padding: 1.5em !important;
-}
-
-.dark-mode .notion-code {
-  background-color: rgba(17, 24, 39, 1);
-  border-color: rgba(55, 65, 81, 1);
-}
-.notion code {
-  color: rgba(31, 41, 55, 1);
-  border: 0 none !important;
-  box-shadow: none !important;
-  background: none !important;
-  padding: 0 !important;
-}
-.dark-mode .notion code {
-  color: rgba(229, 231, 235, 1);
-}
-
-.dark-mode .notion .notion-inline-code {
-  background: rgb(71, 76, 80) !important;
-  color: #ff4081;
-  padding: 0.2em 0.4em !important;
-}
-
-.notion .notion-inline-code {
-  color: #ff4081;
-  background: rgba(127, 122, 107, 0.1) !important;
-  padding: 0.2em 0.4em !important;
-}
-
-.token.cdata,
-.token.doctype,
-.token.prolog {
-  color: rgba(55, 65, 81, 1);
-}
-.token.comment {
-  color: #5b9b4c;
-}
-.dark-mode .token.cdata,
-.dark-mode .token.doctype,
-.dark-mode .token.prolog {
-  color: rgba(209, 213, 219, 1);
-}
-.token.punctuation {
-  color: rgba(55, 65, 81, 1);
-}
-.dark-mode .token.punctuation {
-  color: rgba(209, 213, 219, 1);
-}
-.token.boolean,
-.token.constant,
-.token.deleted,
-.token.number,
-.token.property,
-.token.symbol,
-.token.tag {
-  color: rgba(16, 185, 129, 1);
-}
-.token.attr-name,
-.token.builtin,
-.token.char,
-.token.inserted,
-.token.selector,
-.token.string {
-  color: rgba(139, 92, 246, 1);
-}
-.language-css .token.string,
-.style .token.string,
-.token.entity,
-.token.operator,
-.token.url {
-  color: rgba(245, 158, 11, 1);
-}
-.token.atrule,
-.token.attr-value,
-.token.keyword {
-  color: rgba(59, 130, 246, 1);
-}
-.token.class-name,
-.token.function {
-  color: rgba(236, 72, 153, 1);
-}
-.token.important,
-.token.regex,
-.token.variable {
-  color: rgba(245, 158, 11, 1);
-}
-code[class*='language-'],
-pre[class*='language-'] {
-  color: rgba(31, 41, 55, 1);
-}
-.dark-mode code[class*='language-'],
-.dark-mode pre[class*='language-'] {
-  color: rgba(249, 250, 251, 1);
-}
-pre::-webkit-scrollbar {
-  display: none;
-}
-pre {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.token.operator,
-.token.entity,
-.token.url,
-.token.variable {
+/* prism-coy의 컨테이너 장식 제거 */
+pre[class*='language-'],
+code[class*='language-'] {
   background: none;
+  border: 0 none;
+  box-shadow: none;
+  margin: 0;
 }
 
 pre[class*='language-'] > code {
@@ -122,4 +31,62 @@ pre[class*='language-'] > code {
 pre[class*='language-']:before,
 pre[class*='language-']:after {
   display: none !important;
+}
+
+/* 코드 블록 안에서는 가로 스크롤바를 숨긴다 (컨테이너가 잘라준다) */
+pre::-webkit-scrollbar {
+  display: none;
+}
+pre {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── 다크 모드 토큰 ─────────────────────────────────────── */
+.dark-mode code[class*='language-'],
+.dark-mode pre[class*='language-'] {
+  color: rgba(249, 250, 251, 1);
+}
+.dark-mode .token.cdata,
+.dark-mode .token.doctype,
+.dark-mode .token.prolog,
+.dark-mode .token.punctuation {
+  color: rgba(209, 213, 219, 1);
+}
+.dark-mode .token.comment {
+  color: #7f9f7f;
+}
+.dark-mode .token.boolean,
+.dark-mode .token.constant,
+.dark-mode .token.deleted,
+.dark-mode .token.number,
+.dark-mode .token.property,
+.dark-mode .token.symbol,
+.dark-mode .token.tag {
+  color: #6ee7b7;
+}
+.dark-mode .token.attr-name,
+.dark-mode .token.builtin,
+.dark-mode .token.char,
+.dark-mode .token.inserted,
+.dark-mode .token.selector,
+.dark-mode .token.string {
+  color: #c4b5fd;
+}
+.dark-mode .token.atrule,
+.dark-mode .token.attr-value,
+.dark-mode .token.keyword {
+  color: #93c5fd;
+}
+.dark-mode .token.class-name,
+.dark-mode .token.function {
+  color: #f9a8d4;
+}
+.dark-mode .token.entity,
+.dark-mode .token.operator,
+.dark-mode .token.url,
+.dark-mode .token.important,
+.dark-mode .token.regex,
+.dark-mode .token.variable {
+  color: #fcd34d;
 }

@@ -3,7 +3,9 @@ import 'katex/dist/katex.min.css'
 // Prism core를 먼저 등록해야 syntax components의 global Prism 참조 동작
 import 'prismjs'
 // used for code syntax highlighting (optional)
-import 'prismjs/themes/prism-coy.css'
+// 레퍼런스 서비스가 쓰는 팔레트가 prism 기본 테마다 (keyword #07a, string #690,
+// function #DD4A68, comment slategray, number #905). coy는 색이 전혀 다르다.
+import 'prismjs/themes/prism.css'
 // Prism syntax 정적 등록 — FolioCode가 직접 Prism 쓰니까 사용 언어 미리 등록.
 // starter-kit이 dynamic으로 lazy-load하던 걸 우리는 static으로 바꿔
 // SSR 시점에 syntax highlighting 동작 보장. 추가 언어가 필요하면 여기에.

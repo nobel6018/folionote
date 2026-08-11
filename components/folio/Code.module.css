@@ -1,22 +1,43 @@
-/* 레퍼런스 서비스 풍 코드 블록 스타일 */
+/**
+ * 레퍼런스 서비스 코드 블록 스타일.
+ *
+ * 레퍼런스 사이트 실측: 컨테이너 배경 #f7f6f3 + radius 3px, 안쪽 패딩 없음.
+ * 코드 영역이 34px/16px/32px/32px 패딩을 갖고 배경은 투명하다.
+ * 본문 13.6px / line-height 20.4px / 색 rgb(63,68,71).
+ */
 
-.container {
+/* 클래스를 두 번 겹쳐 특이도를 올린다. react-notion-x의 `.notion-code`가
+ * `padding: 1em`을 걸어 두는데 같은 1-class 특이도라 로드 순서에 따라 진다. */
+.container.container {
   position: relative;
   margin: var(--folio-space-3) 0;
-  background-color: var(--folio-surface-muted);
-  border-radius: var(--folio-radius-md);
+  padding: 0;
+  background-color: var(--folio-code-bg);
+  border-radius: var(--folio-radius-sm);
   overflow: hidden;
 }
 
+/* 언어 라벨과 복사 버튼. 레퍼런스 서비스에는 없어서 쉴 때는 감춰 두고
+ * 마우스를 올리거나 키보드 포커스가 왔을 때만 띄운다. */
 .header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--folio-space-2);
   padding: var(--folio-space-2) var(--folio-space-3);
-  border-bottom: 1px solid var(--folio-divider);
   font-family: var(--folio-font-mono);
   font-size: 12px;
-  color: var(--folio-text-muted);
+  color: var(--folio-text-subtle);
+  opacity: 0;
+  transition: opacity var(--folio-transition-base);
+}
+
+.container:hover .header,
+.header:focus-within {
+  opacity: 1;
 }
 
 .language {
@@ -25,7 +46,7 @@
 }
 
 .copyButton {
-  background: transparent;
+  background: var(--folio-bg);
   border: 1px solid var(--folio-border);
   border-radius: var(--folio-radius-sm);
   padding: 2px 8px;
@@ -33,27 +54,29 @@
   font-size: 12px;
   color: var(--folio-text-muted);
   cursor: pointer;
-  transition: background-color var(--folio-transition-base),
-    color var(--folio-transition-base);
+  transition: color var(--folio-transition-base);
 }
 
 .copyButton:hover {
-  background-color: var(--folio-bg);
   color: var(--folio-text);
 }
 
-.pre {
+/* 컨테이너와 같은 이유로 클래스를 겹친다. prism 테마가 `pre[class*=language-]`로
+ * padding과 color를 걸어 두는데 그쪽이 특이도 (0,1,1)이라 1-class로는 진다. */
+.pre.pre {
   margin: 0;
-  padding: var(--folio-space-3);
+  padding: var(--folio-code-padding);
+  background: none;
   font-family: var(--folio-font-mono);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: var(--folio-code-font-size);
+  line-height: var(--folio-code-line-height);
+  color: var(--folio-code-color);
   overflow-x: auto;
-  background-color: transparent;
 }
 
-.pre code {
+.pre.pre code {
   font-family: inherit;
-  background: transparent;
+  background: none;
   padding: 0;
+  color: inherit;
 }
