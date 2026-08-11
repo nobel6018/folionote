@@ -39,24 +39,10 @@ body {
   caret-color: var(--fg-color);
 }
 
-::-webkit-scrollbar
-{
-  width: 5px;
-  height: 5px;
-  background-color: #F5F5F5;
-  background-color: var(--bg-color-1);
-}
-
-::-webkit-scrollbar-thumb
-{
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-  background-color: #555;
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-  background-color: var(--fg-color-1);
-}
-
-::-webkit-scrollbar-track {           
-    background-color: var(--bg-color);
-}
+/* 스크롤바는 브라우저/OS 기본값에 맡긴다.
+ *
+ * Chrome은 ::-webkit-scrollbar를 한 줄이라도 지정하면 오버레이 스크롤바(스크롤할
+ * 때만 나타나고 잠시 뒤 사라지는 것)를 끄고 항상 자리를 차지하는 고정 스크롤바로
+ * 바꾼다. starter-kit 원본이 여기서 5px 스크롤바를 그리고 있어서, macOS 설정이
+ * "자동으로"인 사용자에게도 스크롤바가 늘 떠 있었다. 레퍼런스 서비스에는 이 규칙이 없다.
+ */

@@ -33,14 +33,12 @@ pre[class*='language-']:after {
   display: none !important;
 }
 
-/* 코드 블록 안에서는 가로 스크롤바를 숨긴다 (컨테이너가 잘라준다) */
-pre::-webkit-scrollbar {
-  display: none;
-}
-pre {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+/* 코드 블록의 가로 스크롤바도 숨기지 않는다.
+ *
+ * 원래 여기서 감췄는데 두 가지가 문제였다. 긴 줄이 잘려도 가로로 스크롤된다는
+ * 사실을 알 수 없고, ::-webkit-scrollbar를 지정하는 순간 Chrome이 그 요소를
+ * 오버레이 스크롤바 대상에서 빼 버린다. 레퍼런스 서비스는 overflow-x: auto만 두고 스크롤바를
+ * 건드리지 않는다. */
 
 /* ── 다크 모드 토큰 ─────────────────────────────────────── */
 .dark-mode code[class*='language-'],
