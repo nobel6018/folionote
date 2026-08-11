@@ -11,8 +11,10 @@ type Crumb = {
   key: string
   title: string
   icon?: string
-  /** 링크를 걸 블록 id. 없으면 현재 페이지라 링크를 걸지 않는다 */
+  /** 링크를 걸 블록 id. 컬렉션을 품은 블록을 못 찾은 경우에만 비어 있다 */
   pageId?: string
+  /** 지금 보고 있는 페이지인지 (강조 + aria-current) */
+  isCurrent: boolean
   /** PageIcon에 넘길 블록 (아이콘 렌더용) */
   block: Block
 }
@@ -63,6 +65,7 @@ function findCollectionCrumb(
     title,
     icon: collection.icon,
     pageId: hostBlockId,
+    isCurrent: false,
     // PageIcon이 읽을 수 있도록 컬렉션 아이콘을 page_icon 자리에 얹는다
     block: {
       ...block,
@@ -97,18 +100,22 @@ export function Breadcrumbs({
               key: root.pageId,
               title: root.title,
               icon: root.icon,
-              pageId: root.active ? undefined : root.pageId,
+              pageId: root.pageId,
+              isCurrent: !!root.active,
               block: root.block
             }
           ]
         : []
     }
 
+    // 현재 페이지도 링크로 둔다. 레퍼런스 서비스가 그렇고(마지막 크럼이 정규 URL로 걸린다),
+    // pretty URL로 들어온 경우 정규 주소로 옮겨갈 수단이 되기도 한다.
     const mapped: Crumb[] = pageCrumbs.map((crumb) => ({
       key: crumb.pageId,
       title: crumb.title,
       icon: crumb.icon,
-      pageId: crumb.active ? undefined : crumb.pageId,
+      pageId: crumb.pageId,
+      isCurrent: !!crumb.active,
       block: crumb.block
     }))
 
@@ -124,22 +131,28 @@ export function Breadcrumbs({
   return (
     <div className='breadcrumbs' key='breadcrumbs'>
       {crumbs.map((crumb, index) => {
-        const isActive = !crumb.pageId
-        const Wrapper = isActive
-          ? (props: any) => <div {...props} />
-          : components.PageLink
+        const className = cs('breadcrumb', crumb.isCurrent && 'active')
+        const content = (
+          <>
+            {crumb.icon && <PageIcon className='icon' block={crumb.block} />}
+            {crumb.title && <span className='title'>{crumb.title}</span>}
+          </>
+        )
 
         return (
           <React.Fragment key={crumb.key}>
-            <Wrapper
-              className={cs('breadcrumb', isActive && 'active')}
-              {...(isActive ? {} : { href: mapPageUrl(crumb.pageId!) })}
-            >
-              {crumb.icon && (
-                <PageIcon className='icon' block={crumb.block} />
-              )}
-              {crumb.title && <span className='title'>{crumb.title}</span>}
-            </Wrapper>
+            {crumb.pageId ? (
+              <components.PageLink
+                className={className}
+                href={mapPageUrl(crumb.pageId)}
+                // 현재 페이지도 링크로 두되 위치임은 보조기기에 알린다
+                aria-current={crumb.isCurrent ? 'page' : undefined}
+              >
+                {content}
+              </components.PageLink>
+            ) : (
+              <span className={className}>{content}</span>
+            )}
 
             {index < crumbs.length - 1 && <span className='spacer'>/</span>}
           </React.Fragment>
