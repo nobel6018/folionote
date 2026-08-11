@@ -156,6 +156,12 @@ export const isCollectionViewTabsEnabled: boolean = getSiteConfig(
   true
 )
 
+// 글 옆 목차. 레퍼런스 서비스는 띄우지 않아서 기본을 꺼짐으로 둔다
+export const isTableOfContentsEnabled: boolean = getSiteConfig(
+  'isTableOfContentsEnabled',
+  false
+)
+
 // 컬렉션 내 검색 (레퍼런스 서비스 어드민의 "검색 기능 숨기기"에 대응)
 export const isCollectionSearchEnabled: boolean = getSiteConfig(
   'isCollectionSearchEnabled',

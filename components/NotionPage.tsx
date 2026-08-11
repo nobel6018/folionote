@@ -4,7 +4,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { type PageBlock } from 'notion-types'
-import { formatDate, getBlockTitle, getPageProperty } from 'notion-utils'
+import {
+  formatDate,
+  getBlockTitle,
+  getBlockValue,
+  getPageProperty
+} from 'notion-utils'
 import * as React from 'react'
 import BodyClassName from 'react-body-classname'
 import {
@@ -169,12 +174,20 @@ export function NotionPage({
   const keys = Object.keys(recordMap?.block || {})
   // react-notion-x v7.10에서 record value 타입이 union으로 확장됨
   // (Block | { role, value }). root block은 항상 PageBlock이므로 cast.
-  const block = recordMap?.block?.[keys[0]!]?.value as PageBlock | undefined
+  // getBlockValue로 풀어야 한다. v7.10부터 record 값이 `Block | { role, value }`
+  // union이라 `.value`만 꺼내면 `{ role, value }`가 그대로 잡히고, Block이 아닌
+  // 객체가 되면서 getBlockTitle/타입 검사가 조용히 실패한다. 그 결과 모든 페이지의
+  // <title>과 og:title이 사이트 이름으로 폴백하고 있었다.
+  const block = getBlockValue(recordMap?.block?.[keys[0]!]) as
+    | PageBlock
+    | undefined
 
   const isBlogPost =
     block?.type === 'page' && block?.parent_table === 'collection'
 
-  const showTableOfContents = !!isBlogPost
+  // 목차는 기본으로 끈다. 레퍼런스 서비스는 글 옆에 목차를 띄우지 않는다.
+  // (블록 union 버그 때문에 그동안은 isBlogPost가 항상 false여서 우연히 꺼져 있었다.)
+  const showTableOfContents = config.isTableOfContentsEnabled && !!isBlogPost
   const minTableOfContentsItems = 3
 
   const pageAside = React.useMemo(

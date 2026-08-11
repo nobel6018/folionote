@@ -51,6 +51,9 @@ export interface SiteConfig {
   /** 컬렉션 안에서 카드를 걸러내는 검색 노출 여부 */
   isCollectionSearchEnabled?: boolean
 
+  /** 글 옆에 목차를 띄울지. 레퍼런스 서비스는 띄우지 않아 기본 false */
+  isTableOfContentsEnabled?: boolean
+
   colorTheme?: ColorTheme
 
   /** 헤더/모바일 드로어에 현재 페이지 공유 버튼 노출 여부 */
