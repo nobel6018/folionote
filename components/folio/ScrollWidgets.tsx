@@ -9,7 +9,12 @@ import { backToTop, scrollProgressBar } from '@/lib/config'
  * 계산한다(스크롤 이벤트는 프레임보다 자주 온다).
  */
 function useScrollState() {
-  const [state, setState] = React.useState({ progress: 0, scrollY: 0 })
+  const [state, setState] = React.useState({
+    progress: 0,
+    scrollY: 0,
+    isScrollingUp: false
+  })
+  const lastScrollY = React.useRef(0)
 
   React.useEffect(() => {
     let frame: number | null = null
@@ -19,10 +24,18 @@ function useScrollState() {
       const scrollY = window.scrollY
       const scrollable =
         document.documentElement.scrollHeight - window.innerHeight
-      setState({
+
+      // 같은 위치로 여러 번 들어올 때 방향 판단이 흔들리지 않게 1px 이상만 본다
+      const delta = scrollY - lastScrollY.current
+      const isScrollingUp =
+        Math.abs(delta) < 1 ? undefined : delta < 0
+      lastScrollY.current = scrollY
+
+      setState((prev) => ({
         progress: scrollable > 0 ? Math.min(scrollY / scrollable, 1) : 0,
-        scrollY
-      })
+        scrollY,
+        isScrollingUp: isScrollingUp ?? prev.isScrollingUp
+      }))
     }
 
     const onScroll = () => {
@@ -52,9 +65,11 @@ function useScrollState() {
  * 둘 다 스크롤 상태 하나만 쓰므로 한 컴포넌트에서 구독을 공유한다.
  */
 export function ScrollWidgets() {
-  const { progress, scrollY } = useScrollState()
+  const { progress, scrollY, isScrollingUp } = useScrollState()
 
-  const isBackToTopVisible = scrollY > backToTop.showAfter
+  // 레퍼런스 서비스 동작: 위로 스크롤할 때만 올라오고, 아래로 내리거나 최상단에서는 숨는다.
+  // 모바일에서 늘 떠 있으면 본문을 가리기 때문이다.
+  const isBackToTopVisible = isScrollingUp && scrollY > backToTop.showAfter
 
   const onBackToTop = React.useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -105,6 +120,7 @@ export function ScrollWidgets() {
           tabIndex={isBackToTopVisible ? 0 : -1}
         >
           <IoArrowUpOutline />
+          <span className='folio-back-to-top-label'>TOP</span>
         </button>
       )}
     </>

@@ -301,7 +301,7 @@ const rawBackToTop: BackToTopConfig | null = getSiteConfig('backToTop', null)
 export const backToTop = {
   enabled: rawBackToTop?.enabled ?? true,
   position: rawBackToTop?.position ?? 'right',
-  fitToContent: rawBackToTop?.fitToContent ?? false,
+  fitToContent: rawBackToTop?.fitToContent ?? true,
   sideOffset: rawBackToTop?.sideOffset ?? 0,
   bottomOffset: rawBackToTop?.bottomOffset ?? 16,
   showAfter: rawBackToTop?.showAfter ?? 400

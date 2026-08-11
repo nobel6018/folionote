@@ -72,20 +72,19 @@ export function Code({
 
   return (
     <div className={`${styles.container} notion-code ${className ?? ''}`}>
-      {/* 레퍼런스 서비스와 같은 배치: 언어는 좌측 상단(Notion에 저장된 표기 그대로),
-          복사 버튼은 우측 상단에 아이콘 + 라벨 */}
-      <div className={styles.header}>
-        <span className={styles.language}>{languageLabel}</span>
-        <button
-          type='button'
-          className={styles.copyButton}
-          onClick={onCopy}
-          aria-label={hasCopied ? '코드를 복사했습니다' : '코드 복사'}
-        >
-          {hasCopied ? <IoCheckmarkOutline /> : <IoCopyOutline />}
-          <span>{hasCopied ? copyLabels.done : copyLabels.idle}</span>
-        </button>
-      </div>
+      {/* 레퍼런스 서비스와 같은 배치: 언어 라벨은 좌상단, 복사 버튼은 우상단.
+          둘 다 코드 블록에 마우스를 올릴 때만 나타난다. */}
+      <span className={styles.language}>{languageLabel}</span>
+
+      <button
+        type='button'
+        className={styles.copyButton}
+        onClick={onCopy}
+        aria-label={hasCopied ? '코드를 복사했습니다' : '코드 복사'}
+      >
+        {hasCopied ? <IoCheckmarkOutline /> : <IoCopyOutline />}
+        <span>{hasCopied ? copyLabels.done : copyLabels.idle}</span>
+      </button>
       <pre className={`${styles.pre} language-${language}`}>
         <code
           className={`language-${language}`}

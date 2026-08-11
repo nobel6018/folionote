@@ -117,9 +117,16 @@
   /* 스크롤 진행률 바 두께. 헤더 아래 끝에 붙이는 계산에도 쓰인다 */
   --folio-scroll-progress-height: 3px;
 
+  /* 맨 위로 버튼 (레퍼런스 서비스 실측) */
+  --folio-back-to-top-bg: #fff;
+  --folio-back-to-top-color: #37352f;
+  --folio-back-to-top-shadow: 0 0 4px 4px #d6d6d6;
+
   /* ── 코드 블록 (레퍼런스 서비스 실측) ────────────────────────────── */
   --folio-code-bg: #f7f6f3;
   --folio-code-color: rgb(63, 68, 71);
+  /* 언어 라벨 / 복사 버튼 색 */
+  --folio-code-chrome-color: rgba(55, 53, 47, 0.65);
   --folio-code-font-size: 13.6px;
   --folio-code-line-height: 20.4px;
   --folio-code-padding: 34px 16px 32px 32px;
@@ -198,6 +205,12 @@
   --folio-card-shadow: var(--folio-card-ring), 0 2px 4px rgba(0, 0, 0, 0.4);
   --folio-card-shadow-hover: var(--folio-card-ring), 0 4px 8px rgba(0, 0, 0, 0.5);
 
-  --folio-code-bg: #2d3439;
-  --folio-code-color: #e8e9ea;
+  --folio-back-to-top-bg: #37352f;
+  --folio-back-to-top-color: #fff;
+  --folio-back-to-top-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.3);
+
+  /* 레퍼런스 서비스 다크 실측 */
+  --folio-code-bg: #3f4447;
+  --folio-code-color: hsla(0, 0%, 100%, 0.9);
+  --folio-code-chrome-color: hsla(0, 0%, 100%, 0.6);
 }

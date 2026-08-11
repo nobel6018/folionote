@@ -506,26 +506,32 @@ svg.notion-page-icon {
 }
 
 /* ── 맨 위로 버튼 ────────────────────────────────────────── */
+/* 레퍼런스 서비스 실측: 48x48 원형, 화살표 아래 10px "TOP" 라벨, 흰 배경에 퍼진 그림자.
+ * 숨을 때는 opacity만 끄지 않고 bottom을 -60px으로 내려 아래로 미끄러진다. */
 .folio-back-to-top {
   position: fixed;
   bottom: var(--folio-back-to-top-bottom, 16px);
   z-index: 250;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 0 none;
   cursor: pointer;
-  background: var(--folio-surface);
-  color: var(--folio-text-muted);
-  box-shadow: var(--folio-card-shadow);
-  transition: opacity var(--folio-transition-base),
-    visibility var(--folio-transition-base), color var(--folio-transition-base);
+  background: var(--folio-back-to-top-bg);
+  color: var(--folio-back-to-top-color);
+  box-shadow: var(--folio-back-to-top-shadow);
+  font-size: 10px;
+  line-height: 1;
+  transition: bottom 300ms ease-out, opacity 300ms ease-out;
 }
-.folio-back-to-top:hover {
-  color: var(--folio-text);
+
+.folio-back-to-top-label {
+  margin-top: 2px;
+  letter-spacing: 0.02em;
 }
 
 .folio-back-to-top-right {
@@ -535,23 +541,24 @@ svg.notion-page-icon {
   left: 0;
 }
 
-/* "화면 너비에 맞추기": 화면 끝이 아니라 본문 컬럼 바깥쪽에 붙인다 */
+/* "화면 너비에 맞추기": 화면 끝이 아니라 본문 컬럼 끝에 맞춘다.
+ * 레퍼런스 서비스 실측처럼 버튼의 바깥쪽 모서리가 본문 폭 경계와 딱 맞물린다. */
 .folio-back-to-top-fit.folio-back-to-top-right {
   right: 50%;
-  transform: translateX(
-    calc(var(--folio-content-max-width) / 2 + 2 * var(--folio-space-3))
-  );
+  transform: translateX(calc(var(--folio-content-max-width) / 2));
 }
 .folio-back-to-top-fit.folio-back-to-top-left {
   left: 50%;
-  transform: translateX(
-    calc(-1 * (var(--folio-content-max-width) / 2 + 2 * var(--folio-space-3)))
-  );
+  transform: translateX(calc(-1 * var(--folio-content-max-width) / 2));
 }
 
+/* 숨김: 화면 아래로 미끄러져 내려간다 (레퍼런스 서비스와 동일).
+ * visibility: hidden을 쓰지 않는 이유는 transition이 끊기기 때문. 대신
+ * pointer-events를 끊어 안 보이는 버튼이 클릭을 먹지 않게 한다. */
 .folio-back-to-top-hidden {
+  bottom: -60px;
   opacity: 0;
-  visibility: hidden;
+  pointer-events: none;
 }
 
 /* ── 페이지뷰 카운트 ─────────────────────────────────────── */

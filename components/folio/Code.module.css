@@ -1,9 +1,12 @@
 /**
  * 레퍼런스 서비스 코드 블록 스타일.
  *
- * 레퍼런스 사이트 실측: 컨테이너 배경 #f7f6f3 + radius 3px, 안쪽 패딩 없음.
- * 코드 영역이 34px/16px/32px/32px 패딩을 갖고 배경은 투명하다.
- * 본문 13.6px / line-height 20.4px / 색 rgb(63,68,71).
+ * 레퍼런스 서비스의 CodeBlock CSS를 실측해서 값을 그대로 옮겼다.
+ * - 컨테이너: 배경 #f7f6f3, radius 3px
+ * - 코드: 34px/16px/32px/32px 패딩, 85%(13.6px) 크기, 색 #3f4447, tab-size 2
+ * - 언어 라벨: 좌상단 absolute (top 8px, left 8px), 12px
+ * - 복사 영역: 우상단 absolute (top 3px, right 1px), 11.5px
+ * - 둘 다 평소 opacity 0, 컨테이너 hover에서 1 (라벨 .12s, 복사 .3s)
  */
 
 /* 클래스를 두 번 겹쳐 특이도를 올린다. react-notion-x의 `.notion-code`가
@@ -17,56 +20,51 @@
   overflow: hidden;
 }
 
-/* 언어 라벨과 복사 버튼. 레퍼런스 서비스에는 없어서 쉴 때는 감춰 두고
- * 마우스를 올리거나 키보드 포커스가 왔을 때만 띄운다. */
-/* 레퍼런스 서비스 배치: 언어는 좌측, 복사 버튼은 우측. 코드 첫 줄 위 여백에 얹는다. */
-.header {
+.language {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
-  display: flex;
+  top: 8px;
+  left: 8px;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--folio-space-2);
-  padding: 10px 16px 0 32px;
-  font-size: 14px;
-  color: var(--folio-text-subtle);
+  height: 20px;
+  padding: 0 5px;
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--folio-code-chrome-color);
   opacity: 0;
-  transition: opacity var(--folio-transition-base);
+  transition: opacity 120ms ease-in 0s;
 }
 
-.container:hover .header,
-.header:focus-within {
+.copyButton {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 25px;
+  padding: 0 8px;
+  background: none;
+  border: 0 none;
+  font-family: inherit;
+  font-size: 11.5px;
+  color: var(--folio-code-chrome-color);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 300ms ease-in 0s;
+}
+
+.container:hover .language,
+.container:hover .copyButton,
+.copyButton:focus-visible {
   opacity: 1;
 }
 
-.language {
-  letter-spacing: 0.02em;
-}
-
-/* 레퍼런스 서비스는 테두리 없는 아이콘 + 라벨 */
-.copyButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: 0 none;
-  padding: 0;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--folio-text-subtle);
-  cursor: pointer;
-  transition: color var(--folio-transition-base);
-}
-
-.copyButton:hover {
-  color: var(--folio-text);
-}
-
-/* 컨테이너와 같은 이유로 클래스를 겹친다. prism 테마가 `pre[class*=language-]`로
- * padding과 color를 걸어 두는데 그쪽이 특이도 (0,1,1)이라 1-class로는 진다. */
+/* 클래스를 겹치는 이유는 컨테이너와 같다. prism 테마가
+ * `pre[class*=language-]`로 padding과 color를 걸어 특이도 (0,1,1)이다. */
 .pre.pre {
   margin: 0;
   padding: var(--folio-code-padding);
@@ -75,6 +73,8 @@
   font-size: var(--folio-code-font-size);
   line-height: var(--folio-code-line-height);
   color: var(--folio-code-color);
+  tab-size: 2;
+  white-space: pre;
   overflow-x: auto;
 }
 
