@@ -303,7 +303,10 @@ export function NotionPage({
         mapPageUrl={siteMapPageUrl}
         mapImageUrl={mapImageUrl}
         searchNotion={config.isSearchEnabled ? searchNotion : undefined}
-        pageAside={pageAside}
+        // 목차를 끄면 aside 자체를 넘기지 않는다. 넘기면 내용이 비어도 362px짜리
+        // 컨테이너가 렌더돼 본문을 밀어내고 넓은 화면에서 가로 스크롤을 만든다.
+        // 레퍼런스 서비스에도 aside가 없다.
+        pageAside={showTableOfContents ? pageAside : null}
         footer={footer}
       />
     </>

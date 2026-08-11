@@ -288,9 +288,11 @@ svg.notion-page-icon {
 /* aside(목차)가 있는 페이지에서는 react-notion-x가
  * `.notion-page-content-has-aside .notion-page-content-inner`로 폭을 못박으므로
  * 같은 2-class 셀렉터로 받아야 한다. */
+/* width는 100%로 둬야 한다. 고정 px을 주면 좁은 화면에서 줄어들지 않아
+ * 문서 전체에 가로 스크롤이 생긴다. */
 .notion-page-content-inner,
 .notion-page-content-has-aside .notion-page-content-inner {
-  width: var(--folio-content-max-width);
+  width: 100%;
   max-width: var(--folio-content-max-width);
 }
 
