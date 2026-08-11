@@ -190,6 +190,20 @@
   font-size: 14px;
 }
 
+/* 현재 페이지 크럼도 링크라 나머지와 똑같이 반응해야 한다.
+ * react-notion-x는 .active를 클릭 대상이 아니라고 보고 cursor: default를 주고
+ * hover 배경에서 제외한다(`:not(.active):hover`). 링크로 렌더된 경우에만
+ * 되살린다. 링크가 없는 경우(span)는 원래대로 반응하지 않는다. */
+.notion-header a.breadcrumb.active {
+  cursor: pointer;
+}
+.notion-header a.breadcrumb.active:hover {
+  background: var(--bg-color-0);
+}
+.notion-header a.breadcrumb.active:active {
+  background: var(--bg-color-1);
+}
+
 /* ── 페이지 컨테이너 ────────────────────────────────────── */
 /* 레퍼런스 서비스 실측: 본문 컬럼은 708px 고정. 폭 제한은 --notion-max-width가 하고
  * (folio-tokens.css 참고) 여기서는 거터와 하단 여백만 맡는다. */
