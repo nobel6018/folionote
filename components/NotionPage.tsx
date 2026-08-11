@@ -27,7 +27,6 @@ import { Footer } from './Footer'
 import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
 import { BottomNavigation } from './folio/BottomNavigation'
-import { Callout as FolioCallout } from './folio/Callout'
 import { Code as FolioCode } from './folio/Code'
 import { CtaButton } from './folio/CtaButton'
 import { PageViewCount } from './folio/PageViewCount'
@@ -135,9 +134,12 @@ export function NotionPage({
       // 브라우저 네이티브 lazy를 쓰고, 네이티브는 회선 속도에 맞춰 훨씬 미리 받는다.
       nextImage: Image,
       nextLink: Link,
-      // 레퍼런스 서비스 풍 자체 컴포넌트로 교체 (Code/Callout). 나머지는 react-notion-x default.
+      // 코드 블록만 자체 컴포넌트로 교체. 나머지는 react-notion-x default.
+      //
+      // Callout은 일부러 교체하지 않는다. react-notion-x가 커스텀 Callout에는
+      // children을 넘기지 않아서(기본 경로만 자식을 그린다) 자체 컴포넌트로는
+      // 콜아웃 안의 블록이 통째로 사라진다. 모양은 CSS로 맞춘다.
       Code: FolioCode,
-      Callout: FolioCallout,
       Collection,
       Equation,
       Pdf,

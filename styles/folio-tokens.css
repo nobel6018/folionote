@@ -123,8 +123,40 @@
   --folio-code-line-height: 20.4px;
   --folio-code-padding: 34px 16px 32px 32px;
 
-  /* Notion 파랑 배경. 레퍼런스 서비스는 Notion 기본값(221,235,241)보다 옅게 쓴다 */
+  /* ── Notion 색상 팔레트 (레퍼런스 서비스 실측) ──────────────────────
+   * react-notion-x가 들고 있는 값이 Notion 현재 팔레트보다 낡아서 배경 7종과
+   * 글자색 2종이 어긋났다. 비교용 페이지를 만들어 레퍼런스 사이트와 나란히 재서
+   * 맞춘 값이다. 노랑 배경과 나머지 글자색은 원래 일치했다.
+   *
+   * 다크 모드는 레퍼런스 사이트가 라이트 전용이라 비교할 수 없어 손대지 않았다. */
+  --notion-gray_background: rgb(241, 241, 239);
+  --notion-brown_background: rgb(244, 238, 238);
+  --notion-orange_background: rgb(251, 236, 221);
+  /* Notion의 green을 react-notion-x는 teal로 부른다 */
+  --notion-teal_background: rgb(237, 243, 236);
   --notion-blue_background: rgb(231, 243, 248);
+  --notion-purple_background: rgb(244, 240, 247);
+  --notion-pink_background: rgb(249, 238, 243);
+  --notion-red_background: rgb(253, 235, 236);
+
+  --notion-gray: rgb(120, 119, 116);
+  --notion-teal: rgb(15, 123, 108);
+
+  /* 블록 색상(콜아웃 등)에 쓰이는 `_co` 변형. react-notion-x는 배경을 0.3 알파로
+   * 옅게 깔지만 레퍼런스 서비스는 인라인 배경과 같은 진하기로 채운다. */
+  --notion-gray_background_co: var(--notion-gray_background);
+  --notion-brown_background_co: var(--notion-brown_background);
+  --notion-orange_background_co: var(--notion-orange_background);
+  --notion-yellow_background_co: var(--notion-yellow_background);
+  --notion-teal_background_co: var(--notion-teal_background);
+  --notion-blue_background_co: var(--notion-blue_background);
+  --notion-purple_background_co: var(--notion-purple_background);
+  --notion-pink_background_co: var(--notion-pink_background);
+  --notion-red_background_co: var(--notion-red_background);
+
+  /* 표 (레퍼런스 서비스 실측) */
+  --folio-table-border: rgb(233, 233, 231);
+  --folio-table-header-bg: #f7f6f3;
 
   /* ── Shadow (레퍼런스 서비스는 거의 flat — 1단계만) ──────────────────────── */
   --folio-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
