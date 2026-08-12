@@ -1,4 +1,4 @@
-import { type GetStaticProps } from 'next'
+import { type GetServerSideProps } from 'next'
 import Head from 'next/head'
 import * as React from 'react'
 
@@ -13,6 +13,9 @@ import {
   TextInput,
   Toggle
 } from '@/components/admin/AdminFields'
+import { isDeployedAdminEnabled } from '@/lib/admin/env'
+import { repoSlug, targetBranch } from '@/lib/admin/github'
+import { getSession } from '@/lib/admin/request'
 import { isDev } from '@/lib/config'
 import { FONT_REGISTRY } from '@/lib/fonts'
 import { type NavigationLink, type SiteConfig } from '@/lib/site-config'
@@ -30,12 +33,27 @@ import { type NavigationLink, type SiteConfig } from '@/lib/site-config'
  * @see pages/api/admin/config.ts
  * @see lib/serialize-site-config.ts
  */
-export const getStaticProps: GetStaticProps = async () => {
-  if (!isDev) {
+export const getServerSideProps: GetServerSideProps<AdminPageProps> = async ({
+  req,
+  query
+}) => {
+  // 로컬 개발이 아니고 배포 어드민도 꺼져 있으면 페이지 자체가 없는 것으로 둔다.
+  if (!isDev && !isDeployedAdminEnabled) {
     return { notFound: true }
   }
 
-  return { props: {} }
+  const session = getSession(req)
+
+  return {
+    props: {
+      mode: isDev ? 'local' : 'deployed',
+      login: session?.login ?? null,
+      avatarUrl: session?.avatarUrl ?? null,
+      repo: isDev ? null : (repoSlug ?? null),
+      branch: isDev ? null : targetBranch,
+      error: typeof query.error === 'string' ? query.error : null
+    }
+  }
 }
 
 const FONT_OPTIONS = [
@@ -57,13 +75,23 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]['key']
 
+type AdminPageProps = {
+  /** local: dev 서버에서 파일을 직접 쓴다. deployed: GitHub에 커밋한다 */
+  mode: 'local' | 'deployed'
+  login: string | null
+  avatarUrl: string | null
+  repo: string | null
+  branch: string | null
+  error: string | null
+}
+
 type SaveState =
   | { kind: 'idle' }
   | { kind: 'saving' }
-  | { kind: 'saved' }
+  | { kind: 'saved'; commitUrl?: string }
   | { kind: 'error'; message: string }
 
-export default function AdminPage() {
+export default function AdminPage(props: AdminPageProps) {
   const [config, setConfig] = React.useState<SiteConfig | null>(null)
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' })
   const [previewKey, setPreviewKey] = React.useState(0)
@@ -71,7 +99,11 @@ export default function AdminPage() {
   const [tab, setTab] = React.useState<TabKey>('basic')
   const [source, setSource] = React.useState('')
 
+  const needsLogin = props.mode === 'deployed' && !props.login
+
   React.useEffect(() => {
+    if (needsLogin) return
+
     const load = async () => {
       try {
         const res = await fetch('/api/admin/config')
@@ -127,7 +159,11 @@ export default function AdminPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(config)
       })
-      const data = (await res.json()) as { source?: string; error?: string }
+      const data = (await res.json()) as {
+        source?: string
+        error?: string
+        commitUrl?: string
+      }
 
       if (!res.ok) {
         setSaveState({ kind: 'error', message: data?.error || '저장 실패' })
@@ -135,13 +171,18 @@ export default function AdminPage() {
       }
 
       setSource(data.source || '')
-      setSaveState({ kind: 'saved' })
-      // dev 서버가 새 설정으로 다시 컴파일할 시간을 준 뒤 미리보기를 새로고침
-      setTimeout(() => setPreviewKey((key) => key + 1), 1200)
+      setSaveState({ kind: 'saved', commitUrl: data.commitUrl })
+
+      // 배포 모드에서는 재빌드가 끝나야 반영되므로 미리보기를 새로고침해도
+      // 예전 화면이 나온다. 로컬에서만 새로고침한다.
+      if (props.mode === 'local') {
+        // dev 서버가 새 설정으로 다시 컴파일할 시간을 준 뒤 미리보기를 새로고침
+        setTimeout(() => setPreviewKey((key) => key + 1), 1200)
+      }
     } catch (err: any) {
       setSaveState({ kind: 'error', message: err?.message || '저장 실패' })
     }
-  }, [config])
+  }, [config, props.mode])
 
   const onCopy = React.useCallback(async () => {
     if (!config) return
@@ -158,6 +199,34 @@ export default function AdminPage() {
       setSaveState({ kind: 'error', message: '클립보드 복사 실패' })
     }
   }, [config])
+
+  if (needsLogin) {
+    return (
+      <>
+        <Head>
+          <title>로그인 | folionote</title>
+          <meta name='robots' content='noindex, nofollow' />
+        </Head>
+        <div className={styles.login}>
+          <div className={styles.loginCard}>
+            <h1 className={styles.loginTitle}>사이트 설정</h1>
+            <p className={styles.loginText}>
+              <code>{props.repo}</code> 리포에 푸시 권한이 있는 GitHub 계정으로
+              로그인하세요. 저장하면 <code>{props.branch}</code> 브랜치에
+              커밋됩니다.
+            </p>
+            {props.error && <p className={styles.loginError}>{props.error}</p>}
+            <a
+              className={`${styles.button} ${styles.buttonPrimary} ${styles.loginButton}`}
+              href='/api/admin/auth/login'
+            >
+              GitHub으로 로그인
+            </a>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   if (!config) {
     return (
@@ -190,7 +259,17 @@ export default function AdminPage() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <h1 className={styles.panelTitle}>사이트 설정</h1>
+            {props.mode === 'deployed' && (
+              <span className={styles.badge} title={`${props.repo} · ${props.branch}`}>
+                {props.branch}
+              </span>
+            )}
             <span className={styles.spacer} />
+            {props.login && (
+              <a className={styles.who} href='/api/admin/auth/logout'>
+                {props.login} · 로그아웃
+              </a>
+            )}
             <button
               type='button'
               className={styles.button}
@@ -223,9 +302,20 @@ export default function AdminPage() {
 
           <div className={styles.panelBody}>
             <p className={styles.notice}>
-              이 화면은 개발 서버에서만 열립니다. 저장하면{' '}
-              <code>site.config.ts</code>가 다시 쓰이고 dev 서버가 자동으로 다시
-              컴파일합니다. 배포하려면 직접 커밋·푸시하세요.
+              {props.mode === 'local' ? (
+                <>
+                  로컬 개발 서버입니다. 저장하면 <code>site.config.ts</code>가
+                  다시 쓰이고 dev 서버가 자동으로 컴파일합니다. 배포하려면 직접
+                  커밋·푸시하세요.
+                </>
+              ) : (
+                <>
+                  저장하면 <code>{props.repo}</code>의{' '}
+                  <code>{props.branch}</code> 브랜치에 <code>site.config.ts</code>
+                  가 커밋됩니다. 재배포가 끝나야 사이트에 반영되므로 오른쪽
+                  미리보기는 잠시 이전 상태로 남아 있습니다.
+                </>
+              )}
             </p>
 
             {showSource ? (
@@ -609,8 +699,24 @@ export default function AdminPage() {
                   : styles.status
               }
             >
-              {saveState.kind === 'saving' && '저장 중…'}
-              {saveState.kind === 'saved' && 'site.config.ts에 저장했습니다'}
+              {saveState.kind === 'saving' &&
+                (props.mode === 'local' ? '저장 중…' : '커밋 중…')}
+              {saveState.kind === 'saved' &&
+                (saveState.commitUrl ? (
+                  <>
+                    커밋했습니다. 재빌드가 끝나면 반영됩니다.{' '}
+                    <a
+                      className={styles.link}
+                      href={saveState.commitUrl}
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      커밋 보기
+                    </a>
+                  </>
+                ) : (
+                  'site.config.ts에 저장했습니다'
+                ))}
               {saveState.kind === 'error' && saveState.message}
             </span>
 
