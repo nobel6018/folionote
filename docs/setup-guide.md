@@ -1,0 +1,279 @@
+# 셋업 가이드 (README에 옮길 초안)
+
+Notion 페이지를 웹사이트로 띄우기까지 필요한 전부를 담습니다. 나중에 README.md로
+옮길 내용을 여기 먼저 쌓아둡니다. README는 짧아야 하므로, 여기서 정리한 뒤
+핵심만 추리고 나머지는 이 문서로 링크할 계획입니다.
+
+셋업 경로는 두 갈래로 갑니다.
+
+- **자동**: AI 에이전트에게 프롬프트를 주면 대부분을 대신 합니다 ([1번](#1-ai-자동-셋업))
+- **수동**: 직접 클릭하고 붙여넣습니다 ([2번](#2-수동-셋업))
+
+사람이 반드시 브라우저에서 해야 하는 일은 셋뿐입니다. 나머지는 전부 자동화됩니다.
+그 셋은 [사람만 할 수 있는 일](#사람만-할-수-있는-일)에 모아뒀습니다.
+
+---
+
+## 완성 상태
+
+셋업이 끝나면 이렇게 됩니다.
+
+| 항목 | 결과 |
+|---|---|
+| 사이트 | Notion 내용이 그대로 웹사이트로 발행됨 |
+| 도메인 | 본인 도메인으로 접속 (Cloudflare에서 구입) |
+| 설정 변경 | 배포된 `/admin`에서 GitHub 로그인 후 수정 |
+| 글 수정 | Notion에서 고치면 최대 10분 안에 반영 (ISR) |
+
+---
+
+## 사람만 할 수 있는 일
+
+AI든 스크립트든 대신 못 하는 일입니다. API가 없어서 브라우저에서만 됩니다.
+
+1. **Notion 페이지 공유 켜기** — Notion API에 "공유 켜기" 엔드포인트가 없습니다
+2. **GitHub OAuth 앱 등록** — GitHub REST API에 OAuth App 생성 엔드포인트가 없습니다
+   (GitHub App은 매니페스트 플로우가 있지만 그것도 브라우저 왕복이 필요합니다)
+3. **도메인 구입 결제** — 결제는 사람이 합니다
+
+나머지(리포 포크, 환경변수 등록, 배포, DNS 레코드 추가)는 전부 CLI나 API로 됩니다.
+
+---
+
+## 1. AI 자동 셋업
+
+에이전트(Claude Code 등)에게 아래 프롬프트를 통째로 주면 됩니다. 사람이 개입할
+지점에서 에이전트가 멈추고 무엇을 해야 하는지 알려줍니다.
+
+> **README에 넣을 때**: 아래 블록을 복사 버튼이 있는 코드 펜스로 감쌉니다.
+> 사용자가 통째로 복사해 붙여넣는 게 핵심입니다.
+
+````markdown
+folionote로 내 Notion 페이지를 웹사이트로 만들어줘. 아래 순서로 진행해줘.
+
+내 정보:
+- Notion 페이지 URL: <여기에 붙여넣기>
+- 사이트 이름: <예: 이도(李裪)>
+- 내 이름: <예: 이영훈>
+- 쓸 도메인: <예: leedo.me / 아직 없으면 "없음">
+
+진행 순서:
+
+1. 사전 확인
+   - gh CLI 로그인 상태(`gh auth status`)와 vercel CLI 로그인 상태(`vercel whoami`)를
+     확인해줘. 안 돼 있으면 어떤 명령을 실행해야 하는지 알려줘.
+
+2. 리포 준비
+   - nobel6018/folionote를 내 계정으로 fork하고 클론해줘.
+   - Notion 페이지 URL에서 32자 페이지 ID를 뽑아 site.config.ts의
+     rootNotionPageId, name, author, domain을 채워줘.
+
+3. Notion 공유 (사람이 할 일)
+   - 여기서 멈추고, 내가 Notion에서 해당 페이지를 "웹에 게시"해야 한다고 알려줘.
+   - 내가 완료했다고 하면, 페이지가 실제로 공개됐는지 확인하고 다음으로 넘어가.
+
+4. 배포
+   - vercel link로 프로젝트를 연결하고 배포해줘.
+   - 배포된 URL로 접속해서 사이트가 뜨는지 확인해줘. 안 뜨면 원인을 찾아 고쳐줘.
+
+5. 도메인 (도메인이 있는 경우)
+   - Cloudflare에 도메인이 있으면 wrangler나 Cloudflare API로 DNS 레코드를 만들고,
+     vercel domains add로 연결해줘. API 토큰이 필요하면 어떤 권한으로 만들어야
+     하는지 알려줘.
+
+6. 어드민 (배포된 사이트에서 설정을 고치고 싶은 경우)
+   - GitHub OAuth 앱 생성은 API가 없으니, 값이 채워진 등록 링크를 만들어서 열어줘.
+   - 내가 Client ID와 secret을 주면 ADMIN_SESSION_SECRET을 생성하고,
+     vercel env add로 셋을 등록한 뒤 재배포해줘.
+   - 마지막으로 /admin에 접속해 로그인 화면이 뜨는지, 미인증 상태에서
+     /api/admin/config가 404인지 확인해줘.
+
+각 단계가 끝날 때마다 실제로 동작하는지 확인하고 결과를 알려줘.
+추측하지 말고 확인한 것만 보고해줘.
+````
+
+### 자동 셋업에서 에이전트가 실제로 하는 일
+
+README에는 안 넣어도 되지만, 무엇이 자동화되는지 남겨둡니다.
+
+| 단계 | 명령 |
+|---|---|
+| 포크 | `gh repo fork nobel6018/folionote --clone` |
+| 페이지 ID 추출 | URL 끝의 32자 hex |
+| 프로젝트 연결 | `vercel link` |
+| 배포 | `vercel --prod` 또는 git push |
+| 도메인 연결 | `vercel domains add <도메인>` |
+| DNS | Cloudflare API `POST /zones/{id}/dns_records` |
+| 환경변수 | `vercel env add <이름> production` |
+| 세션 비밀 생성 | `openssl rand -base64 32` |
+
+---
+
+## 2. 수동 셋업
+
+### 2-1. Notion 준비
+
+발행할 페이지를 열고 우측 상단 공유에서 **웹에 게시**를 켭니다. 켜지 않으면
+사이트가 뜨지 않습니다. 비공식 API로 읽기 때문에 공개 상태여야 합니다.
+
+주소창의 URL 끝에 붙은 32자 문자열이 페이지 ID입니다.
+
+```
+https://www.notion.so/이도-99b5bedd671d454ab450b0c485b800a8
+                          └────────── 이 부분 ──────────┘
+```
+
+### 2-2. 리포 포크
+
+<https://github.com/nobel6018/folionote> 에서 Fork를 누르고 클론합니다.
+
+```bash
+git clone https://github.com/<내계정>/folionote.git
+cd folionote
+pnpm install
+```
+
+### 2-3. site.config.ts 채우기
+
+최소 넷만 채우면 뜹니다.
+
+```ts
+export default siteConfig({
+  rootNotionPageId: '99b5bedd671d454ab450b0c485b800a8',
+  name: '이도(李裪)',
+  domain: 'leedo.me',
+  author: '이영훈',
+  // 나머지는 기본값으로 두고 나중에 /admin에서 고쳐도 됩니다
+})
+```
+
+로컬에서 확인합니다.
+
+```bash
+pnpm dev        # http://localhost:3000
+```
+
+설정을 화면에서 고치고 싶으면 <http://localhost:3000/admin> 을 엽니다. 로컬
+어드민은 인증 없이 열리고 저장하면 `site.config.ts`를 바로 고칩니다.
+
+### 2-4. 배포
+
+Vercel과 Cloudflare Workers 중 고릅니다.
+
+#### Vercel
+
+<https://vercel.com/new> 에서 포크한 리포를 import하면 끝입니다. 설정을 건드릴 게
+없습니다. 이후 main에 푸시할 때마다 자동 배포됩니다.
+
+#### Cloudflare Workers
+
+Cloudflare에서 도메인을 살 거라면 배포도 같은 곳에서 하는 편이 DNS 설정이
+줄어듭니다. Next.js를 Workers에 올리려면 어댑터가 필요합니다.
+
+```bash
+pnpm add -D @opennextjs/cloudflare wrangler
+npx opennextjs-cloudflare build
+npx wrangler deploy
+```
+
+> **확인 필요**: 이 프로젝트는 현재 Vercel에서만 검증했습니다. Cloudflare 경로는
+> ISR(`revalidate`)과 `/api/social-image`의 이미지 생성이 Workers 런타임에서
+> 그대로 도는지 확인이 필요합니다. 실제로 배포해본 뒤 이 문단을 확정하세요.
+
+### 2-5. 도메인 붙이기 (Cloudflare)
+
+**구입** — <https://dash.cloudflare.com> 에서 Domain Registration → Register
+Domains. Cloudflare는 도매가로 팔고 마크업이 없어서 갱신 요금이 튀지 않습니다.
+등록하면 네임서버가 자동으로 Cloudflare로 잡힙니다.
+
+**Vercel에 연결하는 경우** — Vercel 프로젝트의 Settings → Domains에 도메인을
+넣으면 필요한 레코드를 알려줍니다. 그 값을 Cloudflare DNS에 넣습니다.
+
+| 타입 | 이름 | 값 | 프록시 |
+|---|---|---|---|
+| A | `@` | `76.76.21.21` | 끔 (DNS only) |
+| CNAME | `www` | `cname.vercel-dns.com` | 끔 (DNS only) |
+
+프록시(주황 구름)를 반드시 꺼야 합니다. 켜두면 Cloudflare와 Vercel이 각각 SSL을
+처리하려 들어 리다이렉트 루프가 납니다.
+
+**Cloudflare Workers에 배포한 경우** — `wrangler.toml`에 라우트를 적으면 DNS가
+자동으로 잡힙니다.
+
+```toml
+routes = [{ pattern = "leedo.me/*", zone_name = "leedo.me" }]
+```
+
+### 2-6. 배포된 사이트에서 설정 고치기 (선택)
+
+여기까지만 해도 사이트는 돌아갑니다. 설정을 바꾸려면 `site.config.ts`를 고쳐서
+푸시하면 됩니다. 배포된 사이트에서 화면으로 고치고 싶을 때만 아래를 합니다.
+
+기본값은 꺼짐입니다. 환경변수를 넣지 않으면 `/admin`은 404입니다.
+
+**GitHub OAuth 앱 등록** — <https://github.com/settings/applications/new> 에서
+만듭니다.
+
+| 항목 | 값 |
+|---|---|
+| Application name | 아무거나 (예: `folionote admin`) |
+| Homepage URL | `https://내도메인` |
+| Authorization callback URL | `https://내도메인/api/admin/auth/callback` |
+
+콜백 URL이 한 글자라도 다르면 로그인이 거부됩니다. Client secret은 생성 직후에만
+보이고 화면을 벗어나면 다시 못 봅니다.
+
+**환경변수 등록** — 호스팅의 환경변수 설정에 셋을 넣고 재배포합니다. 환경변수는
+빌드 시점에 잡히므로 재배포해야 켜집니다.
+
+| 변수 | 값 |
+|---|---|
+| `GITHUB_OAUTH_CLIENT_ID` | 앱 등록하면 나옴 |
+| `GITHUB_OAUTH_CLIENT_SECRET` | Generate a new client secret |
+| `ADMIN_SESSION_SECRET` | `openssl rand -base64 32` |
+
+Vercel에서는 리포와 브랜치가 자동으로 잡힙니다. 다른 호스트에서는 `GITHUB_REPO`에
+`owner/repo`를 직접 줍니다.
+
+자세한 동작과 보안 설계는 [admin-deploy.md](./admin-deploy.md)에 있습니다.
+
+---
+
+## 자주 막히는 곳
+
+README의 트러블슈팅 절로 옮길 내용입니다.
+
+**사이트가 404나 500** — Notion 페이지가 공개 상태인지 먼저 봅니다. 비공식 API로
+읽기 때문에 비공개면 못 읽습니다.
+
+**글은 뜨는데 이미지가 안 뜸** — Notion 이미지 URL은 서명이 붙어 만료됩니다.
+재배포하거나 ISR 재생성을 기다리면 새 URL을 받습니다.
+
+**도메인 연결 후 리다이렉트 루프** — Cloudflare 프록시(주황 구름)를 끕니다.
+
+**Notion에서 고쳤는데 사이트에 그대로** — ISR 주기가 10분입니다. 급하면
+재배포합니다.
+
+**`/admin`이 404** — 환경변수 셋이 다 있는지, 넣은 뒤 재배포했는지 봅니다.
+셋 중 하나라도 없으면 의도적으로 꺼집니다.
+
+**로그인 후 "푸시 권한이 있는 계정만"** — 포크한 본인 리포가 아니라 원본 리포를
+가리키고 있을 수 있습니다. `GITHUB_REPO`를 확인합니다.
+
+---
+
+## README 구성안
+
+이 문서를 README로 옮길 때의 뼈대입니다.
+
+1. 한 줄 소개 + 데모 링크 + 스크린샷
+2. 이 프로젝트가 하는 일 (Notion을 웹사이트로, 레퍼런스 서비스 대체)
+3. **5분 셋업** — AI 프롬프트 블록 하나
+4. **수동 셋업** — 접기(`<details>`)로 감싸서 길이를 숨김
+5. 기능 목록 (표)
+6. 설정 레퍼런스는 링크로 (`docs/`)
+7. 트러블슈팅 5개
+8. 라이선스, 크레딧 (react-notion-x, 레퍼런스 서비스)
+
+README는 3번에서 끝나야 합니다. 대부분의 사람은 프롬프트만 복사해서 붙여넣고
+끝내야 하고, 나머지는 필요할 때 펼쳐 보는 구조가 좋습니다.
