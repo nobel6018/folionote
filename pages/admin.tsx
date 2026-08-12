@@ -20,6 +20,7 @@ import { repoSlug, targetBranch } from '@/lib/admin/github'
 import { getSession } from '@/lib/admin/request'
 import { isDev } from '@/lib/config'
 import { FONT_REGISTRY } from '@/lib/fonts'
+import { serializeSiteConfig } from '@/lib/serialize-site-config'
 import { type NavigationLink, type SiteConfig } from '@/lib/site-config'
 
 /**
@@ -153,15 +154,59 @@ type SaveState =
   | { kind: 'idle' }
   | { kind: 'saving' }
   | { kind: 'saved'; commitUrl?: string }
+  | { kind: 'copied' }
   | { kind: 'error'; message: string }
 
 export default function AdminPage(props: AdminPageProps) {
   const [config, setConfig] = React.useState<SiteConfig | null>(null)
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' })
   const [previewKey, setPreviewKey] = React.useState(0)
+  const previewRef = React.useRef<HTMLIFrameElement>(null)
+  const [previewPage, setPreviewPage] = React.useState<{
+    path: string
+    pageId: string | null
+  } | null>(null)
   const [showSource, setShowSource] = React.useState(false)
+  // pretty URL 편집용 줄. null이면 아직 config에서 처음 읽지 않은 상태다
+  const [prettyRows, setPrettyRows] = React.useState<Array<
+    [string, string]
+  > | null>(null)
   const [tab, setTab] = React.useState<TabKey>('basic')
-  const [source, setSource] = React.useState('')
+  // 코드 보기는 저장 응답을 기다리지 않는다. 직렬화기가 순수 함수라 브라우저에서
+  // 그대로 돌 수 있으므로 지금 편집 중인 값으로 즉시 만들어 보여준다. 저장 전에
+  // 무엇이 커밋될지 확인하는 게 이 화면의 목적인데, 저장해야 보이면 순서가 뒤바뀐다.
+  const source = React.useMemo(
+    () => (config ? serializeSiteConfig(config) : ''),
+    [config]
+  )
+
+  /**
+   * 미리보기 iframe이 지금 보고 있는 경로와 Notion 페이지 ID를 읽는다.
+   *
+   * iframe이 같은 오리진(`/`)이라 contentWindow.location을 읽을 수 있다.
+   * 사용자가 미리보기 안에서 글을 클릭해 들어가도 그 페이지 ID를 알 수 있어서,
+   * pretty URL을 만들 때 ID를 어디서 찾아야 하나 헤매지 않는다.
+   */
+  const readPreview = React.useCallback(() => {
+    try {
+      const path = previewRef.current?.contentWindow?.location.pathname
+      if (!path) return
+      // 경로 끝에 붙은 32자 hex가 Notion 블록 ID다. pretty URL로 열린 페이지에는
+      // ID가 없으므로 null이 된다.
+      const match = /([0-9a-f]{32})\/?$/i.exec(path)
+      setPreviewPage({ path, pageId: match?.[1] ?? null })
+    } catch {
+      // 크로스 오리진이 되면(외부 링크로 이동) 읽을 수 없다. 그냥 비운다.
+      setPreviewPage(null)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    // iframe 내부 이동은 부모에 이벤트를 주지 않는다. 짧게 폴링하는 편이
+    // MutationObserver나 postMessage 주입보다 단순하고 확실하다.
+    const timer = setInterval(readPreview, 1000)
+    return () => clearInterval(timer)
+  }, [readPreview])
 
   const needsLogin = props.mode === 'deployed' && !props.login
 
@@ -231,7 +276,6 @@ export default function AdminPage(props: AdminPageProps) {
         body: JSON.stringify(config)
       })
       const data = (await res.json()) as {
-        source?: string
         error?: string
         commitUrl?: string
       }
@@ -241,7 +285,6 @@ export default function AdminPage(props: AdminPageProps) {
         return
       }
 
-      setSource(data.source || '')
       setSaveState({ kind: 'saved', commitUrl: data.commitUrl })
 
       // 배포 모드에서는 재빌드가 끝나야 반영되므로 미리보기를 새로고침해도
@@ -256,20 +299,17 @@ export default function AdminPage(props: AdminPageProps) {
   }, [config, props.mode])
 
   const onCopy = React.useCallback(async () => {
-    if (!config) return
+    if (!source) return
     try {
-      const res = await fetch('/api/admin/config', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(config)
-      })
-      const data = (await res.json()) as { source?: string }
-      await navigator.clipboard.writeText(data.source || '')
-      setSaveState({ kind: 'saved' })
+      // 서버에 물어보지 않는다. 예전에는 저장 API를 POST해서 응답의 source를
+      // 복사했는데, 배포 모드에서는 그 POST가 곧 커밋이라 "복사"가 커밋을
+      // 만들어버렸다. 직렬화는 브라우저에서 이미 해뒀다.
+      await navigator.clipboard.writeText(source)
+      setSaveState({ kind: 'copied' })
     } catch {
       setSaveState({ kind: 'error', message: '클립보드 복사 실패' })
     }
-  }, [config])
+  }, [source])
 
   if (needsLogin) {
     return (
@@ -319,16 +359,16 @@ export default function AdminPage(props: AdminPageProps) {
   const pageView = config.pageViewCount || {}
   const navLinks: NavigationLink[] = config.navigationLinks || []
 
-  // pageUrlOverrides는 { '/devs': 'pageId' } 맵이다. 순서를 유지하며 편집하려면
-  // 배열로 풀어야 한다. 저장할 때 다시 맵으로 접는다.
-  const prettyUrls: Array<[string, string]> = Object.entries(
-    config.pageUrlOverrides || {}
-  )
+  // pageUrlOverrides는 { '/devs': 'pageId' } 맵이다. 편집 중인 줄을 config에서
+  // 매번 다시 유도하면 안 된다. 빈 경로는 맵에 담을 수 없어서(키가 없으니)
+  // 새로 추가한 줄이 그 즉시 사라진다. 실제로 "+ 경로 추가"가 아무 일도 하지
+  // 않았다. 그래서 편집용 배열을 따로 들고, config에는 완성된 줄만 접어 넣는다.
+  const prettyUrls = prettyRows ?? Object.entries(config.pageUrlOverrides || {})
   const setPrettyUrls = (rows: Array<[string, string]>) => {
+    setPrettyRows(rows)
     const next: Record<string, string> = {}
     for (const [urlPath, pageId] of rows) {
-      // 키가 비면 맵에 담을 수 없다. 편집 중인 빈 줄은 저장 시 버린다.
-      if (urlPath.trim()) next[urlPath.trim()] = pageId.trim()
+      if (urlPath.trim() && pageId.trim()) next[urlPath.trim()] = pageId.trim()
     }
     set('pageUrlOverrides', Object.keys(next).length ? next : undefined)
   }
@@ -404,9 +444,7 @@ export default function AdminPage(props: AdminPageProps) {
             </p>
 
             {showSource ? (
-              <pre className={styles.code}>
-                {source || '저장을 누르면 생성된 코드가 여기 표시됩니다.'}
-              </pre>
+              <pre className={styles.code}>{source}</pre>
             ) : (
               <ActiveTabContext.Provider value={tab}>
                 <Section title='기본 정보' tab='basic'>
@@ -620,6 +658,10 @@ export default function AdminPage(props: AdminPageProps) {
                     <code>/devs</code>에 컬렉션 페이지 ID를 매핑하면 그 주소로
                     열립니다. 상단 메뉴 링크를 <code>/devs</code>로 걸 때도 같은
                     매핑이 있어야 합니다.
+                    <br />
+                    ID는 오른쪽 미리보기에서 원하는 페이지로 이동하면 상단에
+                    표시됩니다. <b>+ 미리보기 페이지</b>를 누르면 그 ID로 줄이
+                    추가됩니다.
                   </Note>
                   {prettyUrls.map(([urlPath, pageId], index) => (
                     <div key={index} className={styles.navLinkRow}>
@@ -661,12 +703,28 @@ export default function AdminPage(props: AdminPageProps) {
                     <button
                       type='button'
                       className={styles.button}
-                      onClick={() =>
-                        setPrettyUrls([...prettyUrls, ['', '']])
-                      }
+                      onClick={() => setPrettyUrls([...prettyUrls, ['', '']])}
                     >
                       + 경로 추가
                     </button>
+                    {previewPage?.pageId &&
+                      !prettyUrls.some(
+                        ([, id]) => id === previewPage.pageId
+                      ) && (
+                        <button
+                          type='button'
+                          className={styles.button}
+                          title={`미리보기에서 열려 있는 페이지 (${previewPage.pageId})`}
+                          onClick={() =>
+                            setPrettyUrls([
+                              ...prettyUrls,
+                              ['', previewPage.pageId!]
+                            ])
+                          }
+                        >
+                          + 미리보기 페이지
+                        </button>
+                      )}
                   </div>
                 </Section>
 
@@ -850,6 +908,7 @@ export default function AdminPage(props: AdminPageProps) {
                   : styles.status
               }
             >
+              {saveState.kind === 'copied' && '클립보드에 복사했습니다'}
               {saveState.kind === 'saving' &&
                 (props.mode === 'local' ? '저장 중…' : '커밋 중…')}
               {saveState.kind === 'saved' &&
@@ -900,9 +959,25 @@ export default function AdminPage(props: AdminPageProps) {
               새로고침
             </button>
             <span>저장 후 자동으로 새로고침됩니다.</span>
+            <span className={styles.spacer} />
+            {previewPage?.pageId && (
+              <button
+                type='button'
+                className={styles.pageIdChip}
+                title='클릭하면 페이지 ID를 복사합니다'
+                onClick={() => {
+                  void navigator.clipboard.writeText(previewPage.pageId!)
+                  setSaveState({ kind: 'copied' })
+                }}
+              >
+                {previewPage.pageId}
+              </button>
+            )}
           </div>
           <iframe
             key={previewKey}
+            ref={previewRef}
+            onLoad={readPreview}
             className={styles.previewFrame}
             src='/'
             title='사이트 미리보기'

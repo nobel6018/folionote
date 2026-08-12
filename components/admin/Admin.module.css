@@ -698,3 +698,69 @@ select.input:hover {
   font-size: 11px;
   color: var(--fg-3);
 }
+
+/* ── 색 스와치 프리셋 ───────────────────────────────── */
+
+.swatches {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.swatch:hover {
+  transform: scale(1.12);
+}
+
+/* 선택된 스와치는 바깥에 링을 둘러 표시한다. 테두리 색만 바꾸면
+ * 어두운 색 위에서 구분이 안 된다. */
+.swatchOn {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 3.5px var(--accent);
+}
+
+.hexInput {
+  flex: 1 1 62px;
+  min-width: 56px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 미리보기 페이지 ID 칩 ──────────────────────────── */
+
+.pageIdChip {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--sep);
+  border-radius: 6px;
+  background: var(--card);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--fg-2);
+  cursor: pointer;
+}
+
+.pageIdChip:hover {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+/* 버튼 두 개가 나란히 놓이는 추가 줄 */
+.addRow {
+  display: flex;
+  gap: 7px;
+  padding: 8px 13px;
+}
