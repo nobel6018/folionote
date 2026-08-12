@@ -4,8 +4,10 @@ import * as React from 'react'
 
 import styles from '@/components/admin/Admin.module.css'
 import {
+  ActiveTabContext,
   ColorInput,
   Field,
+  Note,
   Section,
   Select,
   TextInput,
@@ -44,6 +46,17 @@ const FONT_OPTIONS = [
   }))
 ]
 
+/** 상단 세그먼티드 탭. 섹션 10개를 5묶음으로 나눈다 */
+const TABS = [
+  { key: 'basic', label: '기본' },
+  { key: 'look', label: '모양' },
+  { key: 'header', label: '헤더' },
+  { key: 'widget', label: '위젯' },
+  { key: 'etc', label: '기타' }
+] as const
+
+type TabKey = (typeof TABS)[number]['key']
+
 type SaveState =
   | { kind: 'idle' }
   | { kind: 'saving' }
@@ -55,6 +68,7 @@ export default function AdminPage() {
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' })
   const [previewKey, setPreviewKey] = React.useState(0)
   const [showSource, setShowSource] = React.useState(false)
+  const [tab, setTab] = React.useState<TabKey>('basic')
   const [source, setSource] = React.useState('')
 
   React.useEffect(() => {
@@ -176,6 +190,7 @@ export default function AdminPage() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <h1 className={styles.panelTitle}>사이트 설정</h1>
+            <span className={styles.spacer} />
             <button
               type='button'
               className={styles.button}
@@ -184,6 +199,27 @@ export default function AdminPage() {
               {showSource ? '폼으로' : '코드 보기'}
             </button>
           </div>
+
+          {!showSource && (
+            <div className={styles.seg} role='tablist'>
+              {TABS.map((t) => (
+                <button
+                  key={t.key}
+                  type='button'
+                  role='tab'
+                  aria-selected={tab === t.key}
+                  className={
+                    tab === t.key
+                      ? `${styles.segItem} ${styles.segItemOn}`
+                      : styles.segItem
+                  }
+                  onClick={() => setTab(t.key)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className={styles.panelBody}>
             <p className={styles.notice}>
@@ -197,8 +233,8 @@ export default function AdminPage() {
                 {source || '저장을 누르면 생성된 코드가 여기 표시됩니다.'}
               </pre>
             ) : (
-              <>
-                <Section title='기본 정보'>
+              <ActiveTabContext.Provider value={tab}>
+                <Section title='기본 정보' tab='basic'>
                   <Field label='사이트 이름'>
                     <TextInput
                       value={config.name}
@@ -237,7 +273,7 @@ export default function AdminPage() {
                   </Field>
                 </Section>
 
-                <Section title='색상 테마'>
+                <Section title='색상 테마' tab='look'>
                   <Field label='모드'>
                     <Select
                       value={colorTheme.mode || 'system'}
@@ -275,7 +311,7 @@ export default function AdminPage() {
                   )}
                 </Section>
 
-                <Section title='폰트'>
+                <Section title='폰트' tab='look'>
                   <Field label='한국어'>
                     <Select
                       value={typeof font.ko === 'string' ? font.ko : ''}
@@ -299,7 +335,7 @@ export default function AdminPage() {
                   </Field>
                 </Section>
 
-                <Section title='헤더'>
+                <Section title='헤더' tab='header'>
                   <Field label='로고 이미지 (라이트)' hint='비우면 사이트 이름'>
                     <TextInput
                       value={logo?.light}
@@ -314,7 +350,6 @@ export default function AdminPage() {
                       onChange={(v) => setNested('logo', 'dark', v)}
                     />
                   </Field>
-                  <div className={styles.row}>
                     <Field label='로고 높이(px)'>
                       <TextInput
                         type='number'
@@ -331,7 +366,6 @@ export default function AdminPage() {
                         onChange={(v) => setNested('logo', 'href', v)}
                       />
                     </Field>
-                  </div>
 
                   <Toggle
                     label='검색 버튼'
@@ -345,7 +379,7 @@ export default function AdminPage() {
                   />
                 </Section>
 
-                <Section title='nav 링크'>
+                <Section title='nav 링크' tab='header'>
                   {navLinks.map((link, index) => (
                     <div key={index} className={styles.navLinkRow}>
                       <input
@@ -383,21 +417,23 @@ export default function AdminPage() {
                       </button>
                     </div>
                   ))}
-                  <button
-                    type='button'
-                    className={styles.button}
-                    onClick={() =>
-                      set('navigationLinks', [
-                        ...navLinks,
-                        { title: '', url: '' }
-                      ])
-                    }
-                  >
-                    + 링크 추가
-                  </button>
+                  <div className={styles.addRow}>
+                    <button
+                      type='button'
+                      className={styles.button}
+                      onClick={() =>
+                        set('navigationLinks', [
+                          ...navLinks,
+                          { title: '', url: '' }
+                        ])
+                      }
+                    >
+                      + 링크 추가
+                    </button>
+                  </div>
                 </Section>
 
-                <Section title='컬렉션'>
+                <Section title='컬렉션' tab='etc'>
                   <Toggle
                     label='뷰 전환 탭'
                     checked={config.isCollectionViewTabsEnabled !== false}
@@ -410,7 +446,7 @@ export default function AdminPage() {
                   />
                 </Section>
 
-                <Section title='위젯'>
+                <Section title='위젯' tab='widget'>
                   <Toggle
                     label='스크롤 진행률 바'
                     checked={progressBar.enabled !== false}
@@ -449,7 +485,7 @@ export default function AdminPage() {
                   )}
                 </Section>
 
-                <Section title='CTA 버튼'>
+                <Section title='CTA 버튼' tab='widget'>
                   <Toggle
                     label='CTA 버튼 사용'
                     checked={!!cta}
@@ -474,7 +510,6 @@ export default function AdminPage() {
                           onChange={(v) => setNested('cta', 'href', v)}
                         />
                       </Field>
-                      <div className={styles.row}>
                         <Field label='배경색'>
                           <ColorInput
                             value={cta.background}
@@ -491,7 +526,6 @@ export default function AdminPage() {
                             onChange={(v) => setNested('cta', 'color', v)}
                           />
                         </Field>
-                      </div>
                       <Toggle
                         label='새 탭으로 열기'
                         checked={!!cta.newTab}
@@ -501,7 +535,7 @@ export default function AdminPage() {
                   )}
                 </Section>
 
-                <Section title='모바일 하단 탭바'>
+                <Section title='모바일 하단 탭바' tab='etc'>
                   <Toggle
                     label='하단 탭바 사용'
                     checked={!!config.bottomNavigation}
@@ -527,10 +561,10 @@ export default function AdminPage() {
                   )}
                 </Section>
 
-                <Section title='페이지뷰 카운트'>
-                  <p className={styles.fieldHint}>
+                <Section title='페이지뷰 카운트' tab='etc'>
+                  <Note>
                     Redis가 있어야 동작합니다 (isRedisEnabled + REDIS_* 환경변수).
-                  </p>
+                  </Note>
                   <Toggle
                     label='페이지뷰 카운트 사용'
                     checked={!!pageView.enabled}
@@ -563,7 +597,7 @@ export default function AdminPage() {
                     </>
                   )}
                 </Section>
-              </>
+              </ActiveTabContext.Provider>
             )}
           </div>
 
