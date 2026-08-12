@@ -120,11 +120,14 @@ export async function canPush(token: string): Promise<boolean> {
   return repo.permissions?.push === true
 }
 
-export async function getFileSha(token: string): Promise<string | undefined> {
+export async function getFileSha(
+  token: string,
+  repoPath: string
+): Promise<string | undefined> {
   try {
     const file = await gh<{ sha: string }>(
       token,
-      `/repos/${githubRepo}/contents/${encodePath(configFilePath)}?ref=${encodeURIComponent(githubBranch)}`
+      `/repos/${githubRepo}/contents/${encodePath(repoPath)}?ref=${encodeURIComponent(githubBranch)}`
     )
     return file.sha
   } catch {
@@ -135,25 +138,38 @@ export async function getFileSha(token: string): Promise<string | undefined> {
 
 export type CommitResult = { commitUrl: string; sha: string }
 
-export async function commitConfig({
+/**
+ * 리포의 파일 하나를 만들거나 고친다.
+ *
+ * 설정 파일과 업로드 이미지가 같은 경로를 쓴다. Contents API는 파일 하나만
+ * 다루므로 커밋도 하나씩 만들어진다.
+ */
+export async function commitFile({
   token,
-  source,
+  repoPath,
+  content,
+  message,
   login
 }: {
   token: string
-  source: string
+  repoPath: string
+  content: Buffer | string
+  message: string
   login: string
 }): Promise<CommitResult> {
-  const sha = await getFileSha(token)
+  const sha = await getFileSha(token, repoPath)
 
   const res = await gh<{ commit: { html_url: string; sha: string } }>(
     token,
-    `/repos/${githubRepo}/contents/${encodePath(configFilePath)}`,
+    `/repos/${githubRepo}/contents/${encodePath(repoPath)}`,
     {
       method: 'PUT',
       body: JSON.stringify({
-        message: `chore(config): ${configFilePath} 수정 (어드민)\n\n${login} 님이 /admin 화면에서 저장했습니다.`,
-        content: Buffer.from(source, 'utf8').toString('base64'),
+        message: `${message}\n\n${login} 님이 /admin 화면에서 저장했습니다.`,
+        content: (typeof content === 'string'
+          ? Buffer.from(content, 'utf8')
+          : content
+        ).toString('base64'),
         branch: githubBranch,
         // sha가 있으면 수정, 없으면 생성. sha를 넘기면 그 사이 다른 커밋이
         // 같은 파일을 건드린 경우 409가 나서 덮어쓰기를 막아준다.
@@ -163,6 +179,24 @@ export async function commitConfig({
   )
 
   return { commitUrl: res.commit.html_url, sha: res.commit.sha }
+}
+
+export async function commitConfig({
+  token,
+  source,
+  login
+}: {
+  token: string
+  source: string
+  login: string
+}): Promise<CommitResult> {
+  return commitFile({
+    token,
+    repoPath: configFilePath,
+    content: source,
+    message: `chore(config): ${configFilePath} 수정 (어드민)`,
+    login
+  })
 }
 
 

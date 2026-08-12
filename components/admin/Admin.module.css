@@ -200,9 +200,10 @@
   background: var(--hover);
 }
 
+/* 포커스에서 text-align을 건드리지 않는다. 클릭하는 순간 글자가 오른쪽에서
+ * 왼쪽으로 튀어서 값을 눈으로 따라가기 어려웠다. 정렬은 상태와 무관하게 고정한다. */
 .input:focus {
   outline: none;
-  text-align: left;
   border-color: var(--accent);
   background: var(--card);
   box-shadow: 0 0 0 3px var(--accent-soft);
@@ -233,6 +234,7 @@ select.input:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
@@ -579,4 +581,120 @@ select.input:hover {
 .link {
   color: #0b6ea8;
   text-decoration: underline;
+}
+
+/* ── 프리셋 select 조합 ─────────────────────────────── */
+
+/* 프리셋 select나 업로드 버튼과 나란히 놓이는 입력.
+ *
+ * .input이 width: 100%라서 그대로 두면 입력 하나가 줄을 다 먹고 옆 요소가
+ * 아래로 접힌다. width를 auto로 풀고 flex-basis를 작게 줘야 한 줄에 들어간다. */
+.inputInline {
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  flex: 1 1 70px;
+  text-align: left;
+  border-color: var(--sep);
+  background: var(--card);
+}
+
+/* 직접 입력이 켜지면 select는 자리를 양보한다 */
+.selectCompact {
+  width: auto;
+  flex: 0 0 auto;
+  max-width: 104px;
+}
+
+/* 프리셋만 있을 때(직접 입력 아님)는 select가 남은 폭을 쓴다 */
+.colorRow select.input,
+.imageRow select.input {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ── 이미지 필드 ────────────────────────────────────── */
+
+.imageRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  /* 안내 문구만 다음 줄로 내려가고 썸네일·입력·버튼은 한 줄에 있어야 한다 */
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.thumb {
+  flex: none;
+  width: 30px;
+  height: 24px;
+  object-fit: contain;
+  border: 1px solid var(--sep);
+  border-radius: 5px;
+  /* 투명 배경 로고가 보이도록 체커보드를 깐다 */
+  background-color: var(--card);
+  background-image:
+    linear-gradient(45deg, #eceff1 25%, transparent 25%),
+    linear-gradient(-45deg, #eceff1 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #eceff1 75%),
+    linear-gradient(-45deg, transparent 75%, #eceff1 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
+}
+
+.thumbEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 24px;
+  border: 1px dashed var(--sep);
+  border-radius: 5px;
+  font-size: 11px;
+  color: var(--fg-3);
+}
+
+.uploadButton {
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--sep);
+  border-radius: 6px;
+  background: var(--card);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.uploadButton:hover {
+  background: var(--hover);
+}
+
+.uploadButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.hiddenFile {
+  display: none;
+}
+
+.inlineError {
+  flex: 1 0 100%;
+  text-align: right;
+  font-size: 11px;
+  color: #c0392b;
+}
+
+.inlineHint {
+  flex: 1 0 100%;
+  text-align: right;
+  font-size: 11px;
+  color: var(--fg-3);
 }

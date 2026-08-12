@@ -7,7 +7,9 @@ import {
   ActiveTabContext,
   ColorInput,
   Field,
+  ImageInput,
   Note,
+  PresetTextInput,
   Section,
   Select,
   TextInput,
@@ -64,6 +66,68 @@ const FONT_OPTIONS = [
   }))
 ]
 
+/**
+ * 날짜 형식 프리셋. 형식 문자열을 외워서 타이핑하게 하지 않는다.
+ * 라벨에 실제 출력 예시를 함께 보여줘야 고를 수 있다.
+ *
+ * 토큰 치환은 단순 문자열 교체라 '년' '월' 같은 한글 리터럴도 그대로 통한다.
+ * @see lib/format-date.ts
+ */
+const DATE_FORMATS = [
+  { value: 'YYYY/MM/DD', label: '2026/07/04' },
+  { value: 'YYYY-MM-DD', label: '2026-07-04' },
+  { value: 'YYYY. MM. DD.', label: '2026. 07. 04.' },
+  { value: 'YYYY년 M월 D일', label: '2026년 7월 4일' },
+  { value: 'M/D/YYYY', label: '7/4/2026' },
+  { value: 'MMM D, YYYY', label: 'Jul 4, 2026' },
+  { value: 'MMMM D, YYYY', label: 'July 4, 2026' },
+  { value: 'D MMM YYYY', label: '4 Jul 2026' }
+]
+
+/** 색 프리셋. 각 목록의 첫 항목이 그 필드의 기본값이다 */
+const PROGRESS_COLORS = [
+  { value: '#007FB8', label: '기본 (바다)' },
+  { value: '#3B82F6', label: '파랑' },
+  { value: '#10B981', label: '초록' },
+  { value: '#EF4444', label: '빨강' },
+  { value: '#8B5CF6', label: '보라' },
+  { value: '#111827', label: '검정' }
+]
+
+const ACCENT_COLORS = [
+  { value: '#53A1C9', label: '기본 (하늘)' },
+  { value: '#0B6EA8', label: '진한 파랑' },
+  { value: '#10B981', label: '초록' },
+  { value: '#EF4444', label: '빨강' },
+  { value: '#111827', label: '검정' }
+]
+
+const BACKGROUND_COLORS = [
+  { value: '#FFFFFF', label: '흰색' },
+  { value: '#FBF9F4', label: '아이보리' },
+  { value: '#F5F6F7', label: '연회색' },
+  { value: '#191919', label: '검정' }
+]
+
+const FOREGROUND_COLORS = [
+  { value: '#37352F', label: 'Notion 기본' },
+  { value: '#111111', label: '검정' },
+  { value: '#3D4A56', label: '진회색' },
+  { value: '#FFFFFF', label: '흰색' }
+]
+
+const CTA_BACKGROUND_COLORS = [
+  { value: '#FFFFFF', label: '흰색' },
+  { value: '#111827', label: '검정' },
+  { value: '#0B6EA8', label: '파랑' },
+  { value: '#10B981', label: '초록' }
+]
+
+const CTA_TEXT_COLORS = [
+  { value: '#000000', label: '검정' },
+  { value: '#FFFFFF', label: '흰색' }
+]
+
 /** 상단 세그먼티드 탭. 섹션 10개를 5묶음으로 나눈다 */
 const TABS = [
   { key: 'basic', label: '기본' },
@@ -100,6 +164,13 @@ export default function AdminPage(props: AdminPageProps) {
   const [source, setSource] = React.useState('')
 
   const needsLogin = props.mode === 'deployed' && !props.login
+
+  // 배포 모드에서 올린 이미지는 커밋 후 재빌드가 끝나야 서비스된다. 그때까지
+  // 썸네일이 깨지므로 미리 알려준다.
+  const uploadHint =
+    props.mode === 'deployed'
+      ? '올린 이미지는 재빌드가 끝난 뒤에 보입니다'
+      : undefined
 
   React.useEffect(() => {
     if (needsLogin) return
@@ -248,6 +319,20 @@ export default function AdminPage(props: AdminPageProps) {
   const pageView = config.pageViewCount || {}
   const navLinks: NavigationLink[] = config.navigationLinks || []
 
+  // pageUrlOverrides는 { '/devs': 'pageId' } 맵이다. 순서를 유지하며 편집하려면
+  // 배열로 풀어야 한다. 저장할 때 다시 맵으로 접는다.
+  const prettyUrls: Array<[string, string]> = Object.entries(
+    config.pageUrlOverrides || {}
+  )
+  const setPrettyUrls = (rows: Array<[string, string]>) => {
+    const next: Record<string, string> = {}
+    for (const [urlPath, pageId] of rows) {
+      // 키가 비면 맵에 담을 수 없다. 편집 중인 빈 줄은 저장 시 버린다.
+      if (urlPath.trim()) next[urlPath.trim()] = pageId.trim()
+    }
+    set('pageUrlOverrides', Object.keys(next).length ? next : undefined)
+  }
+
   return (
     <>
       <Head>
@@ -355,10 +440,12 @@ export default function AdminPage(props: AdminPageProps) {
                       onChange={(v) => set('rootNotionPageId', v)}
                     />
                   </Field>
-                  <Field label='날짜 형식' hint='YYYY/MM/DD, MMM D, YYYY 등'>
-                    <TextInput
+                  <Field label='날짜 형식'>
+                    <PresetTextInput
                       value={config.dateFormat}
                       onChange={(v) => set('dateFormat', v)}
+                      presets={DATE_FORMATS}
+                      placeholder='YYYY/MM/DD'
                     />
                   </Field>
                 </Section>
@@ -383,6 +470,7 @@ export default function AdminPage(props: AdminPageProps) {
                         <ColorInput
                           value={colorTheme.background}
                           fallback='#ffffff'
+                          presets={BACKGROUND_COLORS}
                           onChange={(v) =>
                             setNested('colorTheme', 'background', v)
                           }
@@ -392,6 +480,7 @@ export default function AdminPage(props: AdminPageProps) {
                         <ColorInput
                           value={colorTheme.foreground}
                           fallback='#37352f'
+                          presets={FOREGROUND_COLORS}
                           onChange={(v) =>
                             setNested('colorTheme', 'foreground', v)
                           }
@@ -427,17 +516,19 @@ export default function AdminPage(props: AdminPageProps) {
 
                 <Section title='헤더' tab='header'>
                   <Field label='로고 이미지 (라이트)' hint='비우면 사이트 이름'>
-                    <TextInput
+                    <ImageInput
                       value={logo?.light}
                       placeholder='/logo.png'
                       onChange={(v) => setNested('logo', 'light', v)}
+                      uploadHint={uploadHint}
                     />
                   </Field>
                   <Field label='로고 이미지 (다크)'>
-                    <TextInput
+                    <ImageInput
                       value={logo?.dark}
                       placeholder='(라이트와 같게)'
                       onChange={(v) => setNested('logo', 'dark', v)}
+                      uploadHint={uploadHint}
                     />
                   </Field>
                     <Field label='로고 높이(px)'>
@@ -523,6 +614,62 @@ export default function AdminPage(props: AdminPageProps) {
                   </div>
                 </Section>
 
+                <Section title='pretty URL' tab='etc'>
+                  <Note>
+                    Notion 페이지 ID 대신 쓸 경로를 지정합니다. 예를 들어{' '}
+                    <code>/devs</code>에 컬렉션 페이지 ID를 매핑하면 그 주소로
+                    열립니다. 상단 메뉴 링크를 <code>/devs</code>로 걸 때도 같은
+                    매핑이 있어야 합니다.
+                  </Note>
+                  {prettyUrls.map(([urlPath, pageId], index) => (
+                    <div key={index} className={styles.navLinkRow}>
+                      <input
+                        className={styles.input}
+                        value={urlPath}
+                        placeholder='/devs'
+                        onChange={(e) => {
+                          const next = [...prettyUrls]
+                          next[index] = [e.target.value, pageId]
+                          setPrettyUrls(next)
+                        }}
+                      />
+                      <input
+                        className={styles.input}
+                        value={pageId}
+                        placeholder='Notion 페이지 ID'
+                        onChange={(e) => {
+                          const next = [...prettyUrls]
+                          next[index] = [urlPath, e.target.value]
+                          setPrettyUrls(next)
+                        }}
+                      />
+                      <button
+                        type='button'
+                        className={styles.iconButton}
+                        onClick={() =>
+                          setPrettyUrls(
+                            prettyUrls.filter((_, i) => i !== index)
+                          )
+                        }
+                        aria-label='삭제'
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  <div className={styles.addRow}>
+                    <button
+                      type='button'
+                      className={styles.button}
+                      onClick={() =>
+                        setPrettyUrls([...prettyUrls, ['', '']])
+                      }
+                    >
+                      + 경로 추가
+                    </button>
+                  </div>
+                </Section>
+
                 <Section title='컬렉션' tab='etc'>
                   <Toggle
                     label='뷰 전환 탭'
@@ -549,6 +696,7 @@ export default function AdminPage(props: AdminPageProps) {
                       <ColorInput
                         value={progressBar.color}
                         fallback='#007fb8'
+                        presets={PROGRESS_COLORS}
                         onChange={(v) =>
                           setNested('scrollProgressBar', 'color', v)
                         }
@@ -604,6 +752,7 @@ export default function AdminPage(props: AdminPageProps) {
                           <ColorInput
                             value={cta.background}
                             fallback='#ffffff'
+                            presets={CTA_BACKGROUND_COLORS}
                             onChange={(v) =>
                               setNested('cta', 'background', v)
                             }
@@ -613,6 +762,7 @@ export default function AdminPage(props: AdminPageProps) {
                           <ColorInput
                             value={cta.color}
                             fallback='#000000'
+                            presets={CTA_TEXT_COLORS}
                             onChange={(v) => setNested('cta', 'color', v)}
                           />
                         </Field>
@@ -643,6 +793,7 @@ export default function AdminPage(props: AdminPageProps) {
                       <ColorInput
                         value={bottomNav.color}
                         fallback='#53a1c9'
+                        presets={ACCENT_COLORS}
                         onChange={(v) =>
                           setNested('bottomNavigation', 'color', v)
                         }
