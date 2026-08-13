@@ -25,6 +25,7 @@ import * as config from '@/lib/config'
 import { formatNotionDate } from '@/lib/format-date'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
+import { getPageMetaOverride } from '@/lib/page-meta'
 import { searchNotion } from '@/lib/search-notion'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
@@ -219,7 +220,12 @@ export function NotionPage({
     return <Page404 site={site} pageId={pageId} error={error} />
   }
 
-  const title = getBlockTitle(block, recordMap) || site.name
+  // 페이지별 SEO 덮어쓰기. 지정한 값이 Notion 속성과 사이트 기본값을 모두 이긴다.
+  // (@see lib/page-meta.ts)
+  const metaOverride = getPageMetaOverride(pageId)
+
+  const title =
+    metaOverride?.title || getBlockTitle(block, recordMap) || site.name
 
   console.log('notion page', {
     isDev: config.isDev,
@@ -241,14 +247,17 @@ export function NotionPage({
     ? undefined
     : getCanonicalPageUrl(site, recordMap)(pageId)
 
-  const socialImage = mapImageUrl(
-    getPageProperty<string>('Social Image', block, recordMap) ||
-      (block as PageBlock).format?.page_cover ||
-      config.defaultPageCover,
-    block
-  )
+  const socialImage =
+    metaOverride?.ogImage ||
+    mapImageUrl(
+      getPageProperty<string>('Social Image', block, recordMap) ||
+        (block as PageBlock).format?.page_cover ||
+        config.defaultPageCover,
+      block
+    )
 
   const socialDescription =
+    metaOverride?.description ||
     getPageProperty<string>('Description', block, recordMap) ||
     config.description
 
@@ -262,6 +271,7 @@ export function NotionPage({
         image={socialImage}
         url={canonicalPageUrl}
         isBlogPost={isBlogPost}
+        noindex={metaOverride?.noindex}
       />
 
       {/* lite 모드(oembed 임베드)에서는 위젯이 방해만 되므로 뺀다 */}

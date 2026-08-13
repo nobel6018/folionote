@@ -54,7 +54,9 @@ const KNOWN_ORDER: Array<keyof SiteConfig> = [
   'popups',
   'popupOptions',
   'bottomNavigation',
-  'pageViewCount'
+  'pageViewCount',
+  'customCode',
+  'pageMeta'
 ]
 
 /** 키 위에 붙일 설명. 없으면 주석 없이 값만 쓴다 */
@@ -82,11 +84,38 @@ const COMMENTS: Partial<Record<keyof SiteConfig, string>> = {
   popups:
     'id는 "다시 보지 않기" 기록 키다. 내용을 바꾸면 id도 바꿔야\n이미 닫은 방문자에게 새 내용이 보인다.',
   bottomNavigation: '모바일 하단 탭바 (좁은 화면에서만 보인다)',
+  customCode:
+    '사용자 코드 주입. bodyStart/bodyEnd는 원본 HTML, css는 사이트 CSS 뒤에 붙는다.\n@see docs/custom-code.md',
+  pageMeta:
+    '페이지별 SEO 메타 덮어쓰기. 키는 하이픈 없는 32자 Notion 페이지 ID.\nnoindex를 켜면 사이트맵에서도 빠진다.',
   pageViewCount:
     '페이지뷰 카운트. isRedisEnabled와 REDIS_* 환경변수가 함께 있어야 동작한다.'
 }
 
 const INDENT = '  '
+
+/**
+ * 문자열을 JS 리터럴로 만든다.
+ *
+ * 예전에는 `'${value.replaceAll("'", "\\'")}'` 한 줄이었다. 두 가지가 깨진다.
+ * 개행이 들어 있으면 작은따옴표 문자열 안에 raw 개행이 들어가 문법 오류가 되고,
+ * 백슬래시를 이스케이프하지 않아 CSS의 `\\2014` 같은 값이 다른 문자로 바뀐다.
+ * 커스텀 CSS/스크립트를 설정에 담기 시작하면서 둘 다 실제로 걸린다.
+ *
+ * 여러 줄은 템플릿 리터럴로 쓴다. 그래야 저장된 파일에서도 원문 그대로 읽힌다.
+ */
+function stringLiteral(value: string): string {
+  if (value.includes('\n')) {
+    const escaped = value
+      .replaceAll('\\', '\\\\')
+      .replaceAll('`', '\\`')
+      // 템플릿 리터럴 안에서 살아나는 보간을 막는다
+      .replaceAll('${', '\\${')
+    return `\`${escaped}\``
+  }
+
+  return `'${value.replaceAll('\\', '\\\\').replaceAll("'", "\\'")}'`
+}
 
 /** JS 리터럴로 직렬화. JSON.stringify와 달리 키 따옴표를 필요할 때만 붙인다 */
 function toLiteral(value: unknown, depth: number): string {
@@ -94,7 +123,7 @@ function toLiteral(value: unknown, depth: number): string {
   const padInner = INDENT.repeat(depth + 1)
 
   if (value === null) return 'null'
-  if (typeof value === 'string') return `'${value.replaceAll("'", "\\'")}'`
+  if (typeof value === 'string') return stringLiteral(value)
   if (typeof value === 'number' || typeof value === 'boolean') {
     return String(value)
   }

@@ -5,6 +5,7 @@ import * as React from 'react'
 import styles from '@/components/admin/Admin.module.css'
 import {
   ActiveTabContext,
+  CodeArea,
   ColorInput,
   Field,
   ImageInput,
@@ -26,7 +27,11 @@ import { getSession } from '@/lib/admin/request'
 import { isDev } from '@/lib/config'
 import { FONT_REGISTRY } from '@/lib/fonts'
 import { serializeSiteConfig } from '@/lib/serialize-site-config'
-import { type NavigationLink, type SiteConfig } from '@/lib/site-config'
+import {
+  type NavigationLink,
+  type PageMetaOverride,
+  type SiteConfig
+} from '@/lib/site-config'
 
 /**
  * 설정 편집 화면. **개발 서버에서만 열린다.**
@@ -244,6 +249,9 @@ type AdminPageProps = {
   error: string | null
 }
 
+/** 페이지별 SEO 편집 한 줄 */
+type PageMetaRow = PageMetaOverride & { pageId: string }
+
 type SaveState =
   | { kind: 'idle' }
   | { kind: 'saving' }
@@ -263,6 +271,10 @@ export default function AdminPage(props: AdminPageProps) {
   } | null>(null)
   const [showSource, setShowSource] = React.useState(false)
   const codeTheme = useCodeTheme()
+  // 페이지별 SEO 편집용 줄
+  const [pageMetaRows, setPageMetaRows] = React.useState<PageMetaRow[] | null>(
+    null
+  )
   // pretty URL 편집용 줄. null이면 아직 config에서 처음 읽지 않은 상태다
   const [prettyRows, setPrettyRows] = React.useState<Array<
     [string, string]
@@ -522,6 +534,32 @@ export default function AdminPage(props: AdminPageProps) {
   const bottomNav = config.bottomNavigation || {}
   const pageView = config.pageViewCount || {}
   const navLinks: NavigationLink[] = config.navigationLinks || []
+  const customCode = config.customCode || {}
+
+  // pageMeta도 pretty URL과 같은 이유로 편집용 배열을 따로 든다. 빈 pageId는
+  // 맵의 키가 될 수 없어서, 새로 추가한 줄이 즉시 사라진다.
+  const metaRows =
+    pageMetaRows ??
+    Object.entries(config.pageMeta || {}).map(
+      ([pageId, meta]) => ({ pageId, ...meta }) as PageMetaRow
+    )
+  const setMetaRows = (rows: PageMetaRow[]) => {
+    setPageMetaRows(rows)
+    const next: Record<string, PageMetaOverride> = {}
+    for (const row of rows) {
+      const key = row.pageId.trim().replaceAll('-', '')
+      if (!key) continue
+      const entry: PageMetaOverride = {}
+      if (row.title?.trim()) entry.title = row.title.trim()
+      if (row.description?.trim()) entry.description = row.description.trim()
+      if (row.ogImage?.trim()) entry.ogImage = row.ogImage.trim()
+      if (row.noindex) entry.noindex = true
+      // 값이 하나도 없는 줄은 저장하지 않는다. 빈 객체를 남기면 무슨 의도인지
+      // 알 수 없는 설정이 파일에 쌓인다.
+      if (Object.keys(entry).length) next[key] = entry
+    }
+    set('pageMeta', Object.keys(next).length ? next : undefined)
+  }
 
   // pageUrlOverrides는 { '/devs': 'pageId' } 맵이다. 편집 중인 줄을 config에서
   // 매번 다시 유도하면 안 된다. 빈 경로는 맵에 담을 수 없어서(키가 없으니)
@@ -935,6 +973,161 @@ export default function AdminPage(props: AdminPageProps) {
                       + 링크 추가
                     </button>
                   </div>
+                </Section>
+
+                <Section title='페이지별 SEO' tab='etc'>
+                  <Note>
+                    특정 페이지의 제목, 설명, 공유 이미지를 덮어씁니다. 지정하지
+                    않은 페이지는 Notion 속성(<code>Description</code>,{' '}
+                    <code>Social Image</code>)을 보고, 그것도 없으면 사이트
+                    기본값을 씁니다. <b>검색 제외</b>를 켜면{' '}
+                    <code>noindex</code>가 붙고 사이트맵에서도 빠집니다.
+                  </Note>
+                  {metaRows.map((row, index) => (
+                    <div key={index} className={styles.metaRow}>
+                      <div className={styles.metaRowHead}>
+                        <input
+                          className={`${styles.input} ${styles.inputInline}`}
+                          value={row.pageId}
+                          placeholder='Notion 페이지 ID (32자)'
+                          onChange={(e) => {
+                            const next = [...metaRows]
+                            next[index] = { ...row, pageId: e.target.value }
+                            setMetaRows(next)
+                          }}
+                        />
+                        <button
+                          type='button'
+                          className={styles.iconButton}
+                          onClick={() =>
+                            setMetaRows(metaRows.filter((_, i) => i !== index))
+                          }
+                          aria-label='삭제'
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <input
+                        className={`${styles.input} ${styles.metaRowInput}`}
+                        value={row.title ?? ''}
+                        placeholder='제목 (비우면 Notion 페이지 제목)'
+                        onChange={(e) => {
+                          const next = [...metaRows]
+                          next[index] = { ...row, title: e.target.value }
+                          setMetaRows(next)
+                        }}
+                      />
+                      <input
+                        className={`${styles.input} ${styles.metaRowInput}`}
+                        value={row.description ?? ''}
+                        placeholder='설명 (og:description)'
+                        onChange={(e) => {
+                          const next = [...metaRows]
+                          next[index] = { ...row, description: e.target.value }
+                          setMetaRows(next)
+                        }}
+                      />
+                      <input
+                        className={`${styles.input} ${styles.metaRowInput}`}
+                        value={row.ogImage ?? ''}
+                        placeholder='공유 이미지 URL (비우면 Notion 커버)'
+                        onChange={(e) => {
+                          const next = [...metaRows]
+                          next[index] = { ...row, ogImage: e.target.value }
+                          setMetaRows(next)
+                        }}
+                      />
+                      <label className={styles.metaRowToggle}>
+                        <input
+                          type='checkbox'
+                          checked={!!row.noindex}
+                          onChange={(e) => {
+                            const next = [...metaRows]
+                            next[index] = {
+                              ...row,
+                              noindex: e.target.checked
+                            }
+                            setMetaRows(next)
+                          }}
+                        />
+                        검색 제외 (noindex)
+                      </label>
+                    </div>
+                  ))}
+                  <div className={styles.addRow}>
+                    <button
+                      type='button'
+                      className={styles.button}
+                      onClick={() =>
+                        setMetaRows([...metaRows, { pageId: '' }])
+                      }
+                    >
+                      + 페이지 추가
+                    </button>
+                    {(() => {
+                      const already = metaRows.some(
+                        (r) =>
+                          r.pageId.trim().replaceAll('-', '') === previewPageId
+                      )
+                      return (
+                        <button
+                          type='button'
+                          className={styles.button}
+                          disabled={!previewPageId || already}
+                          title={
+                            !previewPageId
+                              ? '미리보기에서 Notion 페이지를 열면 ID를 가져올 수 있습니다'
+                              : already
+                                ? '이미 아래 목록에 있는 페이지입니다'
+                                : `${previewPage?.title || '미리보기 페이지'} (${previewPageId})`
+                          }
+                          onClick={() =>
+                            setMetaRows([
+                              ...metaRows,
+                              { pageId: previewPageId! }
+                            ])
+                          }
+                        >
+                          미리보기 페이지 ID 가져오기
+                        </button>
+                      )
+                    })()}
+                  </div>
+                </Section>
+
+                <Section title='커스텀 코드' tab='etc'>
+                  <Note>
+                    분석 스크립트, 채팅 위젯, 색 보정 CSS처럼 설정 옵션으로 없는
+                    것을 직접 붙입니다. 서버에서 그대로 렌더되므로 안에 있는{' '}
+                    <code>&lt;script&gt;</code>도 정상 실행됩니다.{' '}
+                    <b>사이트가 깨질 수 있으니</b> 저장 후 미리보기를 꼭
+                    확인하세요.
+                  </Note>
+                  <CodeArea
+                    label='body 시작'
+                    hint='분석 스크립트처럼 먼저 실행돼야 하는 것'
+                    value={customCode.bodyStart}
+                    placeholder={
+                      '<script defer src="https://plausible.io/js/script.js"></script>'
+                    }
+                    onChange={(v) => setNested('customCode', 'bodyStart', v)}
+                  />
+                  <CodeArea
+                    label='body 끝'
+                    hint='채팅 위젯처럼 늦게 떠도 되는 것'
+                    value={customCode.bodyEnd}
+                    onChange={(v) => setNested('customCode', 'bodyEnd', v)}
+                  />
+                  <CodeArea
+                    label='CSS'
+                    hint='사이트 CSS 뒤에 붙습니다'
+                    value={customCode.css}
+                    rows={8}
+                    placeholder={
+                      '.notion-page-content-inner {\n  max-width: 820px;\n}'
+                    }
+                    onChange={(v) => setNested('customCode', 'css', v)}
+                  />
                 </Section>
 
                 <Section title='pretty URL' tab='etc'>

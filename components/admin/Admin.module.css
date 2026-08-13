@@ -1062,3 +1062,80 @@ select.input:hover {
   background: var(--code-selection, rgba(84, 174, 255, 0.32));
   text-shadow: none;
 }
+
+/* ── 여러 줄 코드 입력 ──────────────────────────────── */
+
+/* 라벨 좌 / 값 우로는 코드가 안 읽힌다. 라벨을 위에 두고 아래로 넓게 편다 */
+.codeAreaField {
+  display: block;
+  padding: 9px 13px 11px;
+  border-bottom: 1px solid var(--sep);
+}
+
+.codeAreaField:last-child {
+  border-bottom: 0;
+}
+
+.codeAreaLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  color: var(--fg);
+}
+
+.codeArea {
+  display: block;
+  width: 100%;
+  padding: 8px 9px;
+  border: 1px solid var(--sep);
+  border-radius: 7px;
+  background: var(--hover);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--fg);
+  resize: vertical;
+}
+
+.codeArea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--card);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.codeArea::placeholder {
+  color: var(--fg-3);
+}
+
+/* ── 페이지별 SEO 한 줄 ─────────────────────────────── */
+
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 9px 13px 11px;
+  border-bottom: 1px solid var(--sep);
+}
+
+.metaRowHead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metaRowInput {
+  max-width: none;
+  text-align: left;
+  border-color: var(--sep);
+  background: var(--card);
+}
+
+.metaRowToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fg-2);
+  cursor: pointer;
+}

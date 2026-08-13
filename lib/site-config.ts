@@ -67,6 +67,61 @@ export interface SiteConfig {
   popupOptions?: PopupOptions
   bottomNavigation?: BottomNavigationConfig
   pageViewCount?: PageViewCountConfig
+
+  customCode?: CustomCodeConfig
+
+  /**
+   * 페이지별 SEO 메타 덮어쓰기. 키는 Notion 페이지 ID(하이픈 없는 32자 hex).
+   *
+   * 지정하지 않은 페이지는 지금처럼 Notion 속성(`Description`, `Social Image`)을
+   * 보고, 그것도 없으면 사이트 기본값을 쓴다.
+   */
+  pageMeta?: Record<string, PageMetaOverride>
+}
+
+/**
+ * 사용자 코드 주입 (Super/Bullet/Simple.ink의 "custom code").
+ *
+ * 분석 스크립트, 채팅 위젯, 색 보정 CSS처럼 우리가 옵션으로 만들어주지 않은 것을
+ * 사용자가 직접 붙일 수 있게 하는 탈출구다. 이게 있으면 미구현 옵션의 상당수를
+ * 사용자가 스스로 해결한다.
+ *
+ * **`<head>`에 원본 HTML을 넣는 항목은 두지 않았다.** React가 head에 임의 HTML을
+ * 서버 렌더링할 방법이 없어서 클라이언트에서 주입해야 하는데, 그러면 JS를 실행하지
+ * 않는 크롤러가 메타 태그를 못 본다. "넣었는데 검색엔진이 못 읽는" 함정이 생긴다.
+ * 대신 `metaTags`(구조화)와 `css`를 head에 서버 렌더링하고, 스크립트는 body에서
+ * 받는다. body에 서버 렌더링된 `<script>`는 브라우저가 문서로 파싱하므로 정상
+ * 실행된다(클라이언트 innerHTML과 달리).
+ *
+ * @see docs/custom-code.md
+ */
+export interface CustomCodeConfig {
+  /** `<body>` 시작 직후. 분석 스크립트 등 먼저 실행돼야 하는 것 */
+  bodyStart?: string
+  /** `</body>` 직전. 채팅 위젯처럼 늦게 떠도 되는 것 */
+  bodyEnd?: string
+  /**
+   * 사이트 CSS 뒤에 주입되는 CSS.
+   *
+   * 문서 맨 끝에 넣으므로 같은 특이도라면 사용자 CSS가 이긴다. 우리 스타일이
+   * `:root:root`나 클래스 중복 같은 특이도 기법을 쓰는 곳이 있어서, 그런 규칙을
+   * 이기려면 사용자도 같은 수준의 특이도를 써야 한다.
+   */
+  css?: string
+  /** 검색엔진 인증 등에 쓰는 메타 태그. head에 서버 렌더링된다 */
+  metaTags?: Array<{ name?: string; property?: string; content: string }>
+}
+
+/** 페이지 하나의 SEO 메타 덮어쓰기 */
+export interface PageMetaOverride {
+  /** `<title>`과 `og:title` */
+  title?: string
+  /** `description`과 `og:description` */
+  description?: string
+  /** `og:image`. 비우면 기존 규칙(Notion 커버 등)을 따른다 */
+  ogImage?: string
+  /** 켜면 `noindex`를 주고 사이트맵에서도 뺀다 */
+  noindex?: boolean
 }
 
 export interface NavigationLink {

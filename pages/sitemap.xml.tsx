@@ -3,6 +3,7 @@ import type { GetServerSideProps } from 'next'
 import type { SiteMap } from '@/lib/types'
 import { host } from '@/lib/config'
 import { getSiteMap } from '@/lib/get-site-map'
+import { isNoindexPage } from '@/lib/page-meta'
 
 // In-memory cache. Vercel serverless instance가 살아 있는 동안 재사용 (warm start).
 // CDN cache(Cache-Control 8h) + memory cache + fallback의 3-tier 방어.
@@ -73,6 +74,12 @@ const createSitemap = (siteMap: SiteMap) =>
     </url>
 
     ${Object.keys(siteMap.canonicalPageMap)
+      // noindex로 표시한 페이지는 사이트맵에서도 뺀다. 넣어두면 "빼달라고 하면서
+      // 목록에는 올리는" 모순된 신호가 된다.
+      .filter(
+        (canonicalPagePath) =>
+          !isNoindexPage(siteMap.canonicalPageMap[canonicalPagePath])
+      )
       .map((canonicalPagePath) =>
         `
           <url>

@@ -18,8 +18,10 @@ import {
   type BottomNavigationConfig,
   type ColorTheme,
   type CtaConfig,
+  type CustomCodeConfig,
   type FontConfig,
   type NavigationLink,
+  type PageMetaOverride,
   type PageViewCountConfig,
   type PopupConfig,
   type PopupOptions,
@@ -413,6 +415,21 @@ function cleanPageUrlMap(
     }
   }, {})
 }
+
+/**
+ * 사용자 코드 주입. 비어 있으면 아무것도 렌더하지 않는다.
+ * @see docs/custom-code.md
+ */
+export const customCode: CustomCodeConfig = getSiteConfig('customCode', {}) ?? {}
+
+/**
+ * 페이지별 SEO 메타 덮어쓰기. 키는 하이픈 없는 32자 페이지 ID다.
+ *
+ * 사용자가 하이픈을 넣거나 대문자로 적어도 찾히도록 조회 시점에 정규화한다.
+ * @see lib/page-meta.ts
+ */
+export const pageMeta: Record<string, PageMetaOverride> =
+  getSiteConfig('pageMeta', {}) ?? {}
 
 function invertPageUrlOverrides(
   pageUrlOverrides: PageUrlOverridesMap

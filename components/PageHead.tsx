@@ -11,13 +11,16 @@ export function PageHead({
   pageId,
   image,
   url,
-  isBlogPost
+  isBlogPost,
+  noindex
 }: types.PageProps & {
   title?: string
   description?: string
   image?: string
   url?: string
   isBlogPost?: boolean
+  /** 켜면 검색엔진에서 뺀다 (@see lib/page-meta.ts) */
+  noindex?: boolean
 }) {
   const rssFeedUrl = `${config.host}/feed`
 
@@ -51,7 +54,10 @@ export function PageHead({
         key='theme-color-dark'
       />
 
-      <meta name='robots' content='index,follow' />
+      <meta
+        name='robots'
+        content={noindex ? 'noindex,nofollow' : 'index,follow'}
+      />
       {/* 글은 article이어야 한다. 전부 website로 내보내고 있었다. */}
       <meta property='og:type' content={isBlogPost ? 'article' : 'website'} />
 
