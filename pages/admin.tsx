@@ -248,6 +248,7 @@ export default function AdminPage(props: AdminPageProps) {
   const [previewPage, setPreviewPage] = React.useState<{
     path: string
     pageId: string | null
+    title: string
   } | null>(null)
   const [showSource, setShowSource] = React.useState(false)
   // pretty URL 편집용 줄. null이면 아직 config에서 처음 읽지 않은 상태다
@@ -274,6 +275,8 @@ export default function AdminPage(props: AdminPageProps) {
     try {
       const path = previewRef.current?.contentWindow?.location.pathname
       if (!path) return
+      // 제목까지 같이 읽는다. ID만 보여주면 그게 어느 글인지 알 수 없다.
+      const title = previewRef.current?.contentDocument?.title ?? ''
       // 경로 끝에 붙은 32자 hex가 Notion 블록 ID다. pretty URL로 열린 페이지에는
       // ID가 없으므로 null이 된다.
       const match = /([0-9a-f]{32})\/?$/i.exec(path)
@@ -282,9 +285,12 @@ export default function AdminPage(props: AdminPageProps) {
       // 리렌더가 나고, 코드 뷰의 innerHTML이 다시 만들어지면서 드래그로 잡아둔
       // 선택 영역이 풀린다. 실제로 코드를 블록 잡으면 1초 만에 풀렸다.
       setPreviewPage((prev) =>
-        prev && prev.path === path && prev.pageId === pageId
+        prev &&
+        prev.path === path &&
+        prev.pageId === pageId &&
+        prev.title === title
           ? prev
-          : { path, pageId }
+          : { path, pageId, title }
       )
     } catch {
       // 크로스 오리진이 되면(외부 링크로 이동) 읽을 수 없다. 그냥 비운다.
@@ -837,8 +843,8 @@ export default function AdminPage(props: AdminPageProps) {
                     매핑이 있어야 합니다.
                     <br />
                     ID는 오른쪽 미리보기에서 원하는 페이지로 이동하면 상단에
-                    표시됩니다. <b>+ 미리보기 페이지</b>를 누르면 그 ID로 줄이
-                    추가됩니다.
+                    표시됩니다. <b>미리보기 페이지 ID 가져오기</b>를 누르면 그
+                    페이지의 ID가 채워진 줄이 추가됩니다.
                   </Note>
                   {prettyUrls.map(([urlPath, pageId], index) => (
                     <div key={index} className={styles.navLinkRow}>
@@ -891,7 +897,7 @@ export default function AdminPage(props: AdminPageProps) {
                         <button
                           type='button'
                           className={styles.button}
-                          title={`미리보기에서 열려 있는 페이지 (${previewPage.pageId})`}
+                          title={`${previewPage.title || '미리보기 페이지'} (${previewPage.pageId})`}
                           onClick={() =>
                             setPrettyUrls([
                               ...prettyUrls,
@@ -899,10 +905,16 @@ export default function AdminPage(props: AdminPageProps) {
                             ])
                           }
                         >
-                          + 미리보기 페이지
+                          미리보기 페이지 ID 가져오기
                         </button>
                       )}
                   </div>
+                  {previewPage?.pageId && (
+                    <p className={styles.previewNow}>
+                      지금 보는 페이지:{' '}
+                      <b>{previewPage.title || previewPage.path}</b>
+                    </p>
+                  )}
                 </Section>
 
                 <Section title='컬렉션' tab='etc'>
