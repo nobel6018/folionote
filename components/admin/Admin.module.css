@@ -957,3 +957,87 @@ select.input:hover {
   width: auto;
   max-width: 170px;
 }
+
+/* ── 테마 적용 범위 ─────────────────────────────────── */
+
+.scopeTitle {
+  margin: 0;
+  padding: 10px 13px 6px;
+  border-top: 1px solid var(--sep);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* 무엇이 바뀌는지 이름만 나열하면 결국 탭을 넘나들며 확인해야 한다.
+ * 지금 값과 어느 탭에 있는지를 같이 보여주고, 누르면 그 탭으로 간다. */
+.scopeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 13px;
+  border: 0;
+  border-top: 1px solid var(--sep);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.scopeRow:first-of-type {
+  border-top: 0;
+}
+
+.scopeRow:hover {
+  background: var(--hover);
+}
+
+.scopeSwatch {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
+}
+
+.scopeSwatchEmpty {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border: 1px dashed var(--sep);
+  border-radius: 4px;
+}
+
+.scopeLabel {
+  flex: none;
+  font-size: 12.5px;
+  color: var(--fg);
+}
+
+.scopeValue {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+
+.scopeTab {
+  flex: none;
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.scopeFoot {
+  margin: 0;
+  padding: 8px 13px 10px;
+  border-top: 1px solid var(--sep);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--fg-3);
+}

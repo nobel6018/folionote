@@ -216,6 +216,13 @@ const THEMES: Array<{
   }
 ]
 
+const COLOR_MODE_LABELS: Record<string, string> = {
+  system: 'OS 설정을 따름 (토글 노출)',
+  light: '라이트 고정',
+  dark: '다크 고정',
+  custom: '직접 지정'
+}
+
 /** 상단 세그먼티드 탭. 섹션 10개를 5묶음으로 나눈다 */
 const TABS = [
   { key: 'basic', label: '기본' },
@@ -702,6 +709,68 @@ export default function AdminPage(props: AdminPageProps) {
                       )
                     })}
                   </div>
+
+                  <p className={styles.scopeTitle}>
+                    테마가 바꾸는 값
+                  </p>
+                  {[
+                    {
+                      label: '색상 테마',
+                      tab: 'look' as TabKey,
+                      tabLabel: '모양',
+                      color:
+                        colorTheme.mode === 'custom'
+                          ? colorTheme.background
+                          : undefined,
+                      value:
+                        colorTheme.mode === 'custom'
+                          ? `직접 지정 · 배경 ${colorTheme.background || '-'} / 글자 ${colorTheme.foreground || '-'}`
+                          : COLOR_MODE_LABELS[colorTheme.mode || 'system']
+                    },
+                    {
+                      label: '진행률 바 색',
+                      tab: 'widget' as TabKey,
+                      tabLabel: '위젯',
+                      color: progressBar.color || '#007FB8',
+                      value: progressBar.color || '#007FB8 (기본)'
+                    },
+                    {
+                      label: '하단 탭바 강조 색',
+                      tab: 'etc' as TabKey,
+                      tabLabel: '기타',
+                      color: config.bottomNavigation
+                        ? bottomNav.color || '#53A1C9'
+                        : undefined,
+                      value: config.bottomNavigation
+                        ? bottomNav.color || '#53A1C9 (기본)'
+                        : '하단 탭바를 쓰지 않아 해당 없음'
+                    }
+                  ].map((row) => (
+                    <button
+                      key={row.label}
+                      type='button'
+                      className={styles.scopeRow}
+                      onClick={() => setTab(row.tab)}
+                      title={`${row.tabLabel} 탭에서 고칠 수 있습니다`}
+                    >
+                      {row.color ? (
+                        <span
+                          className={styles.scopeSwatch}
+                          style={{ background: row.color }}
+                        />
+                      ) : (
+                        <span className={styles.scopeSwatchEmpty} />
+                      )}
+                      <span className={styles.scopeLabel}>{row.label}</span>
+                      <span className={styles.scopeValue}>{row.value}</span>
+                      <span className={styles.scopeTab}>{row.tabLabel} ›</span>
+                    </button>
+                  ))}
+
+                  <p className={styles.scopeFoot}>
+                    이 셋만 바뀝니다. 폰트, 메뉴 링크, 로고처럼 취향이 아니라
+                    내용에 속한 값은 테마를 바꿔도 그대로입니다.
+                  </p>
                 </Section>
 
                 <Section title='색상 테마' tab='look'>
@@ -978,7 +1047,7 @@ export default function AdminPage(props: AdminPageProps) {
                     }
                   />
                   {progressBar.enabled !== false && (
-                    <Field label='진행률 바 색'>
+                    <Field label='진행률 바 색' hint='테마와 함께 바뀝니다'>
                       <ColorInput
                         value={progressBar.color}
                         fallback='#007fb8'
@@ -1075,7 +1144,7 @@ export default function AdminPage(props: AdminPageProps) {
                     }
                   />
                   {config.bottomNavigation && (
-                    <Field label='강조 색'>
+                    <Field label='강조 색' hint='테마와 함께 바뀝니다'>
                       <ColorInput
                         value={bottomNav.color}
                         fallback='#53a1c9'
