@@ -15,7 +15,11 @@ import {
   TextInput,
   Toggle
 } from '@/components/admin/AdminFields'
-import { CodeView } from '@/components/admin/CodeView'
+import {
+  CodeThemeSelect,
+  CodeView,
+  useCodeTheme
+} from '@/components/admin/CodeView'
 import { isDeployedAdminEnabled } from '@/lib/admin/env'
 import { repoSlug, targetBranch } from '@/lib/admin/github'
 import { getSession } from '@/lib/admin/request'
@@ -251,6 +255,7 @@ export default function AdminPage(props: AdminPageProps) {
     title: string
   } | null>(null)
   const [showSource, setShowSource] = React.useState(false)
+  const codeTheme = useCodeTheme()
   // pretty URL 편집용 줄. null이면 아직 config에서 처음 읽지 않은 상태다
   const [prettyRows, setPrettyRows] = React.useState<Array<
     [string, string]
@@ -304,6 +309,28 @@ export default function AdminPage(props: AdminPageProps) {
     const timer = setInterval(readPreview, 1000)
     return () => clearInterval(timer)
   }, [readPreview])
+
+  /**
+   * 미리보기가 보고 있는 페이지의 Notion ID.
+   *
+   * URL에 32자 hex가 그대로 붙는 경우가 대부분이지만 아닌 경우가 둘 있다.
+   * 루트(`/`)에는 ID가 없고, pretty URL로 연 페이지(`/devs`)도 ID가 감춰진다.
+   * 둘 다 우리가 이미 답을 알고 있으므로 config에서 찾아준다. 그래야 루트나
+   * 이미 매핑된 페이지에서도 버튼이 동작한다.
+   */
+  const previewPageId = React.useMemo(() => {
+    if (!previewPage) return null
+    if (previewPage.pageId) return previewPage.pageId
+    if (!config) return null
+
+    const path = previewPage.path.replace(/\/$/, '') || '/'
+    if (path === '/') return config.rootNotionPageId ?? null
+
+    const hit = Object.entries(config.pageUrlOverrides || {}).find(
+      ([mapped]) => mapped.replace(/\/$/, '') === path
+    )
+    return hit?.[1] ?? null
+  }, [previewPage, config])
 
   const needsLogin = props.mode === 'deployed' && !props.login
 
@@ -580,7 +607,13 @@ export default function AdminPage(props: AdminPageProps) {
             </p>
 
             {showSource ? (
-              <CodeView source={source} />
+              <>
+                <CodeThemeSelect
+                  themeId={codeTheme.themeId}
+                  onChange={codeTheme.select}
+                />
+                <CodeView source={source} themeId={codeTheme.themeId} />
+              </>
             ) : (
               <ActiveTabContext.Provider value={tab}>
                 <Section title='기본 정보' tab='basic'>
@@ -890,31 +923,37 @@ export default function AdminPage(props: AdminPageProps) {
                     >
                       + 경로 추가
                     </button>
-                    {previewPage?.pageId &&
-                      !prettyUrls.some(
-                        ([, id]) => id === previewPage.pageId
-                      ) && (
+                    {(() => {
+                      const already = prettyUrls.some(
+                        ([, id]) => id === previewPageId
+                      )
+                      const reason = !previewPageId
+                        ? '미리보기에서 Notion 페이지를 열면 ID를 가져올 수 있습니다'
+                        : already
+                          ? '이미 아래 목록에 있는 페이지입니다'
+                          : `${previewPage?.title || '미리보기 페이지'} (${previewPageId})`
+                      return (
                         <button
                           type='button'
                           className={styles.button}
-                          title={`${previewPage.title || '미리보기 페이지'} (${previewPage.pageId})`}
+                          title={reason}
+                          disabled={!previewPageId || already}
                           onClick={() =>
-                            setPrettyUrls([
-                              ...prettyUrls,
-                              ['', previewPage.pageId!]
-                            ])
+                            setPrettyUrls([...prettyUrls, ['', previewPageId!]])
                           }
                         >
                           미리보기 페이지 ID 가져오기
                         </button>
-                      )}
+                      )
+                    })()}
                   </div>
-                  {previewPage?.pageId && (
-                    <p className={styles.previewNow}>
-                      지금 보는 페이지:{' '}
-                      <b>{previewPage.title || previewPage.path}</b>
-                    </p>
-                  )}
+                  <p className={styles.previewNow}>
+                    지금 보는 페이지:{' '}
+                    <b>
+                      {previewPage?.title || previewPage?.path || '불러오는 중…'}
+                    </b>
+                    {previewPageId ? ` · ${previewPageId}` : ''}
+                  </p>
                 </Section>
 
                 <Section title='컬렉션' tab='etc'>
@@ -1149,17 +1188,17 @@ export default function AdminPage(props: AdminPageProps) {
             </button>
             <span>저장 후 자동으로 새로고침됩니다.</span>
             <span className={styles.spacer} />
-            {previewPage?.pageId && (
+            {previewPageId && (
               <button
                 type='button'
                 className={styles.pageIdChip}
                 title='클릭하면 페이지 ID를 복사합니다'
                 onClick={() => {
-                  void navigator.clipboard.writeText(previewPage.pageId!)
+                  void navigator.clipboard.writeText(previewPageId)
                   setSaveState({ kind: 'copied' })
                 }}
               >
-                {previewPage.pageId}
+                {previewPageId}
               </button>
             )}
           </div>

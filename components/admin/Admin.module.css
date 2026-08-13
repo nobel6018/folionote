@@ -771,9 +771,9 @@ select.input:hover {
   flex: 1 1 auto;
   overflow: auto;
   min-height: 0;
-  border: 1px solid var(--sep);
+  border: 1px solid var(--code-border, var(--sep));
   border-radius: 8px;
-  background: var(--card);
+  background: var(--code-bg, var(--card));
 }
 
 .codeGrid {
@@ -792,11 +792,11 @@ select.input:hover {
   z-index: 1;
   margin: 0;
   padding: 12px 8px 12px 12px;
-  border-right: 1px solid var(--sep);
-  background: #f7f9fa;
+  border-right: 1px solid var(--code-border, var(--sep));
+  background: var(--code-gutter-bg, #f7f9fa);
   font: inherit;
   text-align: right;
-  color: #a9b6c0;
+  color: var(--code-gutter-fg, #a9b6c0);
   user-select: none;
   white-space: pre;
 }
@@ -806,7 +806,7 @@ select.input:hover {
   padding: 12px 14px;
   background: transparent;
   font: inherit;
-  color: var(--fg);
+  color: var(--code-fg, var(--fg));
   /* 줄바꿈 금지. 접히면 줄 번호가 어긋난다 */
   white-space: pre;
 }
@@ -818,35 +818,35 @@ select.input:hover {
   color: inherit;
 }
 
-/* 토큰 색은 여기서 못박는다. 전역 prism 테마에 기대면 사이트 테마를 바꿀 때
- * 어드민 코드 뷰가 같이 흔들린다. */
+/* 토큰 색은 인라인 CSS 변수로 들어온다 (@see components/admin/CodeView.tsx).
+ * 전역 prism 테마에 기대면 사이트 테마를 바꿀 때 어드민 코드 뷰가 같이 흔들린다. */
 .codeBody :global(.token.comment) {
-  color: #8b9aa6;
+  color: var(--code-comment);
   font-style: normal;
 }
 .codeBody :global(.token.string),
 .codeBody :global(.token.template-string) {
-  color: #0a7d54;
+  color: var(--code-string);
 }
 .codeBody :global(.token.number),
 .codeBody :global(.token.boolean),
 .codeBody :global(.token.null) {
-  color: #b3541e;
+  color: var(--code-number);
 }
 .codeBody :global(.token.keyword),
 .codeBody :global(.token.builtin) {
-  color: #9a2ea8;
+  color: var(--code-keyword);
 }
 .codeBody :global(.token.function) {
-  color: #0b6ea8;
+  color: var(--code-function);
 }
 .codeBody :global(.token.property),
 .codeBody :global(.token.property-access) {
-  color: #16202a;
+  color: var(--code-fg);
 }
 .codeBody :global(.token.punctuation),
 .codeBody :global(.token.operator) {
-  color: #7a8894;
+  color: var(--code-punctuation);
   background: none;
 }
 
@@ -926,4 +926,34 @@ select.input:hover {
 .previewNow b {
   font-weight: 600;
   color: var(--fg-2);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.button:disabled:hover {
+  background: var(--card);
+}
+
+/* ── 코드 배색 선택 ─────────────────────────────────── */
+
+.codeToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: none;
+  padding: 0 2px 8px;
+}
+
+.codeToolbarLabel {
+  font-size: 11.5px;
+  color: var(--fg-3);
+}
+
+.codeThemeSelect {
+  width: auto;
+  max-width: 170px;
 }
