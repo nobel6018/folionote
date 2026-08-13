@@ -130,6 +130,88 @@ const CTA_TEXT_COLORS = [
   { value: '#FFFFFF', label: '흰색' }
 ]
 
+/**
+ * 테마 프리셋.
+ *
+ * 색 하나하나를 골라 조합을 맞추는 건 품이 많이 든다. 어울리는 값을 묶어두고
+ * 한 번에 적용한 뒤, 마음에 안 드는 항목만 아래에서 고치게 한다.
+ *
+ * patch에는 **보이는 것만** 담는다. navigationLinks나 bottomNavigation.links처럼
+ * 사용자가 쌓아둔 구조는 테마를 바꿔도 사라지면 안 되므로 건드리지 않는다.
+ */
+const THEMES: Array<{
+  id: string
+  label: string
+  hint: string
+  /** 카드에 찍는 미리보기 색 (배경, 글자, 강조) */
+  swatches: [string, string, string]
+  patch: {
+    colorTheme: SiteConfig['colorTheme']
+    progressColor: string
+    accentColor: string
+  }
+}> = [
+  {
+    id: 'default',
+    label: '기본',
+    hint: 'OS 설정을 따라 라이트/다크가 바뀝니다',
+    swatches: ['#FFFFFF', '#37352F', '#007FB8'],
+    patch: {
+      colorTheme: { mode: 'system' },
+      progressColor: '#007FB8',
+      accentColor: '#53A1C9'
+    }
+  },
+  {
+    id: 'mono',
+    label: '모노크롬',
+    hint: '색을 쓰지 않아 글과 사진만 남습니다',
+    swatches: ['#FFFFFF', '#111827', '#111827'],
+    patch: {
+      colorTheme: { mode: 'light' },
+      progressColor: '#111827',
+      accentColor: '#111827'
+    }
+  },
+  {
+    id: 'dark',
+    label: '다크',
+    hint: '항상 어두운 화면으로 고정합니다',
+    swatches: ['#191919', '#E8EAED', '#5B7CFA'],
+    patch: {
+      colorTheme: { mode: 'dark' },
+      progressColor: '#5B7CFA',
+      accentColor: '#5B7CFA'
+    }
+  },
+  {
+    id: 'paper',
+    label: '웜 페이퍼',
+    hint: '종이 같은 배경에 따뜻한 강조색',
+    swatches: ['#FBF9F4', '#37352F', '#A8503A'],
+    patch: {
+      colorTheme: {
+        mode: 'custom',
+        background: '#FBF9F4',
+        foreground: '#37352F'
+      },
+      progressColor: '#A8503A',
+      accentColor: '#A8503A'
+    }
+  },
+  {
+    id: 'cobalt',
+    label: '코발트',
+    hint: '흰 배경에 진한 파랑',
+    swatches: ['#FFFFFF', '#16202A', '#0B6EA8'],
+    patch: {
+      colorTheme: { mode: 'light' },
+      progressColor: '#0B6EA8',
+      accentColor: '#0B6EA8'
+    }
+  }
+]
+
 /** 상단 세그먼티드 탭. 섹션 10개를 5묶음으로 나눈다 */
 const TABS = [
   { key: 'basic', label: '기본' },
@@ -195,10 +277,18 @@ export default function AdminPage(props: AdminPageProps) {
       // 경로 끝에 붙은 32자 hex가 Notion 블록 ID다. pretty URL로 열린 페이지에는
       // ID가 없으므로 null이 된다.
       const match = /([0-9a-f]{32})\/?$/i.exec(path)
-      setPreviewPage({ path, pageId: match?.[1] ?? null })
+      const pageId = match?.[1] ?? null
+      // 값이 그대로면 state를 건드리지 않는다. 1초마다 새 객체를 넣으면 매번
+      // 리렌더가 나고, 코드 뷰의 innerHTML이 다시 만들어지면서 드래그로 잡아둔
+      // 선택 영역이 풀린다. 실제로 코드를 블록 잡으면 1초 만에 풀렸다.
+      setPreviewPage((prev) =>
+        prev && prev.path === path && prev.pageId === pageId
+          ? prev
+          : { path, pageId }
+      )
     } catch {
       // 크로스 오리진이 되면(외부 링크로 이동) 읽을 수 없다. 그냥 비운다.
-      setPreviewPage(null)
+      setPreviewPage((prev) => (prev === null ? prev : null))
     }
   }, [])
 
@@ -233,6 +323,39 @@ export default function AdminPage(props: AdminPageProps) {
     }
 
     void load()
+  }, [])
+
+  /**
+   * 테마 프리셋을 적용한다.
+   *
+   * 색만 바꾸고 링크 목록 같은 구조는 그대로 둔다. bottomNavigation은 links를
+   * 유지한 채 color만 갈아끼우고, 아직 없으면 만들지 않는다. 테마를 골랐다고
+   * 없던 하단 탭바가 생기면 놀란다.
+   */
+  const applyTheme = React.useCallback((themeId: string) => {
+    const theme = THEMES.find((t) => t.id === themeId)
+    if (!theme) return
+
+    setConfig((prev) => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        colorTheme: theme.patch.colorTheme,
+        scrollProgressBar: {
+          ...prev.scrollProgressBar,
+          color: theme.patch.progressColor
+        },
+        ...(prev.bottomNavigation
+          ? {
+              bottomNavigation: {
+                ...prev.bottomNavigation,
+                color: theme.patch.accentColor
+              }
+            }
+          : {})
+      }
+    })
+    setSaveState({ kind: 'idle' })
   }, [])
 
   /** 최상위 키 하나를 갈아끼운다 */
@@ -493,6 +616,53 @@ export default function AdminPage(props: AdminPageProps) {
                       placeholder='YYYY/MM/DD'
                     />
                   </Field>
+                </Section>
+
+                <Section title='테마' tab='look'>
+                  <Note>
+                    어울리는 색을 묶어 한 번에 적용합니다. 고른 뒤 아래에서 개별
+                    값을 고쳐도 됩니다. 메뉴 링크 같은 구조는 바뀌지 않습니다.
+                  </Note>
+                  <div className={styles.themeGrid}>
+                    {THEMES.map((theme) => {
+                      const active =
+                        (config.colorTheme?.mode ?? 'system') ===
+                          (theme.patch.colorTheme?.mode ?? 'system') &&
+                        (progressBar.color || '').toLowerCase() ===
+                          theme.patch.progressColor.toLowerCase()
+                      return (
+                        <button
+                          key={theme.id}
+                          type='button'
+                          className={
+                            active
+                              ? `${styles.themeCard} ${styles.themeCardOn}`
+                              : styles.themeCard
+                          }
+                          onClick={() => applyTheme(theme.id)}
+                          title={theme.hint}
+                          aria-pressed={active}
+                        >
+                          <span
+                            className={styles.themePreview}
+                            style={{ background: theme.swatches[0] }}
+                          >
+                            <span
+                              className={styles.themeBarText}
+                              style={{ background: theme.swatches[1] }}
+                            />
+                            <span
+                              className={styles.themeBarAccent}
+                              style={{ background: theme.swatches[2] }}
+                            />
+                          </span>
+                          <span className={styles.themeLabel}>
+                            {theme.label}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
                 </Section>
 
                 <Section title='색상 테마' tab='look'>

@@ -15,7 +15,7 @@ import styles from './Admin.module.css'
  * Prism 문법은 _app.tsx에서 이미 등록된다(prism-typescript 포함).
  * @see pages/admin.tsx
  */
-export function CodeView({ source }: { source: string }) {
+function CodeViewImpl({ source }: { source: string }) {
   const html = React.useMemo(() => {
     if (!source) return ''
     const grammar = Prism.languages.typescript || Prism.languages.javascript
@@ -54,3 +54,11 @@ export function CodeView({ source }: { source: string }) {
     </div>
   )
 }
+
+/**
+ * source가 그대로면 다시 그리지 않는다.
+ *
+ * 부모가 다른 이유로 리렌더될 때마다 dangerouslySetInnerHTML이 DOM을 새로
+ * 만들고, 그러면 사용자가 드래그로 잡아둔 선택이 풀린다.
+ */
+export const CodeView = React.memo(CodeViewImpl)
