@@ -446,20 +446,6 @@ select.input:hover {
   color: #0b5e8f;
 }
 
-.code {
-  margin: 0;
-  padding: 12px;
-  border: 1px solid var(--sep);
-  border-radius: 8px;
-  background: var(--card);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11.5px;
-  line-height: 1.65;
-  color: var(--fg-2);
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
 /* ── 미리보기 ───────────────────────────────────────── */
 
 .preview {
@@ -763,4 +749,103 @@ select.input:hover {
   display: flex;
   gap: 7px;
   padding: 8px 13px;
+}
+
+/* ── 코드 보기 (하이라이팅 + 줄 번호) ────────────────── */
+
+.panelBodyCode {
+  /* 코드 보기에서는 코드 영역이 자체 스크롤을 갖는다. 패널이 대신 스크롤하면
+   * 번호 열의 sticky가 무의미해지고 가로로 긴 줄이 패널 전체를 늘린다.
+   *
+   * column을 명시해야 한다. 기본 row로 두면 위에 있는 안내 문구와 코드가
+   * 좌우로 나뉘어 코드 폭이 반토막 난다. */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 16px;
+}
+
+.codeScroll {
+  /* 가로 세로 스크롤을 한 컨테이너가 맡는다. 번호 열과 코드 열이 같은 스크롤
+   * 안에 있어야 세로로 함께 움직인다. */
+  flex: 1 1 auto;
+  overflow: auto;
+  min-height: 0;
+  border: 1px solid var(--sep);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+.codeGrid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: min-content;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+  /* 번호와 코드의 행 높이가 정확히 같아야 번호가 줄과 맞는다 */
+  line-height: 1.7;
+}
+
+.codeGutter {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 12px 8px 12px 12px;
+  border-right: 1px solid var(--sep);
+  background: #f7f9fa;
+  font: inherit;
+  text-align: right;
+  color: #a9b6c0;
+  user-select: none;
+  white-space: pre;
+}
+
+.codeBody {
+  margin: 0;
+  padding: 12px 14px;
+  background: transparent;
+  font: inherit;
+  color: var(--fg);
+  /* 줄바꿈 금지. 접히면 줄 번호가 어긋난다 */
+  white-space: pre;
+}
+
+.codeBody code {
+  font: inherit;
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* 토큰 색은 여기서 못박는다. 전역 prism 테마에 기대면 사이트 테마를 바꿀 때
+ * 어드민 코드 뷰가 같이 흔들린다. */
+.codeBody :global(.token.comment) {
+  color: #8b9aa6;
+  font-style: normal;
+}
+.codeBody :global(.token.string),
+.codeBody :global(.token.template-string) {
+  color: #0a7d54;
+}
+.codeBody :global(.token.number),
+.codeBody :global(.token.boolean),
+.codeBody :global(.token.null) {
+  color: #b3541e;
+}
+.codeBody :global(.token.keyword),
+.codeBody :global(.token.builtin) {
+  color: #9a2ea8;
+}
+.codeBody :global(.token.function) {
+  color: #0b6ea8;
+}
+.codeBody :global(.token.property),
+.codeBody :global(.token.property-access) {
+  color: #16202a;
+}
+.codeBody :global(.token.punctuation),
+.codeBody :global(.token.operator) {
+  color: #7a8894;
+  background: none;
 }

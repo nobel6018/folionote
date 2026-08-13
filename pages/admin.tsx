@@ -15,6 +15,7 @@ import {
   TextInput,
   Toggle
 } from '@/components/admin/AdminFields'
+import { CodeView } from '@/components/admin/CodeView'
 import { isDeployedAdminEnabled } from '@/lib/admin/env'
 import { repoSlug, targetBranch } from '@/lib/admin/github'
 import { getSession } from '@/lib/admin/request'
@@ -425,7 +426,13 @@ export default function AdminPage(props: AdminPageProps) {
             </div>
           )}
 
-          <div className={styles.panelBody}>
+          <div
+            className={
+              showSource
+                ? `${styles.panelBody} ${styles.panelBodyCode}`
+                : styles.panelBody
+            }
+          >
             <p className={styles.notice}>
               {props.mode === 'local' ? (
                 <>
@@ -444,7 +451,7 @@ export default function AdminPage(props: AdminPageProps) {
             </p>
 
             {showSource ? (
-              <pre className={styles.code}>{source}</pre>
+              <CodeView source={source} />
             ) : (
               <ActiveTabContext.Provider value={tab}>
                 <Section title='기본 정보' tab='basic'>
