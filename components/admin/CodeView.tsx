@@ -23,6 +23,8 @@ export type CodeTheme = {
   keyword: string
   function: string
   punctuation: string
+  /** 드래그 선택 배경. prism 기본값(#b3d4fc)은 어두운 테마에서 안 읽힌다 */
+  selection: string
 }
 
 export const CODE_THEMES: CodeTheme[] = [
@@ -39,7 +41,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#0550ae',
     keyword: '#cf222e',
     function: '#8250df',
-    punctuation: '#57606a'
+    punctuation: '#57606a',
+    selection: 'rgba(84, 174, 255, 0.32)'
   },
   {
     id: 'github-dark',
@@ -54,7 +57,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#79c0ff',
     keyword: '#ff7b72',
     function: '#d2a8ff',
-    punctuation: '#8b949e'
+    punctuation: '#8b949e',
+    selection: 'rgba(56, 139, 253, 0.42)'
   },
   {
     id: 'dracula',
@@ -69,7 +73,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#bd93f9',
     keyword: '#ff79c6',
     function: '#50fa7b',
-    punctuation: '#f8f8f2'
+    punctuation: '#f8f8f2',
+    selection: 'rgba(189, 147, 249, 0.38)'
   },
   {
     id: 'monokai',
@@ -84,7 +89,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#ae81ff',
     keyword: '#f92672',
     function: '#a6e22e',
-    punctuation: '#f8f8f2'
+    punctuation: '#f8f8f2',
+    selection: 'rgba(174, 129, 255, 0.35)'
   },
   {
     id: 'solarized-light',
@@ -99,7 +105,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#d33682',
     keyword: '#859900',
     function: '#268bd2',
-    punctuation: '#657b83'
+    punctuation: '#657b83',
+    selection: 'rgba(38, 139, 210, 0.24)'
   },
   {
     id: 'nord',
@@ -114,7 +121,8 @@ export const CODE_THEMES: CodeTheme[] = [
     number: '#b48ead',
     keyword: '#81a1c1',
     function: '#88c0d0',
-    punctuation: '#d8dee9'
+    punctuation: '#d8dee9',
+    selection: 'rgba(136, 192, 208, 0.32)'
   }
 ]
 
@@ -190,7 +198,8 @@ function CodeViewImpl({
     '--code-number': theme.number,
     '--code-keyword': theme.keyword,
     '--code-function': theme.function,
-    '--code-punctuation': theme.punctuation
+    '--code-punctuation': theme.punctuation,
+    '--code-selection': theme.selection
   } as React.CSSProperties
 
   return (
