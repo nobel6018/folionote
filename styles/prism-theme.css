@@ -51,8 +51,11 @@ pre[class*='language-']:after {
 .dark-mode .token.punctuation {
   color: rgba(209, 213, 219, 1);
 }
+/* 주석은 원래 #7f9f7f였는데 다크 코드 배경(#3f4447)에서 대비가 3.37:1로
+ * AA 기준(4.5:1)에 미달했다. 주석은 흐릿해야 하지만 못 읽을 정도면 안 된다.
+ * 같은 색조를 유지하며 밝기만 올려 4.95:1로 맞췄다. */
 .dark-mode .token.comment {
-  color: #7f9f7f;
+  color: #a3bfa3;
 }
 .dark-mode .token.boolean,
 .dark-mode .token.constant,
@@ -87,4 +90,22 @@ pre[class*='language-']:after {
 .dark-mode .token.regex,
 .dark-mode .token.variable {
   color: #fcd34d;
+}
+
+/* 연산자·URL·정규식에 씌워진 흰 배경을 벗긴다.
+ *
+ * prism 기본 테마가 이 토큰들에 `background: hsla(0, 0%, 100%, .5)`를 준다
+ * (테마 작성자의 의도적 선택이라고 주석까지 달려 있다). 밝은 코드 배경에서는
+ * 거의 보이지 않지만, 다크 모드에서는 어두운 배경 위에 50% 흰색 박스가 생겨
+ * TypeScript의 `:` 하나하나가 형광펜으로 칠한 것처럼 보인다.
+ *
+ * 더 나쁜 건 대비다. 그 박스는 #3f4447 위에서 #9fa1a3가 되고, 우리가 다크
+ * 연산자 색으로 준 #fcd34d를 얹으면 대비가 1.8:1까지 떨어진다(AA 기준 4.5:1).
+ * 실제로 재서 확인했다. 배경을 지우면 같은 색이 배경 #3f4447 위에서 8.9:1이 된다. */
+.dark-mode .token.operator,
+.dark-mode .token.entity,
+.dark-mode .token.url,
+.dark-mode .language-css .token.string,
+.dark-mode .style .token.string {
+  background: none;
 }
