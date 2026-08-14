@@ -259,6 +259,76 @@ type SaveState =
   | { kind: 'copied' }
   | { kind: 'error'; message: string }
 
+/** 설정 패널 폭의 허용 범위. 너무 좁으면 라벨이 접히고 너무 넓으면 미리보기가 죽는다 */
+const PANEL_MIN = 340
+const PANEL_MAX = 900
+const PANEL_DEFAULT = 472
+const PANEL_STORAGE_KEY = 'folio-admin-panel-width'
+
+/**
+ * 설정 패널과 미리보기 사이 분할 바.
+ *
+ * 드래그하는 동안 iframe의 pointer-events를 끈다. 안 끄면 커서가 미리보기 위로
+ * 넘어가는 순간 이벤트를 iframe이 가져가서 pointermove가 끊기고 드래그가 멈춘다.
+ * setPointerCapture만으로는 iframe을 못 막는다.
+ */
+function useResizablePanel() {
+  const [width, setWidth] = React.useState(PANEL_DEFAULT)
+  const [dragging, setDragging] = React.useState(false)
+  // 판정은 ref로 한다. state는 리렌더 뒤에야 핸들러 클로저에 반영되므로,
+  // pointerdown 직후 빠르게 들어오는 첫 move가 무시될 수 있다. 스타일용으로만 state를 쓴다.
+  const draggingRef = React.useRef(false)
+  // 저장할 때도 같은 이유로 ref를 읽는다. 종료 핸들러가 리렌더 전 값을 들고 있으면
+  // 방금 끌어놓은 폭이 아니라 이전 폭이 저장된다.
+  const widthRef = React.useRef(PANEL_DEFAULT)
+
+  React.useEffect(() => {
+    const saved = Number(localStorage.getItem(PANEL_STORAGE_KEY))
+    if (saved >= PANEL_MIN && saved <= PANEL_MAX) {
+      widthRef.current = saved
+      setWidth(saved)
+    }
+  }, [])
+
+  const onPointerDown = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      e.preventDefault()
+      e.currentTarget.setPointerCapture(e.pointerId)
+      draggingRef.current = true
+      setDragging(true)
+    },
+    []
+  )
+
+  const onPointerMove = React.useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!draggingRef.current) return
+      // 화면 왼쪽 끝부터의 거리가 곧 패널 폭이다. 패널이 항상 왼쪽에 붙어 있다.
+      const next = Math.min(PANEL_MAX, Math.max(PANEL_MIN, e.clientX))
+      widthRef.current = next
+      setWidth(next)
+    },
+    []
+  )
+
+  const stop = React.useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return
+    e.currentTarget.releasePointerCapture(e.pointerId)
+    draggingRef.current = false
+    setDragging(false)
+    localStorage.setItem(PANEL_STORAGE_KEY, String(widthRef.current))
+  }, [])
+
+  /** 더블클릭하면 기본값으로 되돌린다. 드래그로 되돌리기는 정확히 맞추기 어렵다 */
+  const reset = React.useCallback(() => {
+    widthRef.current = PANEL_DEFAULT
+    setWidth(PANEL_DEFAULT)
+    localStorage.setItem(PANEL_STORAGE_KEY, String(PANEL_DEFAULT))
+  }, [])
+
+  return { width, dragging, onPointerDown, onPointerMove, stop, reset }
+}
+
 export default function AdminPage(props: AdminPageProps) {
   const [config, setConfig] = React.useState<SiteConfig | null>(null)
   const [saveState, setSaveState] = React.useState<SaveState>({ kind: 'idle' })
@@ -270,6 +340,7 @@ export default function AdminPage(props: AdminPageProps) {
     title: string
   } | null>(null)
   const [showSource, setShowSource] = React.useState(false)
+  const panel = useResizablePanel()
   const codeTheme = useCodeTheme()
   // 페이지별 SEO 편집용 줄
   const [pageMetaRows, setPageMetaRows] = React.useState<PageMetaRow[] | null>(
@@ -582,7 +653,12 @@ export default function AdminPage(props: AdminPageProps) {
         <meta name='robots' content='noindex, nofollow' />
       </Head>
 
-      <div className={styles.page}>
+      <div
+        className={
+          panel.dragging ? `${styles.page} ${styles.pageResizing}` : styles.page
+        }
+        style={{ '--panel-width': `${panel.width}px` } as React.CSSProperties}
+      >
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <h1 className={styles.panelTitle}>사이트 설정</h1>
@@ -1434,6 +1510,23 @@ export default function AdminPage(props: AdminPageProps) {
             </button>
           </div>
         </div>
+
+        <div
+          className={
+            panel.dragging
+              ? `${styles.splitter} ${styles.splitterActive}`
+              : styles.splitter
+          }
+          role='separator'
+          aria-orientation='vertical'
+          aria-label='설정 패널 폭 조절'
+          title='드래그해서 폭 조절, 더블클릭하면 기본값'
+          onPointerDown={panel.onPointerDown}
+          onPointerMove={panel.onPointerMove}
+          onPointerUp={panel.stop}
+          onPointerCancel={panel.stop}
+          onDoubleClick={panel.reset}
+        />
 
         <div className={styles.preview}>
           <div className={styles.previewBar}>
