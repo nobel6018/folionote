@@ -22,6 +22,7 @@ import {
 import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Breadcrumbs } from './folio/Breadcrumbs'
+import { ScrollProgressBar } from './folio/ScrollProgressBar'
 import { ShareButton } from './folio/ShareButton'
 import { SiteLink } from './folio/SiteLink'
 import styles from './styles.module.css'
@@ -127,7 +128,12 @@ export function NotionPageHeader({
   }, [isMenuOpen, closeMenu])
 
   if (navigationStyle === 'default') {
-    return <Header block={block} />
+    return (
+      <>
+        <Header block={block} />
+        <ScrollProgressBar standalone={true} />
+      </>
+    )
   }
 
   const renderNavLinks = (extraClassName?: string) =>
@@ -229,6 +235,10 @@ export function NotionPageHeader({
       <div className='folio-breadcrumb-row'>
         <Breadcrumbs block={block} />
       </div>
+
+      {/* 헤더 안에 둔다. 밖에 두면 러버밴드 오버스크롤에서 헤더만 밀려 올라가
+          바가 떨어져 보인다 (@see ScrollProgressBar) */}
+      <ScrollProgressBar />
 
       {isMenuOpen && (
         <>

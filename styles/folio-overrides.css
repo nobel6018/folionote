@@ -20,11 +20,10 @@
 /* 모바일 드로어가 열린 동안에만 헤더를 스크롤 위젯 위로 올린다.
  *
  * 헤더는 sticky + z-index 200이라 자체 쌓임 문맥을 만든다. 그 안에 있는 드로어의
- * z-index 301은 헤더 내부에서만 유효해서, 루트 문맥에 있는 진행률 바(250)와
- * 맨 위로 버튼(250)이 드로어 위로 그려졌다. 헤더째로 올리면 해결된다.
+ * z-index 301은 헤더 내부에서만 유효해서, 루트 문맥에 있는 맨 위로 버튼(250)과
+ * 하단 탭바(240)가 드로어 위로 그려졌다. 헤더째로 올리면 해결된다.
  *
- * 진행률 바는 헤더 아래 끝에 붙어 있어 이때 헤더에 가려지는데, 드로어가 떠 있는
- * 동안에는 가려지는 편이 맞다. */
+ * 진행률 바는 헤더 안에 있으므로 드로어와 같은 문맥에서 자연히 아래로 깔린다. */
 .folio-header-menu-open {
   z-index: 320;
 }
@@ -523,16 +522,27 @@ svg.notion-page-icon {
 /* ── 스크롤 프로그레스 바 ────────────────────────────────── */
 /* 레퍼런스 서비스는 화면 최상단이 아니라 sticky 헤더의 아래 끝에 바를 붙인다.
  * 헤더(z-index 200)보다 위에 얹어 가리지 않게 한다. */
+/* 헤더(sticky) 안쪽 아래 끝에 붙인다. 밖에서 position:fixed로 띄우면 macOS
+ * 러버밴드 오버스크롤에서 헤더는 본문과 함께 밀려 올라가는데 바만 제자리에 남아
+ * 허공에 뜬다. 레퍼런스 서비스도 같은 구조다 (@see components/folio/ScrollProgressBar.tsx) */
 .folio-scroll-progress {
-  position: fixed;
-  top: calc(
-    var(--notion-header-height) - var(--folio-scroll-progress-height)
-  );
+  position: absolute;
+  bottom: 0;
   left: 0;
   right: 0;
   height: var(--folio-scroll-progress-height);
   z-index: 250;
   pointer-events: none;
+}
+
+/* navigationStyle: 'default'는 react-notion-x 헤더를 그대로 쓰므로 안에 넣을 수
+ * 없다. sticky로 같은 스크롤 컨텐츠에 얹어 헤더와 함께 움직이게 한다.
+ * 음수 margin은 3px짜리 자기 높이가 본문을 밀어내지 않게 되돌리는 것이다. */
+.folio-scroll-progress-standalone {
+  position: sticky;
+  top: calc(var(--notion-header-height) - var(--folio-scroll-progress-height));
+  bottom: auto;
+  margin-bottom: calc(-1 * var(--folio-scroll-progress-height));
 }
 
 /* width가 아니라 transform으로 늘린다. 레이아웃을 다시 계산하지 않아 스크롤 중에
