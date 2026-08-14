@@ -263,7 +263,7 @@ type SaveState =
 const PANEL_MIN = 340
 const PANEL_MAX = 900
 const PANEL_DEFAULT = 472
-const PANEL_STORAGE_KEY = 'folio-admin-panel-width'
+const PANEL_STORAGE_KEY = 'folionote-admin-panel-width'
 
 /**
  * 설정 패널과 미리보기 사이 분할 바.

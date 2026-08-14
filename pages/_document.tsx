@@ -39,7 +39,7 @@ export default class MyDocument extends Document {
                 넣으면 스크립트가 실행되지 않아 분석 도구가 조용히 죽는다. */}
             {customCode.bodyStart && (
               <div
-                data-folio-custom='body-start'
+                data-folionote-custom='body-start'
                 dangerouslySetInnerHTML={{ __html: customCode.bodyStart }}
               />
             )}
@@ -49,7 +49,7 @@ export default class MyDocument extends Document {
 
             {customCode.bodyEnd && (
               <div
-                data-folio-custom='body-end'
+                data-folionote-custom='body-end'
                 dangerouslySetInnerHTML={{ __html: customCode.bodyEnd }}
               />
             )}
@@ -58,7 +58,7 @@ export default class MyDocument extends Document {
                 청크에 밀려서, 같은 특이도일 때 사용자 규칙이 지고 만다. */}
             {customCode.css && (
               <style
-                data-folio-custom='css'
+                data-folionote-custom='css'
                 dangerouslySetInnerHTML={{ __html: customCode.css }}
               />
             )}

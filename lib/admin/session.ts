@@ -16,7 +16,7 @@ import { sessionSecret } from './env'
  * @see docs/admin-deploy.md
  */
 
-const COOKIE_NAME = '레퍼런스 서비스_admin_session'
+const COOKIE_NAME = 'folionote_admin_session'
 const MAX_AGE_SECONDS = 8 * 60 * 60 // 8시간
 
 export type AdminSession = {
@@ -103,7 +103,7 @@ export function clearedCookie(secure: boolean): string {
  * OAuth state 쿠키. 콜백으로 돌아온 state가 우리가 보낸 것인지 확인해
  * 로그인 CSRF를 막는다.
  */
-const STATE_COOKIE = '레퍼런스 서비스_admin_oauth_state'
+const STATE_COOKIE = 'folionote_admin_oauth_state'
 
 export function stateCookie(state: string, secure: boolean): string {
   // 로그인 왕복에만 쓰이므로 짧게 잡는다

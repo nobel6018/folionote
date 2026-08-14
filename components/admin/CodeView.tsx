@@ -126,7 +126,7 @@ export const CODE_THEMES: CodeTheme[] = [
   }
 ]
 
-const STORAGE_KEY = 'folio-admin-code-theme'
+const STORAGE_KEY = 'folionote-admin-code-theme'
 
 /** 고른 배색을 기억한다. 들어올 때마다 다시 고르게 하지 않는다 */
 export function useCodeTheme() {
