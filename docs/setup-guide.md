@@ -54,9 +54,9 @@ folionote로 내 Notion 페이지를 웹사이트로 만들어줘. 아래 순서
 내 정보:
 
 - Notion 페이지 URL: <여기에 붙여넣기>
-- 사이트 이름: <예: 이도(李裪)>
-- 내 이름: <예: 이영훈>
-- 쓸 도메인: <예: leedo.me / 아직 없으면 "없음">
+- 사이트 이름: <예: 나의 기술 블로그>
+- 내 이름: <예: 홍길동>
+- 쓸 도메인: <예: example.com / 아직 없으면 "없음">
 
 진행 순서:
 
@@ -120,7 +120,7 @@ README에는 안 넣어도 되지만, 무엇이 자동화되는지 남겨둡니�
 주소창의 URL 끝에 붙은 32자 문자열이 페이지 ID입니다.
 
 ```
-https://www.notion.so/이도-99b5bedd671d454ab450b0c485b800a8
+https://www.notion.so/My-Site-99b5bedd671d454ab450b0c485b800a8
                           └────────── 이 부분 ──────────┘
 ```
 
@@ -141,9 +141,9 @@ pnpm install
 ```ts
 export default siteConfig({
   rootNotionPageId: '99b5bedd671d454ab450b0c485b800a8',
-  name: '이도(李裪)',
-  domain: 'leedo.me',
-  author: '이영훈'
+  name: '나의 기술 블로그',
+  domain: 'example.com',
+  author: '홍길동'
   // 나머지는 기본값으로 두고 나중에 /admin에서 고쳐도 됩니다
 })
 ```
