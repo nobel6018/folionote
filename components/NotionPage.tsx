@@ -98,10 +98,7 @@ const propertyLastEditedTimeValue = (
   return defaultFn()
 }
 
-const propertyDateValue = (
-  { data }: any,
-  defaultFn: () => React.ReactNode
-) => {
+const propertyDateValue = ({ data }: any, defaultFn: () => React.ReactNode) => {
   // react-notion-x 기본 렌더는 영문 로케일 고정이라 한국어 사이트에서 어긋난다.
   // site.config.ts의 dateFormat을 따르도록 통일한다. (@see lib/format-date.ts)
   const startDate = data?.[0]?.[1]?.[0]?.[1]?.start_date

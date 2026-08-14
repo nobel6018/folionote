@@ -86,7 +86,9 @@ export function Collection({ block, className, ctx }: CollectionProps) {
     return () => observer.disconnect()
   }, [applyFilter])
 
-  const inner = <NotionCollection block={block} className={className} ctx={ctx} />
+  const inner = (
+    <NotionCollection block={block} className={className} ctx={ctx} />
+  )
 
   // page 타입은 컬렉션 제목이 아니라 페이지 속성 목록이라 색/검색이 필요 없다
   if (block.type === 'page') {

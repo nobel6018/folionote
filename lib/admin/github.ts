@@ -94,7 +94,9 @@ async function gh<T>(
 
   if (!res.ok) {
     const body = await res.text()
-    throw new Error(`GitHub ${init?.method || 'GET'} ${path} ${res.status}: ${body.slice(0, 200)}`)
+    throw new Error(
+      `GitHub ${init?.method || 'GET'} ${path} ${res.status}: ${body.slice(0, 200)}`
+    )
   }
   return res.json() as Promise<T>
 }
@@ -199,8 +201,8 @@ export async function commitConfig({
   })
 }
 
-
-
-
-
-export {githubRepo as repoSlug, githubBranch as targetBranch, configFilePath as targetPath} from './env'
+export {
+  githubRepo as repoSlug,
+  githubBranch as targetBranch,
+  configFilePath as targetPath
+} from './env'

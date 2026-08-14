@@ -25,8 +25,7 @@ export function SiteLink({
   // 프로토콜이 붙어 있거나(http:, mailto: …) //로 시작하면 외부로 본다.
   // 두 검사로 나눈 이유: 하나의 정규식으로 합치면 선택 그룹 안의 반복이
   // 뒤따르는 `//`와 겹쳐 백트래킹 위험(ReDoS)이 생긴다.
-  const isExternal =
-    href.startsWith('//') || /^[a-z][a-z\d+.-]*:/i.test(href)
+  const isExternal = href.startsWith('//') || /^[a-z][a-z\d+.-]*:/i.test(href)
 
   if (isExternal) {
     return (

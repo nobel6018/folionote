@@ -74,7 +74,11 @@ export function unseal(value: string | undefined): AdminSession | null {
 
     const session = JSON.parse(json) as AdminSession
     // 쿠키 maxAge는 브라우저가 지키는 값이라 믿을 수 없다. 서버에서 다시 본다.
-    if (!session?.token || !session?.expiresAt || session.expiresAt < Date.now()) {
+    if (
+      !session?.token ||
+      !session?.expiresAt ||
+      session.expiresAt < Date.now()
+    ) {
       return null
     }
     return session

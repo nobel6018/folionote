@@ -27,8 +27,7 @@ function useScrollState() {
 
       // 같은 위치로 여러 번 들어올 때 방향 판단이 흔들리지 않게 1px 이상만 본다
       const delta = scrollY - lastScrollY.current
-      const isScrollingUp =
-        Math.abs(delta) < 1 ? undefined : delta < 0
+      const isScrollingUp = Math.abs(delta) < 1 ? undefined : delta < 0
       lastScrollY.current = scrollY
 
       setState((prev) => ({

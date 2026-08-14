@@ -1,9 +1,5 @@
 import { type Block, type Collection } from 'notion-types'
-import {
-  getBlockValue,
-  getPageBreadcrumbs,
-  getTextContent
-} from 'notion-utils'
+import { getBlockValue, getPageBreadcrumbs, getTextContent } from 'notion-utils'
 import * as React from 'react'
 import { cs, PageIcon, useNotionContext } from 'react-notion-x'
 

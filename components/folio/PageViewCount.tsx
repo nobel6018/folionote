@@ -53,10 +53,7 @@ export function PageViewCount({ pageId }: { pageId?: string }) {
 
   return (
     <div
-      className={cs(
-        'folio-pageview',
-        `folio-pageview-${pageViewCount.style}`
-      )}
+      className={cs('folio-pageview', `folio-pageview-${pageViewCount.style}`)}
     >
       <span className='folio-pageview-label'>Today</span>
       <span className='folio-pageview-value'>

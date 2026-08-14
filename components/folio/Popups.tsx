@@ -92,7 +92,9 @@ function PopupBody({ popup }: { popup: (typeof popups)[number] }) {
       {popup.image && (
         <img className='folio-popup-image' src={popup.image} alt='' />
       )}
-      {popup.title && <strong className='folio-popup-title'>{popup.title}</strong>}
+      {popup.title && (
+        <strong className='folio-popup-title'>{popup.title}</strong>
+      )}
       {popup.body && <p className='folio-popup-text'>{popup.body}</p>}
     </>
   )

@@ -587,7 +587,10 @@ export default function AdminPage(props: AdminPageProps) {
           <div className={styles.panelHeader}>
             <h1 className={styles.panelTitle}>사이트 설정</h1>
             {props.mode === 'deployed' && (
-              <span className={styles.badge} title={`${props.repo} · ${props.branch}`}>
+              <span
+                className={styles.badge}
+                title={`${props.repo} · ${props.branch}`}
+              >
                 {props.branch}
               </span>
             )}
@@ -644,9 +647,10 @@ export default function AdminPage(props: AdminPageProps) {
               ) : (
                 <>
                   저장하면 <code>{props.repo}</code>의{' '}
-                  <code>{props.branch}</code> 브랜치에 <code>site.config.ts</code>
-                  가 커밋됩니다. 재배포가 끝나야 사이트에 반영되므로 오른쪽
-                  미리보기는 잠시 이전 상태로 남아 있습니다.
+                  <code>{props.branch}</code> 브랜치에{' '}
+                  <code>site.config.ts</code>가 커밋됩니다. 재배포가 끝나야
+                  사이트에 반영되므로 오른쪽 미리보기는 잠시 이전 상태로 남아
+                  있습니다.
                 </>
               )}
             </p>
@@ -748,9 +752,7 @@ export default function AdminPage(props: AdminPageProps) {
                     })}
                   </div>
 
-                  <p className={styles.scopeTitle}>
-                    테마가 바꾸는 값
-                  </p>
+                  <p className={styles.scopeTitle}>테마가 바꾸는 값</p>
                   {[
                     {
                       label: '색상 테마',
@@ -892,22 +894,22 @@ export default function AdminPage(props: AdminPageProps) {
                       uploadHint={uploadHint}
                     />
                   </Field>
-                    <Field label='로고 높이(px)'>
-                      <TextInput
-                        type='number'
-                        value={logo?.height}
-                        onChange={(v) =>
-                          setNested('logo', 'height', v ? Number(v) : '')
-                        }
-                      />
-                    </Field>
-                    <Field label='클릭 시 이동'>
-                      <TextInput
-                        value={logo?.href}
-                        placeholder='/'
-                        onChange={(v) => setNested('logo', 'href', v)}
-                      />
-                    </Field>
+                  <Field label='로고 높이(px)'>
+                    <TextInput
+                      type='number'
+                      value={logo?.height}
+                      onChange={(v) =>
+                        setNested('logo', 'height', v ? Number(v) : '')
+                      }
+                    />
+                  </Field>
+                  <Field label='클릭 시 이동'>
+                    <TextInput
+                      value={logo?.href}
+                      placeholder='/'
+                      onChange={(v) => setNested('logo', 'href', v)}
+                    />
+                  </Field>
 
                   <Toggle
                     label='검색 버튼'
@@ -1058,9 +1060,7 @@ export default function AdminPage(props: AdminPageProps) {
                     <button
                       type='button'
                       className={styles.button}
-                      onClick={() =>
-                        setMetaRows([...metaRows, { pageId: '' }])
-                      }
+                      onClick={() => setMetaRows([...metaRows, { pageId: '' }])}
                     >
                       + 페이지 추가
                     </button>
@@ -1212,7 +1212,9 @@ export default function AdminPage(props: AdminPageProps) {
                   <p className={styles.previewNow}>
                     지금 보는 페이지:{' '}
                     <b>
-                      {previewPage?.title || previewPage?.path || '불러오는 중…'}
+                      {previewPage?.title ||
+                        previewPage?.path ||
+                        '불러오는 중…'}
                     </b>
                     {previewPageId ? ` · ${previewPageId}` : ''}
                   </p>
@@ -1296,24 +1298,22 @@ export default function AdminPage(props: AdminPageProps) {
                           onChange={(v) => setNested('cta', 'href', v)}
                         />
                       </Field>
-                        <Field label='배경색'>
-                          <ColorInput
-                            value={cta.background}
-                            fallback='#ffffff'
-                            presets={CTA_BACKGROUND_COLORS}
-                            onChange={(v) =>
-                              setNested('cta', 'background', v)
-                            }
-                          />
-                        </Field>
-                        <Field label='글자색'>
-                          <ColorInput
-                            value={cta.color}
-                            fallback='#000000'
-                            presets={CTA_TEXT_COLORS}
-                            onChange={(v) => setNested('cta', 'color', v)}
-                          />
-                        </Field>
+                      <Field label='배경색'>
+                        <ColorInput
+                          value={cta.background}
+                          fallback='#ffffff'
+                          presets={CTA_BACKGROUND_COLORS}
+                          onChange={(v) => setNested('cta', 'background', v)}
+                        />
+                      </Field>
+                      <Field label='글자색'>
+                        <ColorInput
+                          value={cta.color}
+                          fallback='#000000'
+                          presets={CTA_TEXT_COLORS}
+                          onChange={(v) => setNested('cta', 'color', v)}
+                        />
+                      </Field>
                       <Toggle
                         label='새 탭으로 열기'
                         checked={!!cta.newTab}
@@ -1352,7 +1352,8 @@ export default function AdminPage(props: AdminPageProps) {
 
                 <Section title='페이지뷰 카운트' tab='etc'>
                   <Note>
-                    Redis가 있어야 동작합니다 (isRedisEnabled + REDIS_* 환경변수).
+                    Redis가 있어야 동작합니다 (isRedisEnabled + REDIS_*
+                    환경변수).
                   </Note>
                   <Toggle
                     label='페이지뷰 카운트 사용'
@@ -1420,11 +1421,7 @@ export default function AdminPage(props: AdminPageProps) {
               {saveState.kind === 'error' && saveState.message}
             </span>
 
-            <button
-              type='button'
-              className={styles.button}
-              onClick={onCopy}
-            >
+            <button type='button' className={styles.button} onClick={onCopy}>
               코드 복사
             </button>
             <button

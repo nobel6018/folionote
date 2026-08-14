@@ -69,11 +69,7 @@ function SiteBrand({ onNavigate }: { onNavigate?: () => void }) {
   }
 
   return (
-    <SiteLink
-      href={logo.href}
-      className='folio-logo-link'
-      onClick={onNavigate}
-    >
+    <SiteLink href={logo.href} className='folio-logo-link' onClick={onNavigate}>
       <img
         className='folio-logo folio-logo-light'
         src={logo.light}

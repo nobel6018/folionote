@@ -138,9 +138,7 @@ export const logo: {
   ? {
       light: typeof rawLogo === 'string' ? rawLogo : rawLogo.light,
       dark:
-        typeof rawLogo === 'string'
-          ? rawLogo
-          : (rawLogo.dark ?? rawLogo.light),
+        typeof rawLogo === 'string' ? rawLogo : (rawLogo.dark ?? rawLogo.light),
       height: (typeof rawLogo === 'string' ? undefined : rawLogo.height) ?? 20,
       href: (typeof rawLogo === 'string' ? undefined : rawLogo.href) ?? '/',
       alt: (typeof rawLogo === 'string' ? undefined : rawLogo.alt) ?? name
@@ -221,9 +219,10 @@ export const font = (() => {
 
   return {
     urls: urls as string[],
-    sans: [...entries.map((e) => quoteFamily(e.family)), ...systemFallback].join(
-      ', '
-    ),
+    sans: [
+      ...entries.map((e) => quoteFamily(e.family)),
+      ...systemFallback
+    ].join(', '),
     mono: rawFont?.mono ?? null
   }
 })()
@@ -259,9 +258,7 @@ export const bottomNavigation = (() => {
     (link) => link?.title && (link.url || link.pageId)
   )
 
-  return links.length
-    ? { color: rawBottomNav.color ?? '#53a1c9', links }
-    : null
+  return links.length ? { color: rawBottomNav.color ?? '#53a1c9', links } : null
 })()
 
 const rawPopups: PopupConfig[] | null = getSiteConfig('popups', null)
@@ -420,7 +417,8 @@ function cleanPageUrlMap(
  * 사용자 코드 주입. 비어 있으면 아무것도 렌더하지 않는다.
  * @see docs/custom-code.md
  */
-export const customCode: CustomCodeConfig = getSiteConfig('customCode', {}) ?? {}
+export const customCode: CustomCodeConfig =
+  getSiteConfig('customCode', {}) ?? {}
 
 /**
  * 페이지별 SEO 메타 덮어쓰기. 키는 하이픈 없는 32자 페이지 ID다.

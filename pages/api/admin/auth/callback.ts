@@ -39,7 +39,8 @@ export default async function handler(
   }
 
   const code = typeof req.query.code === 'string' ? req.query.code : undefined
-  const state = typeof req.query.state === 'string' ? req.query.state : undefined
+  const state =
+    typeof req.query.state === 'string' ? req.query.state : undefined
   const expected = readCookie(req.headers.cookie, cookieNames.state)
 
   if (!code || !state || !expected || !safeEqual(state, expected)) {
