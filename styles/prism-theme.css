@@ -13,13 +13,31 @@
  * 다크 모드는 prism-coy가 상정하지 않은 환경이라 대비를 위해 토큰 색을 따로 준다.
  */
 
-/* prism-coy의 컨테이너 장식 제거 */
+/* prism 기본 테마의 컨테이너 장식 제거 */
 pre[class*='language-'],
 code[class*='language-'] {
   background: none;
   border: 0 none;
   box-shadow: none;
   margin: 0;
+
+  /* 글자 아래 흰 그림자를 벗긴다.
+   *
+   * prism 기본 테마가 `text-shadow: 0 1px white`를 건다(prism.css:11).
+   * 밝은 코드 배경에서는 티가 안 나지만 다크에서는 모든 글자 아래에 흰 선이 깔려
+   * 글씨가 배경에서 떠 보인다(엠보싱처럼). 텍스트 크기가 작을수록 심하다.
+   *
+   * 라이트에서도 지운다. 레퍼런스 사이트(레퍼런스 서비스)를 재보니 코드 블록과 토큰 모두
+   * text-shadow가 none이었다. 레퍼런스 서비스를 따라가는 것이 이 프로젝트의 기준이다.
+   *
+   * text-shadow는 상속되므로 code에 none을 주면 안의 토큰도 따라오지만, 다른
+   * 테마가 토큰에 직접 걸 수 있어 .token까지 명시한다. */
+  text-shadow: none;
+}
+
+pre[class*='language-'] .token,
+code[class*='language-'] .token {
+  text-shadow: none;
 }
 
 pre[class*='language-'] > code {
