@@ -4,7 +4,7 @@ import { siteConfig } from './lib/site-config'
 // 손으로 편집해도 되지만, 저장하면 포맷과 주석이 이 형식으로 정리된다.
 // @see lib/serialize-site-config.ts
 //
-// 아래 값은 데모 사이트(folionote-demo.vercel.app)의 실제 설정이다. fork한 뒤
+// 아래 값은 데모 사이트(folionote.leedo.me)의 실제 설정이다. fork한 뒤
 // rootNotionPageId / name / domain 셋만 자기 값으로 바꾸면 바로 뜬다.
 // @see docs/setup-guide.md
 
@@ -18,7 +18,7 @@ export default siteConfig({
   // 사이트 기본 정보 (필수)
   name: 'folionote',
 
-  domain: 'folionote-demo.vercel.app',
+  domain: 'folionote.leedo.me',
 
   author: 'nobel6018',
 

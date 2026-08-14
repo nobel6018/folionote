@@ -106,7 +106,7 @@ Cloudflare와 Vercel이 각각 SSL을 처리하려 들어 리다이렉트 루프
 
 ## 데모
 
-[folionote-demo.vercel.app](https://folionote-demo.vercel.app)이 이 레포를 그대로 배포한 것이다.
+[folionote.leedo.me](https://folionote.leedo.me)이 이 레포를 그대로 배포한 것이다.
 그 사이트의 내용은 Notion 페이지 하나이고, 이 레포의 `site.config.ts`가 그 페이지를
 가리킨다. 즉 **데모 사이트가 곧 설정 예시**다.
 
