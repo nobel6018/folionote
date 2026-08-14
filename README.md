@@ -75,9 +75,14 @@ pnpm vercel deploy
 - [customization](docs/customization.md) — 디자인 토큰 + 자체 컴포넌트
 - [deployment](docs/deployment.md) — Vercel + DNS (Cloudflare/Route 53) + 도메인 이전
 
-## 이 사이트
+## 데모
 
-이 레포의 `site.config.ts` 기본값은 [레퍼런스 사이트](https://레퍼런스 사이트)로 설정돼 있다 — 작성자(Lee, YoungHoon)의 기술 블로그. **fork 후 본인 값으로 반드시 수정해야 한다.**
+[folionote.vercel.app](https://folionote.vercel.app)이 이 레포를 그대로 배포한 것이다.
+그 사이트의 내용은 Notion 페이지 하나이고, 이 레포의 `site.config.ts`가 그 페이지를
+가리킨다. 즉 **데모 사이트가 곧 설정 예시**다.
+
+fork한 뒤 `rootNotionPageId`, `name`, `domain` 셋만 자기 값으로 바꾸면 바로 뜬다.
+자세한 순서는 [setup-guide](docs/setup-guide.md)에 있다.
 
 ## 라이선스
 

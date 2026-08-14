@@ -3,25 +3,31 @@ import { siteConfig } from './lib/site-config'
 // 이 파일은 /admin 화면에서 저장할 때 자동으로 다시 쓰인다.
 // 손으로 편집해도 되지만, 저장하면 포맷과 주석이 이 형식으로 정리된다.
 // @see lib/serialize-site-config.ts
+//
+// 아래 값은 데모 사이트(folionote.vercel.app)의 실제 설정이다. fork한 뒤
+// rootNotionPageId / name / domain 셋만 자기 값으로 바꾸면 바로 뜬다.
+// @see docs/setup-guide.md
 
 export default siteConfig({
   // 사이트 루트가 될 Notion 페이지 (필수)
-  rootNotionPageId: '99b5bedd671d454ab450b0c485b800a8',
+  rootNotionPageId: '3bcc0343b4fa81abafd4f7fb22799e14',
 
   // 특정 Notion 워크스페이스로 제한할 때만 지정
   rootNotionSpaceId: null,
 
   // 사이트 기본 정보 (필수)
-  name: '이도(李裪)',
+  name: 'folionote',
 
-  domain: 'leedo.me',
+  domain: 'folionote.vercel.app',
 
-  author: '이영훈',
+  author: 'nobel6018',
 
   // Open Graph 설명
-  description: '이도(李裪) - 이영훈의 기술 블로그',
+  description: 'Notion 페이지를 그대로 웹사이트로 발행하는 오픈소스',
 
   language: 'ko',
+
+  github: 'nobel6018/folionote',
 
   defaultPageIcon: null,
 
@@ -40,11 +46,9 @@ export default siteConfig({
 
   // pretty URL 매핑. 키가 경로, 값이 Notion 블록 ID(하이픈 없는 32자 hex).
   // navigationLinks에서 url로 참조하는 경로는 여기에도 반드시 있어야 한다.
-  pageUrlOverrides: {
-    '/devs': 'df93c7ac0dfd4fdf8a9bdc367cdca3ec',
-    '/clouds': 'de87b7bd73cb416392a9df715e0a9c0e',
-    '/books': '5b5cb9bdc8204dcdabc57ceb7b91f858'
-  },
+  //
+  // 데모는 한 페이지짜리라 매핑이 없다. 컬렉션을 쓰면 이렇게 적는다.
+  //   pageUrlOverrides: { '/blog': '컬렉션 페이지 ID' }
 
   // 컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)
   dateFormat: 'YYYY/MM/DD',
@@ -61,25 +65,17 @@ export default siteConfig({
     dark: '/logo-dark.png',
     height: 20,
     href: '/',
-    alt: '이도'
+    alt: 'folionote'
   },
 
   // 'custom'이면 레퍼런스 서비스 풍 자체 헤더, 'default'면 react-notion-x 기본 헤더
   navigationStyle: 'custom',
 
-  // 헤더에 노출할 nav 링크
+  // 헤더에 노출할 nav 링크. 외부 주소도 넣을 수 있다.
   navigationLinks: [
     {
-      title: '개발',
-      url: '/devs'
-    },
-    {
-      title: 'AWS',
-      url: '/clouds'
-    },
-    {
-      title: '독서',
-      url: '/books'
+      title: 'GitHub',
+      url: 'https://github.com/nobel6018/folionote'
     }
   ],
 
@@ -95,6 +91,11 @@ export default siteConfig({
         title: '홈',
         url: '/',
         icon: '🏠'
+      },
+      {
+        title: 'GitHub',
+        url: 'https://github.com/nobel6018/folionote',
+        icon: '🧩'
       }
     ]
   }
