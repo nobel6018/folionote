@@ -143,3 +143,38 @@ pre[class*='language-']:after {
 .dark-mode .style .token.string {
   background: none;
 }
+
+/* ── 다크 모드 드래그 선택 ───────────────────────────────── */
+/*
+ * prism 기본 테마는 코드 선택 배경을 #b3d4fc(밝은 하늘색)로 못박는다
+ * (prism.css:37-41). 라이트 코드 배경에서는 어두운 구문 색과 맞물려 잘 읽히지만,
+ * 다크에서는 밝은 배경에 밝은 구문 색이 겹쳐 글자가 사라진다. 계산해보면 우리
+ * 다크 토큰 8종 전부 1.03~1.46:1이다. 선택하는 순간 코드가 안 보인다.
+ *
+ * 레퍼런스 사이트(레퍼런스 서비스)를 다크로 켜서 스크린샷 픽셀을 뽑아 재보니 레퍼런스 서비스는 이렇게 한다.
+ *   코드 선택: 배경 #30627f, 글자를 near-white(#ebf0f2)로 **덮어쓴다**
+ *   본문 선택: 배경 #2e4256, 글자는 그대로(이미 near-white)
+ *
+ * 즉 코드에서는 구문 색을 유지하지 않고 흰 글자로 통일한다. 선택은 잠깐 보는
+ * 상태이고, 구문 색을 살리려 하면 어떤 배경을 골라도 일부 토큰이 대비를 잃는다.
+ * (#30627f에 구문 색을 그대로 두면 3.3~4.4:1로 여전히 AA 미달이다.)
+ *
+ * 적용 후: 코드 선택 5.75:1, 본문 선택 8.94:1.
+ */
+.dark-mode pre[class*='language-']::selection,
+.dark-mode pre[class*='language-'] ::selection,
+.dark-mode code[class*='language-']::selection,
+.dark-mode code[class*='language-'] ::selection {
+  background: #30627f;
+  color: #ebf0f2;
+  text-shadow: none;
+}
+
+.dark-mode pre[class*='language-']::-moz-selection,
+.dark-mode pre[class*='language-'] ::-moz-selection,
+.dark-mode code[class*='language-']::-moz-selection,
+.dark-mode code[class*='language-'] ::-moz-selection {
+  background: #30627f;
+  color: #ebf0f2;
+  text-shadow: none;
+}
