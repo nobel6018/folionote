@@ -21,12 +21,12 @@ customCode: {
 }
 ```
 
-| 항목 | 위치 | 용도 |
-|---|---|---|
+| 항목        | 위치               | 용도                             |
+| ----------- | ------------------ | -------------------------------- |
 | `bodyStart` | `<body>` 시작 직후 | 먼저 실행돼야 하는 분석 스크립트 |
-| `bodyEnd` | `</body>` 직전 | 늦게 떠도 되는 채팅 위젯 |
-| `css` | 문서 맨 끝 | 사이트 CSS를 덮어쓰는 규칙 |
-| `metaTags` | `<head>` | 검색엔진 인증 등 메타 태그 |
+| `bodyEnd`   | `</body>` 직전     | 늦게 떠도 되는 채팅 위젯         |
+| `css`       | 문서 맨 끝         | 사이트 CSS를 덮어쓰는 규칙       |
+| `metaTags`  | `<head>`           | 검색엔진 인증 등 메타 태그       |
 
 ### 왜 `<head>`에 원본 HTML을 넣는 항목이 없는가
 
@@ -96,16 +96,16 @@ pageMeta: {
 
 ## 관련 코드
 
-| 파일 | 역할 |
-|---|---|
-| `lib/site-config.ts` | `CustomCodeConfig`, `PageMetaOverride` 타입 |
-| `lib/config.ts` | `customCode`, `pageMeta` 해석 |
-| `lib/page-meta.ts` | ID 정규화 조회, `isNoindexPage` |
-| `pages/_document.tsx` | bodyStart/bodyEnd/css/metaTags 주입 |
-| `components/NotionPage.tsx` | 제목·설명·공유 이미지 덮어쓰기 적용 |
-| `components/PageHead.tsx` | `robots` 태그 |
-| `pages/sitemap.xml.tsx` | noindex 페이지 제외 |
-| `lib/serialize-site-config.ts` | 여러 줄 문자열을 템플릿 리터럴로 저장 |
+| 파일                           | 역할                                        |
+| ------------------------------ | ------------------------------------------- |
+| `lib/site-config.ts`           | `CustomCodeConfig`, `PageMetaOverride` 타입 |
+| `lib/config.ts`                | `customCode`, `pageMeta` 해석               |
+| `lib/page-meta.ts`             | ID 정규화 조회, `isNoindexPage`             |
+| `pages/_document.tsx`          | bodyStart/bodyEnd/css/metaTags 주입         |
+| `components/NotionPage.tsx`    | 제목·설명·공유 이미지 덮어쓰기 적용         |
+| `components/PageHead.tsx`      | `robots` 태그                               |
+| `pages/sitemap.xml.tsx`        | noindex 페이지 제외                         |
+| `lib/serialize-site-config.ts` | 여러 줄 문자열을 템플릿 리터럴로 저장       |
 
 ## 직렬화기에서 함께 고친 것
 

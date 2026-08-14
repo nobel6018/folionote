@@ -38,14 +38,16 @@ git add site.config.ts && git commit -m "chore: 사이트 설정 변경" && git 
 파일 1개만 수정하면 사이트 전체 톤 변경.
 
 ### Brand 색
+
 ```css
 :root {
-  --folio-brand-primary: #2e3439;   /* 기본 텍스트/포인트 */
-  --folio-brand-accent: #77a4fe;    /* selection, 호버 */
+  --folio-brand-primary: #2e3439; /* 기본 텍스트/포인트 */
+  --folio-brand-accent: #77a4fe; /* selection, 호버 */
 }
 ```
 
 ### 본문 폰트 변경
+
 1. 새 폰트 추가 — `styles/fonts.css` 수정 또는 `_app.tsx`에 `import` 추가
 2. `styles/folio-tokens.css`에서 `--folio-font-sans` 갱신
    ```css
@@ -53,11 +55,13 @@ git add site.config.ts && git commit -m "chore: 사이트 설정 변경" && git 
    ```
 
 ### Light/Dark 색
+
 - light는 `:root`에서 정의
 - dark는 `.dark-mode { ... }`에서 override
 - 다크모드는 `next-themes`가 `<html>` element에 클래스 부여 (3-state: system/light/dark, localStorage 저장)
 
 ### 레이아웃
+
 - `--folio-content-max-width` (708px) — 본문 텍스트 최대 폭
 - `--folio-page-max-width` (900px) — 페이지 컨테이너
 - `--folio-page-cover-height` (30vh / 200px) — 커버 이미지 높이
@@ -66,6 +70,7 @@ git add site.config.ts && git commit -m "chore: 사이트 설정 변경" && git 
 ## react-notion-x 클래스 직접 override
 
 `styles/folio-overrides.css`에서 `.notion-*` 클래스에 레퍼런스 서비스 풍 시각 적용. 필요한 부분 수정:
+
 - `.notion-callout`, `.notion-bookmark` 등 블록별 스타일
 - `.notion-page-cover-wrapper` — 커버 이미지 풀폭
 - `.notion-page-icon-hero` — 페이지 아이콘 좌측 정렬 + 사각형
@@ -77,16 +82,20 @@ git add site.config.ts && git commit -m "chore: 사이트 설정 변경" && git 
 ```tsx
 import { MyCallout } from './folio/MyCallout'
 
-const components = React.useMemo<Partial<NotionComponents>>(() => ({
-  Code: FolioCode,
-  Callout: MyCallout,   // ← 자체 구현 추가
-  // ...
-}), [])
+const components = React.useMemo<Partial<NotionComponents>>(
+  () => ({
+    Code: FolioCode,
+    Callout: MyCallout // ← 자체 구현 추가
+    // ...
+  }),
+  []
+)
 ```
 
 react-notion-x가 customizable한 컴포넌트:
+
 - `Code`, `Callout`, `Equation`, `Pdf`, `Modal`, `Tweet`, `Header`, `Image`, `Link`
-- `Bookmark`는 *customizable 아님* — CSS만 활용
+- `Bookmark`는 _customizable 아님_ — CSS만 활용
 
 ## 폰트 추가 임베드
 
@@ -96,6 +105,7 @@ react-notion-x가 customizable한 컴포넌트:
 ```
 
 또는 self-host로 더 빠른 로딩:
+
 ```css
 @font-face {
   font-family: 'MyFont';

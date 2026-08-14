@@ -9,52 +9,52 @@
 
 렌더링 결과를 재서 맞춰 놓은 값들이 어드민 설정과 일치했다. 추측이 아니라는 확인이다.
 
-| 항목 | 어드민 값 | folionote 토큰 |
-|---|---|---|
-| 모서리 둥글게 - 갤러리 및 보드 | 4 | `--folio-radius-md: 4px` |
-| 모서리 둥글게 - 이미지 | 0 | 커버 `border-radius: 0` |
-| 모서리 둥글게 - 콜아웃 | 4 | `--folio-radius-md` |
-| 페이지 너비 | 900 | `--folio-page-max-width: 900px` |
-| 상단 메뉴 높이 | 48 | `--folio-nav-row-height: 48px` |
-| 스크롤 시 블러 효과 | OFF | `backdrop-filter: none` |
-| 마우스 오버 효과 색상 | `#669DFD` | `--folio-brand-accent` |
+| 항목                           | 어드민 값 | folionote 토큰                  |
+| ------------------------------ | --------- | ------------------------------ |
+| 모서리 둥글게 - 갤러리 및 보드 | 4         | `--folio-radius-md: 4px`        |
+| 모서리 둥글게 - 이미지         | 0         | 커버 `border-radius: 0`        |
+| 모서리 둥글게 - 콜아웃         | 4         | `--folio-radius-md`             |
+| 페이지 너비                    | 900       | `--folio-page-max-width: 900px` |
+| 상단 메뉴 높이                 | 48        | `--folio-nav-row-height: 48px`  |
+| 스크롤 시 블러 효과            | OFF       | `backdrop-filter: none`        |
+| 마우스 오버 효과 색상          | `#669DFD` | `--folio-brand-accent`          |
 
 어드민의 "폰트 크기 16"은 예외다. 실제 nav 링크는 14px/700으로 렌더된다.
 어드민 라벨보다 실측을 따랐다.
 
 ## 홈 (사이트 기본)
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 호스트네임 | O | `site.config.ts` `domain` |
-| 연결된 Notion 주소 | O | `rootNotionPageId` |
-| 호스트네임 플랜 | 해당 없음 | SaaS 과금 개념 |
-| 리다이렉트 주소 | X | Vercel 도메인 설정으로 대체 |
-| 로고 (favicon) | 수동 | `public/` 파일 교체 |
-| 공유 이미지 (og:image) | 부분 | `defaultPageCover` + 페이지 `Social Image` 속성 |
-| 노션 커버를 og:image로 덮어쓰기 | O | 블록 커버를 우선 사용 (`PageHead`) |
-| 검색 엔진 허용 (robots.txt) | 토글 없음 | 항상 허용 (`pages/robots.txt.tsx`) |
-| 사이트맵 (sitemap.xml) | 토글 없음 | 항상 생성 (`pages/sitemap.xml.tsx`) |
+| 레퍼런스 서비스 설정                       | folionote  | 메모                                            |
+| ------------------------------- | --------- | ----------------------------------------------- |
+| 호스트네임                      | O         | `site.config.ts` `domain`                       |
+| 연결된 Notion 주소              | O         | `rootNotionPageId`                              |
+| 호스트네임 플랜                 | 해당 없음 | SaaS 과금 개념                                  |
+| 리다이렉트 주소                 | X         | Vercel 도메인 설정으로 대체                     |
+| 로고 (favicon)                  | 수동      | `public/` 파일 교체                             |
+| 공유 이미지 (og:image)          | 부분      | `defaultPageCover` + 페이지 `Social Image` 속성 |
+| 노션 커버를 og:image로 덮어쓰기 | O         | 블록 커버를 우선 사용 (`PageHead`)              |
+| 검색 엔진 허용 (robots.txt)     | 토글 없음 | 항상 허용 (`pages/robots.txt.tsx`)              |
+| 사이트맵 (sitemap.xml)          | 토글 없음 | 항상 생성 (`pages/sitemap.xml.tsx`)             |
 
 ## 스타일 > 기본 스타일
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 색상 테마 라이트 / 다크 | O | `colorTheme.mode`. 기본 `system`(3-state) |
-| 색상 테마 커스텀 (배경 + 폰트 색) | O | `colorTheme: { mode: 'custom', background, foreground }` |
-| 테마 선택 버튼 표시 | O | 테마를 고정하거나 custom을 쓰면 자동으로 감춘다 |
-| 공유 버튼 표시 | O | `isShareButtonEnabled`. 헤더 + 모바일 드로어 |
-| 검색 버튼 표시 | O | `isSearchEnabled` |
-| 페이지 경로 표시 | 토글 없음 | 항상 표시 |
-| 복제 버튼 표시 | X | |
-| 모서리 둥글게 (갤러리 / 이미지 / 콜아웃) | 고정값 | 토큰 수정으로 변경, 슬라이더는 없음 |
-| 페이지 너비 | 고정값 | `--folio-page-max-width` |
-| 계절별 특수 효과 | X | 눈, 벚꽃 등 |
-| 스크롤 프로그레스 바 | O | `scrollProgressBar`. 기본색 `#007FB8` (어드민과 동일) |
-| 페이지 맨 위로 버튼 | O | `backToTop`. 좌우 위치, 여백, 화면 너비에 맞추기 지원 |
-| 페이지뷰 카운트 | O | `pageViewCount`. Redis 필요, 기본 꺼짐 (아래 참고) |
-| 글 복사 방지 | X | |
-| 레퍼런스 서비스 로고 숨기기 | 해당 없음 | |
+| 레퍼런스 서비스 설정                                | folionote  | 메모                                                     |
+| ---------------------------------------- | --------- | -------------------------------------------------------- |
+| 색상 테마 라이트 / 다크                  | O         | `colorTheme.mode`. 기본 `system`(3-state)                |
+| 색상 테마 커스텀 (배경 + 폰트 색)        | O         | `colorTheme: { mode: 'custom', background, foreground }` |
+| 테마 선택 버튼 표시                      | O         | 테마를 고정하거나 custom을 쓰면 자동으로 감춘다          |
+| 공유 버튼 표시                           | O         | `isShareButtonEnabled`. 헤더 + 모바일 드로어             |
+| 검색 버튼 표시                           | O         | `isSearchEnabled`                                        |
+| 페이지 경로 표시                         | 토글 없음 | 항상 표시                                                |
+| 복제 버튼 표시                           | X         |                                                          |
+| 모서리 둥글게 (갤러리 / 이미지 / 콜아웃) | 고정값    | 토큰 수정으로 변경, 슬라이더는 없음                      |
+| 페이지 너비                              | 고정값    | `--folio-page-max-width`                                  |
+| 계절별 특수 효과                         | X         | 눈, 벚꽃 등                                              |
+| 스크롤 프로그레스 바                     | O         | `scrollProgressBar`. 기본색 `#007FB8` (어드민과 동일)    |
+| 페이지 맨 위로 버튼                      | O         | `backToTop`. 좌우 위치, 여백, 화면 너비에 맞추기 지원    |
+| 페이지뷰 카운트                          | O         | `pageViewCount`. Redis 필요, 기본 꺼짐 (아래 참고)       |
+| 글 복사 방지                             | X         |                                                          |
+| 레퍼런스 서비스 로고 숨기기                         | 해당 없음 |                                                          |
 
 ## 스타일 > 폰트
 
@@ -67,11 +67,11 @@ RIDIBatang, Gmarket Sans, DungGeunMo 등).
 folionote도 `font: { ko, en, ja }`로 언어별 지정을 받는다. 세 폰트를 font-family
 스택으로 합치면 브라우저가 글자마다 그 글자를 가진 폰트를 골라 쓴다.
 
-| 항목 | 상태 | 메모 |
-|---|---|---|
-| 언어별(Ko/En/Ja) 지정 | O | `font.ko` / `font.en` / `font.ja` |
-| 폰트 목록 제공 | 부분 | `lib/fonts.ts`에 22종. OFL/Apache로 CDN 배포가 명확한 것만 |
-| 고정폭 폰트 | O | `font.mono` |
+| 항목                  | 상태 | 메모                                                       |
+| --------------------- | ---- | ---------------------------------------------------------- |
+| 언어별(Ko/En/Ja) 지정 | O    | `font.ko` / `font.en` / `font.ja`                          |
+| 폰트 목록 제공        | 부분 | `lib/fonts.ts`에 22종. OFL/Apache로 CDN 배포가 명확한 것만 |
+| 고정폭 폰트           | O    | `font.mono`                                                |
 
 레퍼런스 서비스 목록 중 TmoneyRoundWind, NanumSquare, S-CoreDream, Gmarket Sans, RIDIBatang
 등은 상업적 이용은 무료지만 재배포 조건이 제각각이라 OSS 기본 레지스트리에
@@ -84,13 +84,13 @@ folionote도 `font: { ko, en, ja }`로 언어별 지정을 받는다. 세 폰트
 
 이 탭이 최근 작업한 컬렉션 렌더링과 그대로 대응한다.
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 검색 기능 숨기기 | O | `isCollectionSearchEnabled` (`components/folio/CollectionSearch.tsx`) |
-| 페이지 내 데이터베이스 속성 숨기기 | 토글 없음 | 항상 2열로 표시 |
-| 원본 데이터베이스로의 링크 비활성화 | X | |
-| 데이터베이스 뷰 목록 숨기기 | O | `isCollectionViewTabsEnabled` |
-| 페이지 경로에서 데이터베이스 페이지 숨기기 | 토글 없음 | 항상 크럼에 넣는다 (`components/folio/Breadcrumbs.tsx`) |
+| 레퍼런스 서비스 설정                                  | folionote  | 메모                                                                 |
+| ------------------------------------------ | --------- | -------------------------------------------------------------------- |
+| 검색 기능 숨기기                           | O         | `isCollectionSearchEnabled` (`components/folio/CollectionSearch.tsx`) |
+| 페이지 내 데이터베이스 속성 숨기기         | 토글 없음 | 항상 2열로 표시                                                      |
+| 원본 데이터베이스로의 링크 비활성화        | X         |                                                                      |
+| 데이터베이스 뷰 목록 숨기기                | O         | `isCollectionViewTabsEnabled`                                        |
+| 페이지 경로에서 데이터베이스 페이지 숨기기 | 토글 없음 | 항상 크럼에 넣는다 (`components/folio/Breadcrumbs.tsx`)               |
 
 컬렉션 내 검색은 레퍼런스 서비스와 같게 제목뿐 아니라 태그, 날짜까지 매칭한다. leedo에서
 "Kotlin"을 넣으면 제목에 Kotlin이 없는 "BFF GraphQL N+1 호출 개선"이 태그로
@@ -104,44 +104,44 @@ recordMap을 걸러 react-notion-x에 넘기는 대신 렌더된 항목에 클�
 
 ## 스타일 > 상단 메뉴바
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 좌측 로고 이미지 (테마별) | O | `logo.light` / `logo.dark`. 없으면 사이트 이름 텍스트 |
-| 로고 크기 | O | `logo.height` |
-| 로고 클릭 시 이동 URL | O | `logo.href` |
-| 상단 메뉴 높이 | O | `--folio-nav-row-height` |
-| 마우스 오버 효과 (텍스트 / 색상) | O | `--folio-nav-hover-color` |
-| 스크롤 시 상단 고정 | O | sticky |
-| 스크롤 시 블러 효과 | 고정 OFF | |
-| 메뉴 목록 (최대 5개) | O | `navigationLinks`, 개수 제한 없음 |
-| 모바일 메뉴 | O | 780px 이하에서 햄버거 + 우측 사이드 드로어 |
-| 서브메뉴 (PRO) | X | |
+| 레퍼런스 서비스 설정                        | folionote | 메모                                                  |
+| -------------------------------- | -------- | ----------------------------------------------------- |
+| 좌측 로고 이미지 (테마별)        | O        | `logo.light` / `logo.dark`. 없으면 사이트 이름 텍스트 |
+| 로고 크기                        | O        | `logo.height`                                         |
+| 로고 클릭 시 이동 URL            | O        | `logo.href`                                           |
+| 상단 메뉴 높이                   | O        | `--folio-nav-row-height`                               |
+| 마우스 오버 효과 (텍스트 / 색상) | O        | `--folio-nav-hover-color`                              |
+| 스크롤 시 상단 고정              | O        | sticky                                                |
+| 스크롤 시 블러 효과              | 고정 OFF |                                                       |
+| 메뉴 목록 (최대 5개)             | O        | `navigationLinks`, 개수 제한 없음                     |
+| 모바일 메뉴                      | O        | 780px 이하에서 햄버거 + 우측 사이드 드로어            |
+| 서브메뉴 (PRO)                   | X        |                                                       |
 
 ## 스타일 > CTA 버튼
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 버튼 내용 / 링크 | O | `cta.text` / `cta.href` |
-| 하단 공백 | O | `cta.bottomOffset` |
-| 색상 단일 / 그라데이션 | O | `cta.background` 또는 `cta.gradient` |
-| 글자색 / 그림자색 | O | `cta.color` / `cta.shadowColor` |
-| 새 브라우저 탭으로 열기 | O | `cta.newTab` |
-| 클릭 이벤트 측정 | 해당 없음 | 붙여 둔 분석 도구가 링크 클릭을 잡는다 |
+| 레퍼런스 서비스 설정               | folionote  | 메모                                   |
+| ----------------------- | --------- | -------------------------------------- |
+| 버튼 내용 / 링크        | O         | `cta.text` / `cta.href`                |
+| 하단 공백               | O         | `cta.bottomOffset`                     |
+| 색상 단일 / 그라데이션  | O         | `cta.background` 또는 `cta.gradient`   |
+| 글자색 / 그림자색       | O         | `cta.color` / `cta.shadowColor`        |
+| 새 브라우저 탭으로 열기 | O         | `cta.newTab`                           |
+| 클릭 이벤트 측정        | 해당 없음 | 붙여 둔 분석 도구가 링크 클릭을 잡는다 |
 
 ## 스타일 > 팝업 설정
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 팝업 추가 (개수 제한) | O | `popups` 배열. 개수 제한 없음 |
-| 메인 페이지만 보이기 | O | `popupOptions.mainPageOnly` |
-| 닫기 / 다시 보지 않기 | O | "다시 보지 않기"는 localStorage에 팝업 id로 기록 |
+| 레퍼런스 서비스 설정             | folionote | 메모                                             |
+| --------------------- | -------- | ------------------------------------------------ |
+| 팝업 추가 (개수 제한) | O        | `popups` 배열. 개수 제한 없음                    |
+| 메인 페이지만 보이기  | O        | `popupOptions.mainPageOnly`                      |
+| 닫기 / 다시 보지 않기 | O        | "다시 보지 않기"는 localStorage에 팝업 id로 기록 |
 
 ## 스타일 > 하단 네비게이터 (레퍼런스 서비스 PRO)
 
-| 레퍼런스 서비스 설정 | folionote | 메모 |
-|---|---|---|
-| 메뉴 목록 (최대 5개) | O | `bottomNavigation.links`. 개수 제한 없음 |
-| 색상 | O | `bottomNavigation.color`. 현재 페이지 항목 강조에 쓴다 |
+| 레퍼런스 서비스 설정            | folionote | 메모                                                   |
+| -------------------- | -------- | ------------------------------------------------------ |
+| 메뉴 목록 (최대 5개) | O        | `bottomNavigation.links`. 개수 제한 없음               |
+| 색상                 | O        | `bottomNavigation.color`. 현재 페이지 항목 강조에 쓴다 |
 
 좁은 화면(780px 이하)에서만 보인다. 탭바 높이만큼 본문 하단 여백과 떠 있는
 것들(CTA, 맨 위로, 팝업)을 밀어올린다.
@@ -153,7 +153,6 @@ recordMap을 걸러 react-notion-x에 넘기는 대신 렌더된 항목에 클�
 - **원본 데이터베이스로의 링크 비활성화**
 - **리다이렉트 주소** (Vercel 도메인 설정으로 대체)
 - **robots.txt / sitemap.xml 토글** (현재는 항상 켜짐)
-
 
 ## 페이지뷰 카운트
 
@@ -178,13 +177,13 @@ recordMap을 걸러 react-notion-x에 넘기는 대신 렌더된 항목에 클�
 "Notion보다 어둡게 느껴진다"는 의견이 있어 세 곳을 나란히 재봤다. 결론은
 **우리는 레퍼런스 서비스와 모든 항목이 동일하고, Notion 쪽이 오히려 더 어둡다**는 것이다.
 
-| 항목 | Notion 앱 | 레퍼런스 서비스 (레퍼런스 사이트) | folionote |
-|---|---|---|---|
-| 본문 글자색 | `rgb(44,44,43)` | `rgb(55,53,47)` | `rgb(55,53,47)` |
-| 배경 | `#fff` | `#fff` | `#fff` |
-| 줄높이 | 24px | 24px | 24px |
-| 자간 / 굵기 | normal / 400 | normal / 400 | normal / 400 |
-| 같은 문자열 렌더 폭 | 182.9px | 182.9px | 182.9px |
+| 항목                | Notion 앱       | 레퍼런스 서비스 (레퍼런스 사이트) | folionote        |
+| ------------------- | --------------- | ------------------ | --------------- |
+| 본문 글자색         | `rgb(44,44,43)` | `rgb(55,53,47)`    | `rgb(55,53,47)` |
+| 배경                | `#fff`          | `#fff`             | `#fff`          |
+| 줄높이              | 24px            | 24px               | 24px            |
+| 자간 / 굵기         | normal / 400    | normal / 400       | normal / 400    |
+| 같은 문자열 렌더 폭 | 182.9px         | 182.9px            | 182.9px         |
 
 Notion은 중성 near-black(`#2C2C2B`)으로 바꿨고 레퍼런스 서비스는 따뜻한 `#37352F`를 유지한다.
 레퍼런스 서비스 기준을 지키기로 해서 우리도 `#37352F`를 쓴다. Notion 톤으로 가려면

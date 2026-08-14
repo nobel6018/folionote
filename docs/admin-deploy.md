@@ -36,9 +36,9 @@ Keystatic과 Decap CMS(구 Netlify CMS)가 같은 구조를 씁니다.
 
 <https://github.com/settings/developers> 에서 New OAuth App을 누릅니다.
 
-| 항목 | 값 |
-|---|---|
-| Homepage URL | `https://내도메인` |
+| 항목                       | 값                                         |
+| -------------------------- | ------------------------------------------ |
+| Homepage URL               | `https://내도메인`                         |
 | Authorization callback URL | `https://내도메인/api/admin/auth/callback` |
 
 Client ID와 Client secret을 받아둡니다.
@@ -47,14 +47,14 @@ Client ID와 Client secret을 받아둡니다.
 
 Vercel 프로젝트 설정의 Environment Variables에 넣습니다.
 
-| 변수 | 필수 | 설명 |
-|---|---|---|
-| `GITHUB_OAUTH_CLIENT_ID` | O | OAuth 앱의 Client ID |
-| `GITHUB_OAUTH_CLIENT_SECRET` | O | OAuth 앱의 Client secret |
-| `ADMIN_SESSION_SECRET` | O | 세션 쿠키 암호화 키. `openssl rand -base64 32`로 만듭니다 |
-| `GITHUB_REPO` | 조건부 | `owner/repo`. Vercel에서는 자동으로 잡히므로 생략합니다 |
-| `GITHUB_BRANCH` | X | 커밋할 브랜치. 기본은 현재 배포 브랜치 |
-| `ADMIN_CONFIG_PATH` | X | 설정 파일 경로. 기본 `site.config.ts` |
+| 변수                         | 필수   | 설명                                                      |
+| ---------------------------- | ------ | --------------------------------------------------------- |
+| `GITHUB_OAUTH_CLIENT_ID`     | O      | OAuth 앱의 Client ID                                      |
+| `GITHUB_OAUTH_CLIENT_SECRET` | O      | OAuth 앱의 Client secret                                  |
+| `ADMIN_SESSION_SECRET`       | O      | 세션 쿠키 암호화 키. `openssl rand -base64 32`로 만듭니다 |
+| `GITHUB_REPO`                | 조건부 | `owner/repo`. Vercel에서는 자동으로 잡히므로 생략합니다   |
+| `GITHUB_BRANCH`              | X      | 커밋할 브랜치. 기본은 현재 배포 브랜치                    |
+| `ADMIN_CONFIG_PATH`          | X      | 설정 파일 경로. 기본 `site.config.ts`                     |
 
 Vercel은 git 연동 프로젝트에 `VERCEL_GIT_REPO_OWNER`와 `VERCEL_GIT_REPO_SLUG`를
 넣어줍니다. 그래서 Vercel에 올렸다면 위의 셋만 넣으면 됩니다. 다른 호스트에서는
@@ -103,14 +103,14 @@ POST에는 실리지 않지만, 서버에서 한 번 더 봅니다. 방어를 �
 
 ## 관련 코드
 
-| 파일 | 역할 |
-|---|---|
-| `lib/admin/env.ts` | 환경변수 해석, 어드민 켜짐 판정 |
-| `lib/admin/session.ts` | 세션 쿠키 암호화·복호화, state 쿠키 |
-| `lib/admin/github.ts` | OAuth 교환, 푸시 권한 확인, 커밋 |
-| `lib/admin/request.ts` | 세션 읽기, Origin 확인 |
-| `pages/api/admin/auth/login.ts` | OAuth 시작 |
-| `pages/api/admin/auth/callback.ts` | OAuth 콜백, 인가, 세션 발급 |
-| `pages/api/admin/auth/logout.ts` | 세션 쿠키 삭제 |
-| `pages/api/admin/config.ts` | 설정 읽기, 로컬 저장 또는 커밋 |
-| `pages/admin.tsx` | 설정 화면, 로그인 화면 |
+| 파일                               | 역할                                |
+| ---------------------------------- | ----------------------------------- |
+| `lib/admin/env.ts`                 | 환경변수 해석, 어드민 켜짐 판정     |
+| `lib/admin/session.ts`             | 세션 쿠키 암호화·복호화, state 쿠키 |
+| `lib/admin/github.ts`              | OAuth 교환, 푸시 권한 확인, 커밋    |
+| `lib/admin/request.ts`             | 세션 읽기, Origin 확인              |
+| `pages/api/admin/auth/login.ts`    | OAuth 시작                          |
+| `pages/api/admin/auth/callback.ts` | OAuth 콜백, 인가, 세션 발급         |
+| `pages/api/admin/auth/logout.ts`   | 세션 쿠키 삭제                      |
+| `pages/api/admin/config.ts`        | 설정 읽기, 로컬 저장 또는 커밋      |
+| `pages/admin.tsx`                  | 설정 화면, 로그인 화면              |

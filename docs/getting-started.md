@@ -5,7 +5,7 @@ folionote로 자신의 Notion 페이지를 정적 사이트로 띄우는 5단계
 ## 1. Notion 페이지 준비
 
 1. Notion에서 사이트의 root 페이지를 결정 (예: "내 블로그")
-2. 페이지 우상단 *Share* → *"Anyone with the link"*로 공개
+2. 페이지 우상단 _Share_ → *"Anyone with the link"*로 공개
 3. 페이지 URL에서 **page ID** 추출 — URL 끝의 32자 hex
    ```
    https://www.notion.so/My-Site-67890abcdef1234567890abcdef12345
@@ -24,7 +24,7 @@ pnpm install   # 또는 npm/yarn
 
 ```ts
 export default siteConfig({
-  rootNotionPageId: 'YOUR_NOTION_PAGE_ID',  // ← 1단계에서 추출한 32자
+  rootNotionPageId: 'YOUR_NOTION_PAGE_ID', // ← 1단계에서 추출한 32자
   name: 'My Site',
   domain: 'mysite.com',
   author: 'Your Name',
@@ -58,6 +58,7 @@ pnpm dev
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnobel6018%2Ffolionote)
 
 또는 CLI:
+
 ```bash
 vercel       # preview
 vercel --prod

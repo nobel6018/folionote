@@ -19,6 +19,7 @@ vercel --prod
 ```
 
 질문 답변 (대부분 기본값 OK):
+
 - **Set up and deploy** → Y
 - **Link to existing project** → N (새 project 생성)
 - **Project name** → `folionote` 또는 자유
@@ -29,6 +30,7 @@ vercel --prod
 ## 환경변수 (Vercel UI)
 
 대부분 optional. 필요 시 Vercel project Settings → Environment Variables에 추가:
+
 - `NEXT_PUBLIC_FATHOM_ID`, `NEXT_PUBLIC_POSTHOG_ID` — analytics
 - `REDIS_HOST`, `REDIS_PASSWORD` — preview image cache (Vercel KV / Upstash)
 - `TWITTER_ACCESS_TOKEN` — 트윗 embed
@@ -40,11 +42,13 @@ vercel --prod
 Vercel UI: Project Settings → Domains → "Add Domain" → 도메인 입력
 
 또는 CLI:
+
 ```bash
 vercel domains add mydomain.com folionote
 ```
 
 Vercel이 DNS instruction 표시:
+
 - **Subdomain** (예: `blog.mydomain.com`):
   ```
   Type:  CNAME
@@ -61,16 +65,19 @@ Vercel이 DNS instruction 표시:
 ### Step 2: DNS provider에 record 추가
 
 #### Cloudflare
+
 1. DNS → Records → Add record
 2. Vercel 안내 값 그대로 입력
 3. Proxy status: **DNS only** (회색 구름) — Vercel이 SSL 처리하므로 Cloudflare proxy 불필요
 4. Save
 
 #### AWS Route 53
+
 1. Hosted zones → 자기 도메인 → Create record
-2. Vercel 안내 값 그대로 입력. Apex 도메인은 *ALIAS to Vercel* 또는 *A record 76.76.21.21* 둘 다 가능
+2. Vercel 안내 값 그대로 입력. Apex 도메인은 _ALIAS to Vercel_ 또는 _A record 76.76.21.21_ 둘 다 가능
 
 #### AWS CLI 예시 (Subdomain)
+
 ```bash
 aws route53 change-resource-record-sets \
   --hosted-zone-id <ZONE_ID> \
@@ -92,6 +99,7 @@ aws route53 change-resource-record-sets \
 Vercel이 Let's Encrypt SSL을 자동 발급 (1-5분).
 
 검증:
+
 ```bash
 curl -I https://mydomain.com
 # → status 200 + Vercel headers
@@ -105,12 +113,13 @@ curl -I https://mydomain.com
 2. **301 redirect 셋업**: 기존 URL → 새 URL
    - 레퍼런스 서비스: 어드민에서 redirect 셋업 가능 여부 확인
    - 또는 기존 도메인을 Vercel에 추가 + Vercel rewrites로 308 redirect
-3. **Google Search Console** *Change of Address* tool로 새 도메인 등록 + 변경 알림
+3. **Google Search Console** _Change of Address_ tool로 새 도메인 등록 + 변경 알림
 4. **sitemap.xml 갱신**: 새 도메인 기준으로 다시 제출
 
 ## ISR + 캐시 전략
 
 빌드 시 152 페이지 동시 SSG는 Notion API rate limit (429)에 걸려 실패. 우리는:
+
 - **메인 페이지**: SSG + revalidate 600s (10분 ISR)
 - **본문 페이지**: `fallback: 'blocking'` lazy SSG — 첫 요청 시 server-side fetch + 캐시
 - **sitemap.xml**: 8h CDN cache + memory cache + fallback (3-tier 방어)

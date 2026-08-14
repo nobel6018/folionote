@@ -18,12 +18,12 @@ Notion 페이지를 웹사이트로 띄우기까지 필요한 전부를 담습�
 
 셋업이 끝나면 이렇게 됩니다.
 
-| 항목 | 결과 |
-|---|---|
-| 사이트 | Notion 내용이 그대로 웹사이트로 발행됨 |
-| 도메인 | 본인 도메인으로 접속 (Cloudflare에서 구입) |
-| 설정 변경 | 배포된 `/admin`에서 GitHub 로그인 후 수정 |
-| 글 수정 | Notion에서 고치면 최대 10분 안에 반영 (ISR) |
+| 항목      | 결과                                        |
+| --------- | ------------------------------------------- |
+| 사이트    | Notion 내용이 그대로 웹사이트로 발행됨      |
+| 도메인    | 본인 도메인으로 접속 (Cloudflare에서 구입)  |
+| 설정 변경 | 배포된 `/admin`에서 GitHub 로그인 후 수정   |
+| 글 수정   | Notion에서 고치면 최대 10분 안에 반영 (ISR) |
 
 ---
 
@@ -48,10 +48,11 @@ AI든 스크립트든 대신 못 하는 일입니다. API가 없어서 브라우
 > **README에 넣을 때**: 아래 블록을 복사 버튼이 있는 코드 펜스로 감쌉니다.
 > 사용자가 통째로 복사해 붙여넣는 게 핵심입니다.
 
-````markdown
+```markdown
 folionote로 내 Notion 페이지를 웹사이트로 만들어줘. 아래 순서로 진행해줘.
 
 내 정보:
+
 - Notion 페이지 URL: <여기에 붙여넣기>
 - 사이트 이름: <예: 이도(李裪)>
 - 내 이름: <예: 이영훈>
@@ -90,22 +91,22 @@ folionote로 내 Notion 페이지를 웹사이트로 만들어줘. 아래 순서
 
 각 단계가 끝날 때마다 실제로 동작하는지 확인하고 결과를 알려줘.
 추측하지 말고 확인한 것만 보고해줘.
-````
+```
 
 ### 자동 셋업에서 에이전트가 실제로 하는 일
 
 README에는 안 넣어도 되지만, 무엇이 자동화되는지 남겨둡니다.
 
-| 단계 | 명령 |
-|---|---|
-| 포크 | `gh repo fork nobel6018/folionote --clone` |
-| 페이지 ID 추출 | URL 끝의 32자 hex |
-| 프로젝트 연결 | `vercel link` |
-| 배포 | `vercel --prod` 또는 git push |
-| 도메인 연결 | `vercel domains add <도메인>` |
-| DNS | Cloudflare API `POST /zones/{id}/dns_records` |
-| 환경변수 | `vercel env add <이름> production` |
-| 세션 비밀 생성 | `openssl rand -base64 32` |
+| 단계           | 명령                                          |
+| -------------- | --------------------------------------------- |
+| 포크           | `gh repo fork nobel6018/folionote --clone`     |
+| 페이지 ID 추출 | URL 끝의 32자 hex                             |
+| 프로젝트 연결  | `vercel link`                                 |
+| 배포           | `vercel --prod` 또는 git push                 |
+| 도메인 연결    | `vercel domains add <도메인>`                 |
+| DNS            | Cloudflare API `POST /zones/{id}/dns_records` |
+| 환경변수       | `vercel env add <이름> production`            |
+| 세션 비밀 생성 | `openssl rand -base64 32`                     |
 
 ---
 
@@ -142,7 +143,7 @@ export default siteConfig({
   rootNotionPageId: '99b5bedd671d454ab450b0c485b800a8',
   name: '이도(李裪)',
   domain: 'leedo.me',
-  author: '이영훈',
+  author: '이영훈'
   // 나머지는 기본값으로 두고 나중에 /admin에서 고쳐도 됩니다
 })
 ```
@@ -156,29 +157,33 @@ pnpm dev        # http://localhost:3000
 설정을 화면에서 고치고 싶으면 <http://localhost:3000/admin> 을 엽니다. 로컬
 어드민은 인증 없이 열리고 저장하면 `site.config.ts`를 바로 고칩니다.
 
-### 2-4. 배포
+### 2-4. 배포 (Vercel)
 
-Vercel과 Cloudflare Workers 중 고릅니다.
+호스팅은 Vercel에 둡니다. 도메인은 Cloudflare에서 사도 되고, 둘을 같은 곳에 둘
+필요는 없습니다. Workers로 옮기는 것을 검토했다가 접은 이유는 아래에 있습니다.
 
 #### Vercel
 
 <https://vercel.com/new> 에서 포크한 리포를 import하면 끝입니다. 설정을 건드릴 게
 없습니다. 이후 main에 푸시할 때마다 자동 배포됩니다.
 
-#### Cloudflare Workers
+#### Cloudflare Workers는 권하지 않습니다
 
-Cloudflare에서 도메인을 살 거라면 배포도 같은 곳에서 하는 편이 DNS 설정이
-줄어듭니다. Next.js를 Workers에 올리려면 어댑터가 필요합니다.
+Cloudflare에서 도메인을 사면 배포도 같은 곳에서 하고 싶어집니다. 실제로
+`@opennextjs/cloudflare`로 옮겨서 Worker 런타임에 올려봤고, **기능 두 개를 잃는
+것을 확인했습니다.** 도메인만 Cloudflare에 두고 배포는 Vercel에 두는 편이
+낫습니다. 자세한 실측은 [cloudflare-migration](./cloudflare-migration.md)에 있습니다.
 
-```bash
-pnpm add -D @opennextjs/cloudflare wrangler
-npx opennextjs-cloudflare build
-npx wrangler deploy
-```
+요약하면 사이트 페이지, 사이트맵, RSS, robots는 전부 정상이고 Worker 크기도
+압축 1.78MiB로 무료 한도(3MiB) 안에 들어갑니다. 문제는 다음 둘입니다.
 
-> **확인 필요**: 이 프로젝트는 현재 Vercel에서만 검증했습니다. Cloudflare 경로는
-> ISR(`revalidate`)과 `/api/social-image`의 이미지 생성이 Workers 런타임에서
-> 그대로 도는지 확인이 필요합니다. 실제로 배포해본 뒤 이 문단을 확정하세요.
+- **소셜 이미지가 죽습니다.** `next/og`가 폰트와 WASM을 `fs`로 읽는데 Cloudflare의
+  Node 심에 `fs.readFileSync`가 없습니다. 링크를 공유해도 카드가 안 뜹니다.
+- **LQIP 블러 미리보기가 불가능합니다.** 네이티브 모듈 `sharp`에 의존하는데
+  Workers에는 네이티브 바이너리를 올릴 수 없습니다. 우회 방법이 없습니다.
+
+이 둘을 포기할 수 있다면 옮겨도 됩니다. 그 경우 필요한 작업은 위 문서에 정리해
+뒀고, `feat/cloudflare-deploy` 브랜치에 동작하는 설정이 들어 있습니다.
 
 ### 2-5. 도메인 붙이기 (Cloudflare)
 
@@ -212,20 +217,13 @@ Domains. 등록하면 네임서버가 자동으로 Cloudflare로 잡힙니다.
 **Vercel에 연결하는 경우** — Vercel 프로젝트의 Settings → Domains에 도메인을
 넣으면 필요한 레코드를 알려줍니다. 그 값을 Cloudflare DNS에 넣습니다.
 
-| 타입 | 이름 | 값 | 프록시 |
-|---|---|---|---|
-| A | `@` | `76.76.21.21` | 끔 (DNS only) |
+| 타입  | 이름  | 값                     | 프록시        |
+| ----- | ----- | ---------------------- | ------------- |
+| A     | `@`   | `76.76.21.21`          | 끔 (DNS only) |
 | CNAME | `www` | `cname.vercel-dns.com` | 끔 (DNS only) |
 
 프록시(주황 구름)를 반드시 꺼야 합니다. 켜두면 Cloudflare와 Vercel이 각각 SSL을
 처리하려 들어 리다이렉트 루프가 납니다.
-
-**Cloudflare Workers에 배포한 경우** — `wrangler.toml`에 라우트를 적으면 DNS가
-자동으로 잡힙니다.
-
-```toml
-routes = [{ pattern = "leedo.me/*", zone_name = "leedo.me" }]
-```
 
 ### 2-6. 배포된 사이트에서 설정 고치기 (선택)
 
@@ -237,10 +235,10 @@ routes = [{ pattern = "leedo.me/*", zone_name = "leedo.me" }]
 **GitHub OAuth 앱 등록** — <https://github.com/settings/applications/new> 에서
 만듭니다.
 
-| 항목 | 값 |
-|---|---|
-| Application name | 아무거나 (예: `folionote admin`) |
-| Homepage URL | `https://내도메인` |
+| 항목                       | 값                                         |
+| -------------------------- | ------------------------------------------ |
+| Application name           | 아무거나 (예: `folionote admin`)            |
+| Homepage URL               | `https://내도메인`                         |
 | Authorization callback URL | `https://내도메인/api/admin/auth/callback` |
 
 콜백 URL이 한 글자라도 다르면 로그인이 거부됩니다. Client secret은 생성 직후에만
@@ -249,11 +247,11 @@ routes = [{ pattern = "leedo.me/*", zone_name = "leedo.me" }]
 **환경변수 등록** — 호스팅의 환경변수 설정에 셋을 넣고 재배포합니다. 환경변수는
 빌드 시점에 잡히므로 재배포해야 켜집니다.
 
-| 변수 | 값 |
-|---|---|
-| `GITHUB_OAUTH_CLIENT_ID` | 앱 등록하면 나옴 |
+| 변수                         | 값                           |
+| ---------------------------- | ---------------------------- |
+| `GITHUB_OAUTH_CLIENT_ID`     | 앱 등록하면 나옴             |
 | `GITHUB_OAUTH_CLIENT_SECRET` | Generate a new client secret |
-| `ADMIN_SESSION_SECRET` | `openssl rand -base64 32` |
+| `ADMIN_SESSION_SECRET`       | `openssl rand -base64 32`    |
 
 Vercel에서는 리포와 브랜치가 자동으로 잡힙니다. 다른 호스트에서는 `GITHUB_REPO`에
 `owner/repo`를 직접 줍니다.
@@ -306,11 +304,11 @@ README는 3번에서 끝나야 합니다. 대부분의 사람은 프롬프트만
 본문에 길게 쓰기 아까운, 그러나 사용자가 알면 이득인 것들입니다. 수동 셋업 절
 안에 인용 블록으로 한 줄씩 넣습니다.
 
-| 위치 | 문구 |
-|---|---|
+| 위치        | 문구                                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------------------- |
 | 도메인 구입 | Cloudflare는 도메인을 도매가 그대로 팔고 갱신가도 같습니다. 첫해 할인 뒤 갱신가가 뛰는 곳과 총액이 달라집니다 |
-| 도메인 구입 | WHOIS 프라이버시가 기본 포함입니다. 따로 받는 곳이 많습니다 |
-| DNS 설정 | Vercel에 붙일 때는 프록시(주황 구름)를 꺼야 합니다 |
-| Notion | 페이지가 공개 상태여야 합니다. 비공식 API로 읽습니다 |
-| 반영 | Notion 수정은 최대 10분 뒤 반영됩니다 (ISR) |
-| 어드민 | 환경변수를 안 넣으면 `/admin`은 404입니다. 기본이 꺼짐입니다 |
+| 도메인 구입 | WHOIS 프라이버시가 기본 포함입니다. 따로 받는 곳이 많습니다                                                   |
+| DNS 설정    | Vercel에 붙일 때는 프록시(주황 구름)를 꺼야 합니다                                                            |
+| Notion      | 페이지가 공개 상태여야 합니다. 비공식 API로 읽습니다                                                          |
+| 반영        | Notion 수정은 최대 10분 뒤 반영됩니다 (ISR)                                                                   |
+| 어드민      | 환경변수를 안 넣으면 `/admin`은 404입니다. 기본이 꺼짐입니다                                                  |
