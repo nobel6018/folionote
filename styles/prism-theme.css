@@ -41,6 +41,23 @@ pre[class*='language-']:after {
  * 건드리지 않는다. */
 
 /* ── 다크 모드 토큰 ─────────────────────────────────────── */
+/*
+ * 배경은 Notion 다크의 코드 블록 값(#3f4447)이다. react-notion-x가 들고 있는
+ * Notion 팔레트의 --bg-color-1과 같다.
+ *
+ * 원래는 starter-kit이 물려준 Tailwind 파스텔(#93c5fd, #c4b5fd, #f9a8d4 …)을
+ * 썼다. 대비는 5.3~5.5:1로 AA를 넘었는데도 읽기 나빴다. 이유는 대비가 아니라
+ * 색조였다. 키워드가 연한 파랑, 문자열이 연한 보라라서 둘이 사실상 같은 색으로
+ * 보이고, 코드 전체가 한 덩어리로 뭉갰다. 구분이 안 되면 대비가 충분해도 못 읽는다.
+ *
+ * 색조를 갈라주는 One Dark 계열로 바꾸고, #3f4447 위에서 쓸 수 있게 밝기를 올렸다.
+ * 원본 One Dark는 더 어두운 배경(#282c34)을 상정해서 그대로 쓰면 키워드 4.17:1,
+ * 숫자 4.00:1로 AA에 미달한다.
+ *
+ * 전부 계산해서 확인한 값이다 (AA 4.5:1 기준):
+ *   본문 9.44 / punctuation 6.17 / comment 4.95 / keyword 5.22
+ *   string 5.92 / function 6.62 / number 5.13 / operator 5.67
+ */
 .dark-mode code[class*='language-'],
 .dark-mode pre[class*='language-'] {
   color: rgba(249, 250, 251, 1);
@@ -49,11 +66,10 @@ pre[class*='language-']:after {
 .dark-mode .token.doctype,
 .dark-mode .token.prolog,
 .dark-mode .token.punctuation {
-  color: rgba(209, 213, 219, 1);
+  color: #c9cdd1;
 }
-/* 주석은 원래 #7f9f7f였는데 다크 코드 배경(#3f4447)에서 대비가 3.37:1로
- * AA 기준(4.5:1)에 미달했다. 주석은 흐릿해야 하지만 못 읽을 정도면 안 된다.
- * 같은 색조를 유지하며 밝기만 올려 4.95:1로 맞췄다. */
+/* 주석은 흐릿해야 하지만 못 읽을 정도면 안 된다. 원래 #7f9f7f가 3.37:1로
+ * 미달이었다. 색조를 유지하며 밝기만 올렸다. */
 .dark-mode .token.comment {
   color: #a3bfa3;
 }
@@ -64,7 +80,7 @@ pre[class*='language-']:after {
 .dark-mode .token.property,
 .dark-mode .token.symbol,
 .dark-mode .token.tag {
-  color: #6ee7b7;
+  color: #e8b07a;
 }
 .dark-mode .token.attr-name,
 .dark-mode .token.builtin,
@@ -72,16 +88,16 @@ pre[class*='language-']:after {
 .dark-mode .token.inserted,
 .dark-mode .token.selector,
 .dark-mode .token.string {
-  color: #c4b5fd;
+  color: #a6d68a;
 }
 .dark-mode .token.atrule,
 .dark-mode .token.attr-value,
 .dark-mode .token.keyword {
-  color: #93c5fd;
+  color: #7cc4f8;
 }
 .dark-mode .token.class-name,
 .dark-mode .token.function {
-  color: #f9a8d4;
+  color: #f0d08a;
 }
 .dark-mode .token.entity,
 .dark-mode .token.operator,
@@ -89,7 +105,7 @@ pre[class*='language-']:after {
 .dark-mode .token.important,
 .dark-mode .token.regex,
 .dark-mode .token.variable {
-  color: #fcd34d;
+  color: #6fd3e0;
 }
 
 /* 연산자·URL·정규식에 씌워진 흰 배경을 벗긴다.
