@@ -103,11 +103,53 @@ function renderUserMentionsAsText(recordMap: ExtendedRecordMap) {
   }
 }
 
+/** 노션이 직접 호스팅하는 파일인지. notion-client가 서명 대상을 고르는 기준과 같다. */
+function isNotionHostedFile(source: string): boolean {
+  return (
+    source.includes('secure.notion-static.com') ||
+    source.includes('prod-files-secure') ||
+    source.includes('attachment:')
+  )
+}
+
+/**
+ * 동영상·파일·PDF·오디오의 주소를 만료되지 않는 노션 리다이렉터로 바꾼다.
+ *
+ * notion-client는 `getSignedFileUrls`로 받은 **서명된** S3 주소를
+ * `recordMap.signed_urls`에 채우고, react-notion-x는 그걸 그대로 `<video src>`에
+ * 박는다(build/index.js:825). 그런데 이 서명은 6시간 남짓이면 만료된다. ISR은
+ * 요청이 와야 재생성하므로 한동안 방문이 없던 페이지는 그 사이 만들어둔 HTML을
+ * 그대로 내보낸다. 즉 오래 조용했던 페이지의 첫 방문자만 죽은 링크를 받는다.
+ *
+ * `www.notion.so/signed/<원본주소>?table=block&id=<blockId>`는 요청마다 새 서명을
+ * 발급해 `file.notion.so`로 302를 주는 리다이렉터라 늙지 않는다. 바이트도 노션이
+ * 내보내므로 우리 대역폭은 들지 않는다. 이미지는 `mapImageUrl`이 이미 같은 성격의
+ * `www.notion.so/image/...`로 감싸고 있어 손댈 필요가 없다.
+ */
+function useStableFileUrls(recordMap: ExtendedRecordMap) {
+  const signedUrls = (recordMap.signed_urls ??= {})
+
+  for (const [blockId, record] of Object.entries(recordMap.block || {})) {
+    const block = getBlockValue(record)
+    if (!block) continue
+
+    // 이미지는 제외한다. mapImageUrl이 따로 처리하고, 여기서 덮으면 이중으로 감싼다.
+    if (!['video', 'file', 'pdf', 'audio'].includes(block.type)) continue
+
+    const source = block.properties?.source?.[0]?.[0] as string | undefined
+    if (!source || !isNotionHostedFile(source)) continue
+
+    signedUrls[blockId] =
+      `https://www.notion.so/signed/${encodeURIComponent(source)}?table=block&id=${blockId}`
+  }
+}
+
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId)
 
   fillEmptyCollectionViewNames(recordMap)
   renderUserMentionsAsText(recordMap)
+  useStableFileUrls(recordMap)
 
   if (navigationStyle !== 'default') {
     // ensure that any pages linked to in the custom navigation header have

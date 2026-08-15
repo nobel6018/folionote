@@ -79,9 +79,13 @@ const createGetPage = (deadline: number, stats: { budgetSkipped: number }) => {
 
     const maxAttempts = 5
 
+    // 크롤은 제목과 slug만 쓰므로 파일 서명은 필요 없다. 켜두면 첨부가 있는
+    // 페이지마다 getSignedFileUrls 왕복이 한 번씩 더 붙어 예산만 깎는다.
+    const crawlOpts = { ...opts, signFileUrls: false }
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        return await notion.getPage(pageId, opts)
+        return await notion.getPage(pageId, crawlOpts)
       } catch (err: any) {
         const status = err?.statusCode ?? err?.status ?? err?.response?.status
         const isRetriable = status === 429 || (status >= 500 && status < 600)
