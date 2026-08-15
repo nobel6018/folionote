@@ -1,6 +1,5 @@
 import cs from 'classnames'
 import dynamic from 'next/dynamic'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { type PageBlock } from 'notion-types'
@@ -31,6 +30,7 @@ import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Footer } from './Footer'
 import { Loading } from './Loading'
+import { NotionImage } from './NotionImage'
 import { NotionPageHeader } from './NotionPageHeader'
 import { BottomNavigation } from './folio/BottomNavigation'
 import { Code as FolioCode } from './folio/Code'
@@ -135,7 +135,9 @@ export function NotionPage({
       // next/legacy/image는 200px rootMargin IntersectionObserver로 지연 로딩해서
       // 스크롤을 조금만 빨리 내려도 카드가 블러인 채로 남는다. 최신 next/image는
       // 브라우저 네이티브 lazy를 쓰고, 네이티브는 회선 속도에 맞춰 훨씬 미리 받는다.
-      nextImage: Image,
+      //
+      // 리사이즈는 Vercel이 아니라 노션에 시킨다 (@see NotionImage)
+      nextImage: NotionImage,
       nextLink: Link,
       // 코드 블록만 자체 컴포넌트로 교체. 나머지는 react-notion-x default.
       //
