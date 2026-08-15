@@ -497,6 +497,9 @@ svg.notion-page-icon {
   line-height: 1.5;
 }
 
+/* 다크에서도 같은 값을 쓴다. 레퍼런스 서비스는 인라인 코드에 라이트/다크 분기가 없다
+ * (1284-3e750cfd32caa9df.js의 서식 처리 `case "c"`: 언제나 #EB5757 +
+ * rgba(135,131,120,0.15)). 반투명 회색이라 어느 배경에서도 알아서 녹는다. */
 .notion-inline-code {
   font-family: var(--folio-font-mono);
   background-color: rgba(135, 131, 120, 0.15);
@@ -504,10 +507,6 @@ svg.notion-page-icon {
   padding: 1px 4px;
   border-radius: var(--folio-radius-sm);
   font-size: 0.9em;
-}
-.dark-mode .notion-inline-code {
-  color: #ef6262;
-  background-color: rgba(255, 255, 255, 0.08);
 }
 
 /* ── Collection header (제목 + 뷰 탭) ───────────────────── */
