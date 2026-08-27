@@ -14,6 +14,41 @@ Vercel이다. Cloudflare Workers로 옮기는 것은 실제로 옮겨 본 뒤 �
 실측 기록은 `docs/cloudflare-migration.md`에 있다. 도메인과 DNS를 Cloudflare에 두는 것은
 문제가 없고, 배포만 Vercel에 남긴다.
 
+## 패키지 경계
+
+pnpm workspace다. 렌더러는 `packages/core`(`@folionote/core`)에 있고, 앱은 리포
+루트에 그대로 있다. 앱을 `apps/` 아래로 옮기지 않은 이유는 배포다. README의 Vercel
+Deploy 버튼, `vercel --prod`, 이미 fork한 리포들이 root directory 설정 없이 계속
+동작해야 한다.
+
+```
+/                 pages/  site.config.ts  public/  next.config.js
+                  lib/load-site-config.ts  lib/admin/  lib/analytics-env.ts
+                  lib/fonts/inter-semibold.ts
+packages/core     컴포넌트, 설정 해석기, Notion 읽기 계층, CSS
+```
+
+앱은 진입점 다섯 개로만 패키지에 닿는다. `packages/core` 안으로 상대 경로를 뚫지
+않는다.
+
+| 경로                         | 무엇                                          |
+| ---------------------------- | --------------------------------------------- |
+| `@folionote/core`            | 컴포넌트, `SiteConfigProvider`, `useSiteConfig` |
+| `@folionote/core/config`     | `resolveSiteConfig`, `siteConfig`, 직렬화기, 타입 |
+| `@folionote/core/server`     | `resolveNotionPage`, `getPage`, `getSiteMap`, 피드/사이트맵 |
+| `@folionote/core/edge`       | edge 런타임에서 도는 것만 (`sharp`, Redis 없음) |
+| `@folionote/core/admin`      | 설정 폼 UI                                    |
+| `@folionote/core/styles.css` | CSS 전부                                      |
+
+패키지를 고쳤으면 `pnpm core:build`를 돌려야 앱에 반영된다. dev 서버는 `dist`를
+보므로 소스만 고치면 화면이 안 바뀐다. 계속 고칠 때는 `pnpm core:watch`를 따로 띄운다.
+
+패키지를 고쳤으면 `pnpm changeset`으로 변경 내용을 적는다. main에 머지되면 GitHub
+Actions가 버전 올리는 PR을 연다 (@see .github/workflows/release.yml, docs/architecture.md).
+
+npm 발행에는 리포 Secrets의 `NPM_TOKEN`이 필요하다. 없으면 릴리스 워크플로의
+publish 단계만 실패한다.
+
 ## 사람만 할 수 있는 일
 
 API가 없어서 브라우저에서만 되는 일이 셋이다. 대신 하려 들지 말고 그 지점에서 멈춘 뒤,
@@ -145,11 +180,13 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 
 ## 개발할 때 지킬 것
 
-- `pnpm test`가 CI와 같다(`.github/workflows/build.yml`). 내용은 `eslint .`와
-  `prettier --check`이고 대상은 `.js/.jsx/.ts/.tsx`다. 타입은 따로
-  `npx tsc --noEmit`으로 본다.
-- dev 서버는 포트를 명시한다. `PORT=3010 pnpm dev`처럼. 3000은 다른 프로젝트가 쓰고 있을
-  수 있고, 그러면 Next가 조용히 다른 포트로 옮겨 붙어 확인 대상이 어긋난다.
+- `pnpm test`는 `eslint .`와 `prettier --check`이고, 워크스페이스 전체(루트 앱 +
+  `packages/*`)를 훑는다. 타입은 `pnpm typecheck`가 본다. 이 명령은 먼저
+  `packages/core`를 빌드한다. 앱이 패키지의 `dist/*.d.ts`를 보기 때문이다.
+  CI는 `.github/workflows/build.yml`이고 test, typecheck, `core:build`를 돌린다.
+- dev 서버는 포트를 명시한다. `PORT=3010 pnpm dev`처럼. 3000은 다른 프로젝트가 쓰고
+  있을 수 있고, 그러면 Next가 조용히 다른 포트로 옮겨 붙어 확인 대상이 어긋난다.
+  `pnpm dev`는 dev 서버를 띄우기 전에 `packages/core`를 한 번 빌드한다.
 - 주석은 한국어로 "왜"를 쓴다. 코드가 이미 말하는 "무엇"을 반복하지 않는다. 본문에
   Em dash를 쓰지 않고 필요하면 `-`를 쓴다.
 - 커밋 메시지는 한국어 conventional 형식이다. `feat(admin): ...`, `fix(dark): ...`,
@@ -182,6 +219,14 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - Vercel Hobby 플랜은 비상업용이다. 수익이 붙는 사이트라면 요금제를 확인하라고 알린다.
 - `/admin`은 필요한 값 넷이 다 잡힐 때만 켜진다(`GITHUB_REPO`는 Vercel에서 자동으로 잡히므로
   실제로 넣는 것은 셋). 하나라도 없으면 404가 정상 동작이지 버그가 아니다.
+- `packages/core`는 `"type": "module"`이 아니다. 붙이면 webpack이 dist를 엄격한
+  ESM으로 보고 CJS interop을 건너뛰어서, `next/image`가 컴포넌트가 아니라
+  `{ default, getImageProps }` 객체로 들어온다. 첫 화면이 "Element type is invalid"로
+  죽는다. 되돌리지 말 것.
+- 프리뷰 이미지를 쓰면 앱의 dependencies에 `sharp`가 있어야 한다. pnpm은 패키지
+  의존성을 앱 루트에 풀지 않는데, Next는 외부 모듈 여부를 앱 루트에서 판단한다.
+  없으면 webpack이 `sharp`를 번들에 말아넣고 네이티브 바인딩을 못 찾아 빌드가
+  "Could not load the sharp module"로 실패한다.
 - `git filter-repo`는 실행할 때마다 `origin` remote를 지운다. 실행 후 `git remote -v`로
   확인하고 다시 추가한다.
 
@@ -194,6 +239,7 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - `docs/custom-code.md` 스크립트/CSS 주입, 페이지별 SEO 덮어쓰기
 - `docs/deployment.md` Vercel 배포, DNS(Cloudflare/Route 53), 도메인 이전과 ISR 캐시 전략
 - `docs/architecture.md` 설정이 흐르는 길(site.config.ts → loadSiteConfig → PageProps.config → useSiteConfig)과 패키지 경계
+- `packages/core/README.md` `@folionote/core`를 남의 앱에서 쓰는 법, 진입점, deps 주입
 - `docs/admin-deploy.md` 배포 어드민의 동작과 보안 설계, 관련 코드 위치
 - `docs/cloudflare-migration.md` Workers 이전 실측과 접은 이유
 - `docs/feature-parity.md` 상용 서비스 기능 대조표

@@ -42,6 +42,8 @@ export default withBundleAnalyzer({
     ]
   },
 
-  // See https://react-tweet.vercel.app/next#troubleshooting
-  transpilePackages: ['react-tweet']
+  // @folionote/core는 tsc가 만든 그대로 배포된다(번들 없음). CSS 모듈과 JSX가
+  // 들어 있어서 Next가 직접 컴파일해야 한다. 이 패키지를 쓰는 앱은 모두 필요하다.
+  // react-tweet은 https://react-tweet.vercel.app/next#troubleshooting
+  transpilePackages: ['react-tweet', '@folionote/core']
 })

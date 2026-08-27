@@ -1,3 +1,9 @@
+import {
+  type NotionPageInfo,
+  type PageError,
+  type ResolvedSiteConfig
+} from '@folionote/core/config'
+import { createMapImageUrl, getNotion } from '@folionote/core/edge'
 import ky from 'ky'
 import { type NextApiRequest, type NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
@@ -12,10 +18,6 @@ import {
 
 import interSemiBoldFont from '@/lib/fonts/inter-semibold'
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { createMapImageUrl } from '@/lib/map-image-url'
-import { notion } from '@/lib/notion-api'
-import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
-import { type NotionPageInfo, type PageError } from '@/lib/types'
 
 export const runtime = 'edge'
 
@@ -175,7 +177,7 @@ export async function getNotionPageInfo(
   | { type: 'error'; error: PageError }
 > {
   const mapImageUrl = createMapImageUrl(config)
-  const recordMap = await notion.getPage(pageId)
+  const recordMap = await getNotion().getPage(pageId)
 
   const keys = Object.keys(recordMap?.block || {})
   // react-notion-x v7.10 union 타입 narrow.

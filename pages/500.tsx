@@ -1,6 +1,7 @@
-import { ErrorPage } from '@/components/ErrorPage'
+import { ErrorPage } from '@folionote/core'
+import { type ResolvedSiteConfig } from '@folionote/core/config'
+
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
 
 /**
  * 500 화면도 폰트와 테마를 사이트 설정에서 받는다. 이 파일이 없으면 Next가

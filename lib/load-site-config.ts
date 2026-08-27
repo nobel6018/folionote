@@ -1,21 +1,21 @@
 /**
  * 이 리포에 담긴 사이트 하나를 읽어 최종 설정으로 만든다. **서버 전용이다.**
  *
- * `site.config.ts`를 import하는 파일은 이 파일 하나뿐이다. 나머지 `lib/`과
- * `components/`는 설정을 값으로 받는다. 나중에 `packages/core`와
- * `apps/self-host`로 가를 때 이 파일만 앱 쪽에 남기면 되도록 경계를 여기서 끊는다.
+ * `site.config.ts`를 import하는 파일은 이 파일 하나뿐이다. 렌더러(`@folionote/core`)는
+ * 설정을 값으로 받는다. 그 경계가 이 파일이다.
  *
  * 브라우저 번들에 들어가면 안 된다. 들어가는 순간 사이트 이름과 도메인이 JS에
  * 박혀서, 호스팅 서비스가 한 프로세스로 사이트 여러 개를 그릴 수 없게 된다.
  *
  * @see docs/architecture.md
  */
-import rawSiteConfig from '../site.config'
-import { type SiteConfig } from './site-config'
 import {
   type ResolvedSiteConfig,
-  resolveSiteConfig
-} from './site-config-resolve'
+  resolveSiteConfig,
+  type SiteConfig
+} from '@folionote/core/config'
+
+import rawSiteConfig from '../site.config'
 
 if (!rawSiteConfig) {
   throw new Error(`Config error: invalid site.config.ts`)

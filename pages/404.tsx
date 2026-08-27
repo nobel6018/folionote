@@ -1,6 +1,7 @@
-import { Page404 } from '@/components/Page404'
+import { Page404 } from '@folionote/core'
+import { type PageProps } from '@folionote/core/config'
+
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { type PageProps } from '@/lib/types'
 
 /**
  * 404 화면도 사이트 설정이 필요하다(언어, 폰트, 테마). Next는 이 페이지에

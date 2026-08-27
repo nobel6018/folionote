@@ -1,0 +1,91 @@
+{
+  "name": "@folionote/core",
+  "version": "0.1.0",
+  "description": "Notion 페이지를 사이트로 그리는 렌더러. Next.js Pages Router용 컴포넌트, 설정 해석기, Notion 읽기 계층.",
+  "author": "nobel6018 <nobel6018@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nobel6018/folionote.git",
+    "directory": "packages/core"
+  },
+  "license": "MIT",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "styles",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    },
+    "./edge": {
+      "types": "./dist/edge/index.d.ts",
+      "default": "./dist/edge/index.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./admin": {
+      "types": "./dist/admin/index.d.ts",
+      "default": "./dist/admin/index.js"
+    },
+    "./styles.css": "./styles/styles.css",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit"
+  },
+  "dependencies": {
+    "@keyvhq/core": "^1.6.9",
+    "@keyvhq/redis": "^1.6.10",
+    "@react-icons/all-files": "^4.1.0",
+    "classnames": "^2.5.1",
+    "expiry-map": "^2.0.0",
+    "ioredis": "^6.0.0",
+    "katex": "^0.16.11",
+    "ky": "^1.8.1",
+    "lqip-modern": "^2.2.1",
+    "next-themes": "^0.4.6",
+    "notion-client": "^7.7.0",
+    "notion-types": "^7.7.0",
+    "notion-utils": "^7.7.0",
+    "p-map": "^7.0.3",
+    "p-memoize": "^7.1.1",
+    "prismjs": "^1.30.0",
+    "react-body-classname": "^1.3.1",
+    "react-notion-x": "^7.7.0",
+    "react-tweet": "^3.2.2",
+    "react-use": "^17.6.0",
+    "rss": "^1.2.2"
+  },
+  "peerDependencies": {
+    "next": ">=15",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@types/prismjs": "^1.26.5",
+    "@types/react": "^19.1.13",
+    "@types/react-body-classname": "^1.1.10",
+    "@types/rss": "^0.0.32",
+    "typescript": "^5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,8 +1,8 @@
+import { type ResolvedSiteConfig } from '@folionote/core/config'
 import { IconContext } from '@react-icons/all-files'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
 
 /**
  * 설정을 어디서 읽을지.
