@@ -1,14 +1,16 @@
 # folionote
 
-> Inspired by 노션을 웹으로 배포하는 상용 서비스. An independent, open-source reimplementation — Notion 페이지를 정적 사이트로 배포하는 Next.js 기반 OSS 프로젝트.
+> Notion 페이지를 내 도메인의 정적 사이트로 배포하는 Next.js 기반 오픈소스 프로젝트.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fnobel6018%2Ffolionote)
 
 ## 무엇인가
 
-상용 서비스는 Notion 페이지를 자기 도메인의 정적 사이트로 배포해주는 한국 SaaS다. folionote는 그 핵심 기능 — _Notion 페이지를 예쁘게 정적 렌더링 + pretty URL + 다크모드 + 네비게이션_ — 을 본인이 호스팅할 수 있는 OSS로 다시 만든 것.
+Notion에 글을 쓰고, 그 페이지를 내 도메인의 정적 사이트로 내보낸다. Notion 블록을 그대로 렌더링하고 pretty URL, 다크모드, 네비게이션, SEO를 붙인다.
 
-이 프로젝트는 [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) (by Travis Fischer)을 베이스로 fork됐고, 레퍼런스 서비스의 시각 디자인과 사용성에서 영감을 받았다. **레퍼런스 서비스의 코드/CSS를 직접 카피하지 않았다** — 디자인 토큰만 추출해서 새로 구현한 독립 프로젝트.
+같은 일을 해주는 상용 서비스가 여럿 있지만 구독이 끊기면 사이트도 멈추고, 원하는 기능을 직접 넣을 수 없다. folionote는 발행하는 쪽까지 내 것으로 두려고 만들었다. 직접 호스팅하고, 코드를 고칠 수 있다.
+
+이 프로젝트는 [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) (by Travis Fischer)을 베이스로 fork했다. 렌더링은 [`react-notion-x`](https://github.com/NotionX/react-notion-x)를 쓴다. 디자인은 기존 서비스들을 참고해 자체 구현했다.
 
 ## 주요 기능
 
@@ -119,6 +121,5 @@ MIT — [LICENSE](LICENSE) 참고. `nextjs-notion-starter-kit` 원본의 MIT 저
 
 ## 크레딧
 
-- 디자인 영감: 노션을 웹으로 배포하는 상용 서비스 (레퍼런스 서비스)
 - 베이스 프로젝트: [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit) by Travis Fischer
 - Notion 렌더링: [`react-notion-x`](https://github.com/NotionX/react-notion-x)

@@ -2,7 +2,7 @@
   "name": "folionote",
   "version": "0.1.0",
   "private": false,
-  "description": "Open-source alternative to 상용 서비스 — turn a Notion page into a fast static site (Next.js + react-notion-x).",
+  "description": "Turn a Notion page into a fast static site you host yourself (Next.js + react-notion-x).",
   "author": "nobel6018 <nobel6018@gmail.com>",
   "repository": "nobel6018/folionote",
   "license": "MIT",

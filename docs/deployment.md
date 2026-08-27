@@ -107,7 +107,7 @@ curl -I https://mydomain.com
 
 ## 기존 도메인에서 새 도메인으로 옮기기 (레퍼런스 서비스 → folionote)
 
-기존 사이트(예: 상용 서비스의 v3.mydomain.com)에서 folionote로 옮길 때 SEO 권위 보존:
+기존 사이트(예: blog.mydomain.com)에서 folionote로 옮길 때 SEO 권위 보존:
 
 1. **새 도메인을 먼저 동작 확인** (preview URL 또는 임시 도메인)
 2. **301 redirect 셋업**: 기존 URL → 새 URL
