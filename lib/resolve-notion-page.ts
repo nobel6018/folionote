@@ -7,6 +7,32 @@ import { environment, pageUrlAdditions, pageUrlOverrides, site } from './config'
 import { db } from './db'
 import { getSiteMap } from './get-site-map'
 import { getPage } from './notion'
+import { classifyNotionError } from './notion-errors'
+
+/**
+ * 페이지를 읽되, 사용자가 고칠 수 있는 실패는 던지지 않고 안내용 props로 바꾼다.
+ *
+ * Notion이 비공개이거나 ID가 틀린 경우가 여기 해당한다. 그대로 던지면 루트
+ * 페이지는 빌드가 실패하고(정적 생성 대상) 하위 페이지는 이유 없는 500이 된다.
+ * 안내 화면을 돌려주면 사이트 주인이 무엇을 고쳐야 하는지 화면에서 바로 본다.
+ *
+ * 네트워크 오류나 Notion 장애처럼 사용자가 어쩔 수 없는 실패는 그대로 던진다.
+ * 그 경우는 잠깐 뒤에 다시 시도하는 것이 맞고, 오류 화면을 캐시하면 안 된다.
+ */
+async function getPageOrError(
+  pageId: string
+): Promise<{ recordMap: ExtendedRecordMap } | { error: PageProps['error'] }> {
+  try {
+    return { recordMap: await getPage(pageId) }
+  } catch (err) {
+    const known = classifyNotionError(err)
+    if (known) {
+      console.warn('notion page unavailable', pageId, known.kind)
+      return { error: known }
+    }
+    throw err
+  }
+}
 
 export async function resolveNotionPage(
   domain: string,
@@ -48,7 +74,9 @@ export async function resolveNotionPage(
     }
 
     if (pageId) {
-      recordMap = await getPage(pageId)
+      const result = await getPageOrError(pageId)
+      if ('error' in result) return { site, pageId, error: result.error }
+      recordMap = result.recordMap
     } else {
       // handle mapping of user-friendly canonical page paths to Notion page IDs
       // e.g., /developer-x-entrepreneur versus /71201624b204481f862630ea25ce62fe
@@ -60,7 +88,9 @@ export async function resolveNotionPage(
         // cached aggressively
         // recordMap = siteMap.pageMap[pageId]
 
-        recordMap = await getPage(pageId)
+        const result = await getPageOrError(pageId)
+        if ('error' in result) return { site, pageId, error: result.error }
+        recordMap = result.recordMap
 
         if (useUriToPageIdCache) {
           try {
@@ -86,8 +116,9 @@ export async function resolveNotionPage(
   } else {
     pageId = site.rootNotionPageId
 
-    console.log(site)
-    recordMap = await getPage(pageId)
+    const result = await getPageOrError(pageId)
+    if ('error' in result) return { site, pageId, error: result.error }
+    recordMap = result.recordMap
   }
 
   const props: PageProps = { site, recordMap, pageId }

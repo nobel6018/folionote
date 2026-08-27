@@ -17,8 +17,9 @@
 
   font-size: 16px;
   line-height: 1.5;
-  color: rgb(55, 53, 47);
-  caret-color: rgb(55, 53, 47);
+  /* 고정 색이면 다크모드에서 어두운 배경에 어두운 글자가 된다 */
+  color: var(--fg-color);
+  caret-color: var(--fg-color);
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica,
     'Apple Color Emoji', Arial, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
@@ -43,6 +44,38 @@
 .errorImage {
   max-width: 100%;
   width: 640px;
+}
+
+/* 고칠 수 있는 실패의 안내 (@see components/Page404.tsx) */
+.errorHelp {
+  max-width: 560px;
+  margin: 0 auto 1.5em;
+  text-align: left;
+}
+
+.errorHelp ol {
+  padding-left: 1.4em;
+}
+
+.errorHelp li {
+  margin: 0.35em 0;
+}
+
+.errorHelp a {
+  color: var(--notion-blue);
+  text-decoration: underline;
+}
+
+.errorOwnerHint {
+  font-weight: 600;
+}
+
+.errorPageId {
+  display: block;
+  margin-top: 0.5em;
+  font-size: 0.85em;
+  color: var(--fg-color-3);
+  word-break: break-all;
 }
 
 .footer {

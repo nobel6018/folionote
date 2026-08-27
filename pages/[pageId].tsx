@@ -17,7 +17,8 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
       props,
       // ISR: 10분마다 backend 재검증. 빌드 시 152개 페이지 동시 SSG → Notion API 429
       // 회피용. 첫 요청 때 server-side fetch + 캐시.
-      revalidate: 600
+      // 안내 화면(Notion 미공개 등)은 30초. (@see lib/resolve-notion-page.ts)
+      revalidate: props.error ? 30 : 600
     }
   } catch (err) {
     console.error('page error', domain, rawPageId, err)

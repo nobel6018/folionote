@@ -10,7 +10,9 @@ export const getStaticProps = async () => {
     return {
       props,
       // ISR: 10분마다 backend 재검증 (메인 페이지의 collection list 갱신).
-      revalidate: 600
+      // 안내 화면(Notion 미공개 등)은 30초로 줄인다. 사용자가 Notion에서
+      // 고치면 곧바로 살아나야 한다. (@see lib/resolve-notion-page.ts)
+      revalidate: props.error ? 30 : 600
     }
   } catch (err) {
     console.error('page error', domain, err)
