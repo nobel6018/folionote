@@ -31,9 +31,9 @@ vercel --prod
 
 대부분 optional. 필요 시 Vercel project Settings → Environment Variables에 추가:
 
-- `NEXT_PUBLIC_FATHOM_ID`, `NEXT_PUBLIC_POSTHOG_ID` — analytics
-- `REDIS_HOST`, `REDIS_PASSWORD` — preview image cache (Vercel KV / Upstash)
-- `TWITTER_ACCESS_TOKEN` — 트윗 embed
+- `NEXT_PUBLIC_FATHOM_ID`, `NEXT_PUBLIC_POSTHOG_ID` - analytics
+- `REDIS_HOST`, `REDIS_PASSWORD` - preview image cache (Vercel KV / Upstash)
+- `TWITTER_ACCESS_TOKEN` - 트윗 embed
 
 ## Custom Domain 연결
 
@@ -68,7 +68,7 @@ Vercel이 DNS instruction 표시:
 
 1. DNS → Records → Add record
 2. Vercel 안내 값 그대로 입력
-3. Proxy status: **DNS only** (회색 구름) — Vercel이 SSL 처리하므로 Cloudflare proxy 불필요
+3. Proxy status: **DNS only** (회색 구름) - Vercel이 SSL 처리하므로 Cloudflare proxy 불필요
 4. Save
 
 #### AWS Route 53
@@ -105,7 +105,7 @@ curl -I https://mydomain.com
 # → status 200 + Vercel headers
 ```
 
-## 기존 도메인에서 새 도메인으로 옮기기 (레퍼런스 서비스 → folionote)
+## 기존 도메인에서 새 도메인으로 옮기기
 
 기존 사이트(예: blog.mydomain.com)에서 folionote로 옮길 때 SEO 권위 보존:
 
@@ -121,7 +121,7 @@ curl -I https://mydomain.com
 빌드 시 152 페이지 동시 SSG는 Notion API rate limit (429)에 걸려 실패. 우리는:
 
 - **메인 페이지**: SSG + revalidate 600s (10분 ISR)
-- **본문 페이지**: `fallback: 'blocking'` lazy SSG — 첫 요청 시 server-side fetch + 캐시
+- **본문 페이지**: `fallback: 'blocking'` lazy SSG - 첫 요청 시 server-side fetch + 캐시
 - **sitemap.xml**: 8h CDN cache + memory cache + fallback (3-tier 방어)
 
 따라서 build 시간 1-2분, Vercel build server에서 rate limit 거의 안 침.

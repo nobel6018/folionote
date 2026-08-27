@@ -2,11 +2,13 @@
 
 folionote로 자신의 Notion 페이지를 정적 사이트로 띄우는 5단계 가이드.
 
+리포를 클론하지 않고 브라우저만으로 배포하는 길도 있습니다. `NOTION_ROOT_PAGE_ID`와 `SITE_NAME` 두 환경변수만 넣으면 `site.config.ts`를 고치지 않아도 뜹니다([README의 5분 만에 시작](../README.md#5분-만에-시작), [폴백 규칙](configuration.md#환경변수로도-받는다)). 아래는 리포를 클론해 파일을 고치는 경로입니다.
+
 ## 1. Notion 페이지 준비
 
 1. Notion에서 사이트의 root 페이지를 결정 (예: "내 블로그")
-2. 페이지 우상단 _Share_ → *"Anyone with the link"*로 공개
-3. 페이지 URL에서 **page ID** 추출 — URL 끝의 32자 hex
+2. 페이지 우상단 _Share_ → 게시 탭에서 **웹에 게시**를 켬 ("링크 공유"와 다른 설정입니다)
+3. 페이지 URL에서 **page ID** 추출 - URL 끝의 32자 hex
    ```
    https://www.notion.so/My-Site-67890abcdef1234567890abcdef12345
                               ↑ 여기 끝의 32자가 page ID
@@ -21,6 +23,8 @@ pnpm install   # 또는 npm/yarn
 ```
 
 ## 3. site.config.ts 수정
+
+환경변수로 가는 경우 이 단계를 건너뜁니다.
 
 ```ts
 export default siteConfig({
