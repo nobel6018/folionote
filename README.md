@@ -98,6 +98,21 @@ pnpm test
 
 포트는 명시하는 편이 낫습니다. 3000이 이미 쓰이고 있으면 Next가 조용히 다른 포트로 옮겨 붙습니다.
 
+### 리포 구조
+
+pnpm workspace입니다. 루트가 여러분이 배포하는 Next 앱이고, 렌더러는 `packages/core`에 있습니다.
+
+```
+/              pages/  site.config.ts  public/  next.config.js
+packages/core  @folionote/core - 컴포넌트, 설정 해석기, Notion 읽기 계층, CSS
+```
+
+루트에서 `pnpm install` 한 번이면 둘 다 잡힙니다. `pnpm dev`와 `pnpm build`는 앱을 만들기 전에 `packages/core`를 먼저 빌드합니다. 패키지 쪽을 계속 고칠 때는 `pnpm core:watch`를 따로 띄워 두세요.
+
+디자인이나 컴포넌트를 고치려면 `packages/core/src/react/`와 `packages/core/styles/`를 봅니다. 자세한 경계는 [docs/architecture.md](docs/architecture.md)에 있습니다.
+
+렌더러만 가져다 자기 앱에 쓰고 싶다면 npm의 [`@folionote/core`](packages/core/README.md)를 설치하면 됩니다.
+
 코딩 에이전트를 쓴다면 클론한 리포를 열고 "배포해줘"라고 하면 됩니다. 리포의 [AGENTS.md](AGENTS.md)에 셋업 플레이북이 있고, Claude Code에서는 `/setup` 슬래시 커맨드로도 됩니다. 아직 클론하기 전이면 이 한 줄을 씁니다.
 
 ```
