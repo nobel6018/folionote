@@ -10,10 +10,11 @@ import {
   parsePageId
 } from 'notion-utils'
 
-import * as libConfig from '@/lib/config'
 import interSemiBoldFont from '@/lib/fonts/inter-semibold'
-import { mapImageUrl } from '@/lib/map-image-url'
+import { loadSiteConfig } from '@/lib/load-site-config'
+import { createMapImageUrl } from '@/lib/map-image-url'
 import { notion } from '@/lib/notion-api'
+import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
 import { type NotionPageInfo, type PageError } from '@/lib/types'
 
 export const runtime = 'edge'
@@ -22,15 +23,14 @@ export default async function OGImage(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const config = loadSiteConfig()
   const { searchParams } = new URL(req.url!)
-  const pageId = parsePageId(
-    searchParams.get('id') || libConfig.rootNotionPageId
-  )
+  const pageId = parsePageId(searchParams.get('id') || config.rootNotionPageId)
   if (!pageId) {
     return new Response('Invalid notion page id', { status: 400 })
   }
 
-  const pageInfoOrError = await getNotionPageInfo({ pageId })
+  const pageInfoOrError = await getNotionPageInfo(config, { pageId })
   if (pageInfoOrError.type === 'error') {
     return res.status(pageInfoOrError.error.statusCode).send({
       error: pageInfoOrError.error.message
@@ -163,14 +163,18 @@ export default async function OGImage(
   )
 }
 
-export async function getNotionPageInfo({
-  pageId
-}: {
-  pageId: string
-}): Promise<
+export async function getNotionPageInfo(
+  config: ResolvedSiteConfig,
+  {
+    pageId
+  }: {
+    pageId: string
+  }
+): Promise<
   | { type: 'success'; data: NotionPageInfo }
   | { type: 'error'; error: PageError }
 > {
+  const mapImageUrl = createMapImageUrl(config)
   const recordMap = await notion.getPage(pageId)
 
   const keys = Object.keys(recordMap?.block || {})
@@ -185,8 +189,8 @@ export async function getNotionPageInfo({
 
   if (
     blockSpaceId &&
-    libConfig.rootNotionSpaceId &&
-    blockSpaceId !== libConfig.rootNotionSpaceId
+    config.rootNotionSpaceId &&
+    blockSpaceId !== config.rootNotionSpaceId
   ) {
     return {
       type: 'error',
@@ -199,11 +203,11 @@ export async function getNotionPageInfo({
 
   const isBlogPost =
     block.type === 'page' && block.parent_table === 'collection'
-  const title = getBlockTitle(block, recordMap) || libConfig.name
+  const title = getBlockTitle(block, recordMap) || config.name
 
   const imageCoverPosition =
     (block as PageBlock).format?.page_cover_position ??
-    libConfig.defaultPageCoverPosition
+    config.defaultPageCoverPosition
   const imageObjectPosition = imageCoverPosition
     ? `center ${(1 - imageCoverPosition) * 100}%`
     : undefined
@@ -213,25 +217,31 @@ export async function getNotionPageInfo({
       (block as PageBlock).format?.page_cover,
     block
   )
-  const imageFallbackUrl = mapImageUrl(libConfig.defaultPageCover, block)
+  const imageFallbackUrl = mapImageUrl(
+    config.defaultPageCover ?? undefined,
+    block
+  )
 
   const blockIcon = getBlockIcon(block, recordMap)
   const authorImageBlockUrl = mapImageUrl(
     blockIcon && isUrl(blockIcon) ? blockIcon : undefined,
     block
   )
-  const authorImageFallbackUrl = mapImageUrl(libConfig.defaultPageIcon, block)
+  const authorImageFallbackUrl = mapImageUrl(
+    config.defaultPageIcon ?? undefined,
+    block
+  )
   const [authorImage, image] = await Promise.all([
     getCompatibleImageUrl(authorImageBlockUrl, authorImageFallbackUrl),
     getCompatibleImageUrl(imageBlockUrl, imageFallbackUrl)
   ])
 
   const author =
-    getPageProperty<string>('Author', block, recordMap) || libConfig.author
+    getPageProperty<string>('Author', block, recordMap) || config.author
 
   // const socialDescription =
   //   getPageProperty<string>('Description', block, recordMap) ||
-  //   libConfig.description
+  //   config.description
 
   // const lastUpdatedTime = getPageProperty<number>(
   //   'Last Updated',
@@ -251,7 +261,7 @@ export async function getNotionPageInfo({
           month: 'long'
         })} ${datePublished.getFullYear()}`
       : undefined
-  const detail = date || author || libConfig.domain
+  const detail = date || author || config.domain
 
   const pageInfo: NotionPageInfo = {
     pageId,

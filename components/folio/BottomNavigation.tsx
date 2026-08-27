@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import * as React from 'react'
 import { cs, useNotionContext } from 'react-notion-x'
 
-import { bottomNavigation } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import { SiteLink } from './SiteLink'
 
@@ -14,6 +14,7 @@ import { SiteLink } from './SiteLink'
 export function BottomNavigation() {
   const { components, mapPageUrl } = useNotionContext()
   const router = useRouter()
+  const { bottomNavigation } = useSiteConfig()
 
   if (!bottomNavigation) {
     return null

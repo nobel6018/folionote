@@ -2,7 +2,8 @@ import { IoCloseOutline } from '@react-icons/all-files/io5/IoCloseOutline'
 import { useRouter } from 'next/router'
 import * as React from 'react'
 
-import { popupOptions, popups } from '@/lib/config'
+import { type PopupConfig } from '@/lib/site-config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 const DISMISS_KEY_PREFIX = 'folio-popup-dismissed:'
 
@@ -31,6 +32,7 @@ function rememberDismissal(id: string) {
  * 안 보인다).
  */
 export function Popups() {
+  const { popups, popupOptions } = useSiteConfig()
   const router = useRouter()
   const [visibleIds, setVisibleIds] = React.useState<string[]>([])
 
@@ -46,7 +48,7 @@ export function Popups() {
     }
 
     setVisibleIds(popups.filter((p) => !isDismissed(p.id)).map((p) => p.id))
-  }, [shouldShow])
+  }, [shouldShow, popups])
 
   const dismiss = React.useCallback((id: string, remember: boolean) => {
     if (remember) rememberDismissal(id)
@@ -86,7 +88,7 @@ export function Popups() {
   )
 }
 
-function PopupBody({ popup }: { popup: (typeof popups)[number] }) {
+function PopupBody({ popup }: { popup: PopupConfig }) {
   const content = (
     <>
       {popup.image && (

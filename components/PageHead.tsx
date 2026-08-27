@@ -1,9 +1,13 @@
 import Head from 'next/head'
 
 import type * as types from '@/lib/types'
-import * as config from '@/lib/config'
 import { getSocialImageUrl } from '@/lib/get-social-image-url'
+import { useOptionalSiteConfig } from '@/lib/site-config-context'
 
+/**
+ * 설정 없이도 렌더돼야 한다. `/_error`는 페이지 데이터를 만들지 못한 상태라
+ * `pageProps.config`가 없다. 그 경우 사이트에 딸린 태그(RSS, 트위터 계정)만 빠진다.
+ */
 export function PageHead({
   site,
   title,
@@ -13,7 +17,7 @@ export function PageHead({
   url,
   isBlogPost,
   noindex
-}: types.PageProps & {
+}: Partial<types.PageProps> & {
   title?: string
   description?: string
   image?: string
@@ -22,12 +26,14 @@ export function PageHead({
   /** 켜면 검색엔진에서 뺀다 (@see lib/page-meta.ts) */
   noindex?: boolean
 }) {
-  const rssFeedUrl = `${config.host}/feed`
+  const config = useOptionalSiteConfig()
+  const rssFeedUrl = config ? `${config.host}/feed` : null
 
   title = title ?? site?.name
   description = description ?? site?.description
 
-  const socialImageUrl = getSocialImageUrl(pageId) || image
+  const socialImageUrl =
+    (config ? getSocialImageUrl(config, pageId) : null) || image
 
   return (
     <Head>
@@ -68,7 +74,7 @@ export function PageHead({
         </>
       )}
 
-      {config.twitter && (
+      {config?.twitter && (
         <meta name='twitter:creator' content={`@${config.twitter}`} />
       )}
 
@@ -98,12 +104,14 @@ export function PageHead({
         </>
       )}
 
-      <link
-        rel='alternate'
-        type='application/rss+xml'
-        href={rssFeedUrl}
-        title={site?.name}
-      />
+      {rssFeedUrl && (
+        <link
+          rel='alternate'
+          type='application/rss+xml'
+          href={rssFeedUrl}
+          title={site?.name}
+        />
+      )}
 
       <meta property='og:title' content={title} />
       <meta name='twitter:title' content={title} />
@@ -123,7 +131,7 @@ export function PageHead({
             description,
             author: {
               '@type': 'Person',
-              name: config.author
+              name: config?.author
             },
             image: socialImageUrl
           })}

@@ -1,20 +1,23 @@
 import { type User } from 'notion-types'
 import { getPageTitle, parsePageId } from 'notion-utils'
 
-import * as config from './config'
 import { getPage } from './notion'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
-export const oembed = async ({
-  url,
-  maxWidth,
-  maxHeight,
-  dark = false
-}: {
-  url: string
-  maxWidth?: number
-  maxHeight?: number
-  dark?: boolean
-}) => {
+export const oembed = async (
+  config: ResolvedSiteConfig,
+  {
+    url,
+    maxWidth,
+    maxHeight,
+    dark = false
+  }: {
+    url: string
+    maxWidth?: number
+    maxHeight?: number
+    dark?: boolean
+  }
+) => {
   // TODO: handle pages with no pageId via domain
   const pageId = parsePageId(url)!
 
@@ -23,7 +26,7 @@ export const oembed = async ({
 
   // TODO: handle errors gracefully
 
-  const page = await getPage(pageId)
+  const page = await getPage(config, pageId)
   const pageTitle = getPageTitle(page)
   if (pageTitle) title = pageTitle
 

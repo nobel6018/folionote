@@ -1,5 +1,5 @@
-import { pageMeta } from './config'
 import { type PageMetaOverride } from './site-config'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 /**
  * 페이지별 SEO 메타 덮어쓰기 조회.
@@ -16,19 +16,45 @@ function normalize(pageId: string | undefined | null): string {
   return (pageId || '').replaceAll('-', '').toLowerCase()
 }
 
-/** 정규화된 키로 다시 만든 맵. 매 호출마다 순회하지 않도록 한 번만 만든다 */
-const normalized: Record<string, PageMetaOverride> = Object.fromEntries(
-  Object.entries(pageMeta).map(([key, value]) => [normalize(key), value])
-)
+/**
+ * 정규화된 키로 다시 만든 맵. 매 호출마다 순회하지 않도록 설정 객체당 한 번만 만든다.
+ * WeakMap이라 설정이 버려지면 같이 사라진다.
+ */
+const normalizedCache = new WeakMap<
+  ResolvedSiteConfig,
+  Record<string, PageMetaOverride>
+>()
+
+function getNormalizedPageMeta(
+  config: ResolvedSiteConfig
+): Record<string, PageMetaOverride> {
+  let normalized = normalizedCache.get(config)
+
+  if (!normalized) {
+    normalized = Object.fromEntries(
+      Object.entries(config.pageMeta).map(([key, value]) => [
+        normalize(key),
+        value
+      ])
+    )
+    normalizedCache.set(config, normalized)
+  }
+
+  return normalized
+}
 
 export function getPageMetaOverride(
+  config: ResolvedSiteConfig,
   pageId: string | undefined | null
 ): PageMetaOverride | undefined {
   const key = normalize(pageId)
-  return key ? normalized[key] : undefined
+  return key ? getNormalizedPageMeta(config)[key] : undefined
 }
 
 /** 사이트맵에서 빼야 하는 페이지인지 */
-export function isNoindexPage(pageId: string | undefined | null): boolean {
-  return getPageMetaOverride(pageId)?.noindex === true
+export function isNoindexPage(
+  config: ResolvedSiteConfig,
+  pageId: string | undefined | null
+): boolean {
+  return getPageMetaOverride(config, pageId)?.noindex === true
 }

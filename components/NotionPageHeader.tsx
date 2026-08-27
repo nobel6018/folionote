@@ -10,15 +10,7 @@ import { useRouter } from 'next/router'
 import * as React from 'react'
 import { Header, Search, useNotionContext } from 'react-notion-x'
 
-import {
-  isSearchEnabled,
-  isShareButtonEnabled,
-  isThemeToggleEnabled,
-  logo,
-  name,
-  navigationLinks,
-  navigationStyle
-} from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Breadcrumbs } from './folio/Breadcrumbs'
@@ -61,6 +53,8 @@ function ToggleThemeButton() {
  * 보고 src를 바꾸면 SSR 결과와 어긋나거나 첫 페인트에 잘못된 로고가 깜빡인다.
  */
 function SiteBrand({ onNavigate }: { onNavigate?: () => void }) {
+  const { logo, name } = useSiteConfig()
+
   if (!logo) {
     return (
       <SiteLink href='/' className='folio-site-name' onClick={onNavigate}>
@@ -94,6 +88,13 @@ export function NotionPageHeader({
   block: types.CollectionViewPageBlock | types.PageBlock
 }) {
   const { components, mapPageUrl } = useNotionContext()
+  const {
+    isSearchEnabled,
+    isShareButtonEnabled,
+    isThemeToggleEnabled,
+    navigationLinks,
+    navigationStyle
+  } = useSiteConfig()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 

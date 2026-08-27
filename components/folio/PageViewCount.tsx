@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import * as React from 'react'
 
-import { pageViewCount } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 type Counts = { today: number; total: number }
 
@@ -13,6 +13,7 @@ type Counts = { today: number; total: number }
  * 되는 줄 오해하게 된다.
  */
 export function PageViewCount({ pageId }: { pageId?: string }) {
+  const { pageViewCount } = useSiteConfig()
   const [counts, setCounts] = React.useState<Counts | null>(null)
   const countedPageId = React.useRef<string | null>(null)
 
@@ -45,7 +46,7 @@ export function PageViewCount({ pageId }: { pageId?: string }) {
     void count()
 
     return () => controller.abort()
-  }, [pageId])
+  }, [pageId, pageViewCount.enabled])
 
   if (!pageViewCount.enabled || !counts) {
     return null

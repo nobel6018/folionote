@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { cta } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 /**
  * 화면 하단에 떠 있는 CTA 버튼 (레퍼런스 서비스 어드민의 스타일 > CTA 버튼).
@@ -10,6 +10,8 @@ import { cta } from '@/lib/config'
  * 별도 계측 코드를 넣지 않았다.
  */
 export function CtaButton() {
+  const { cta } = useSiteConfig()
+
   if (!cta) {
     return null
   }

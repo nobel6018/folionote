@@ -2,6 +2,8 @@ import { type ParsedUrlQuery } from 'node:querystring'
 
 import { type ExtendedRecordMap, type PageMap } from 'notion-types'
 
+import { type ResolvedSiteConfig } from './site-config-resolve'
+
 export * from 'notion-types'
 
 export type NavigationStyle = 'default' | 'custom'
@@ -23,6 +25,12 @@ export interface PageError {
 }
 
 export interface PageProps {
+  /**
+   * 이 요청이 그릴 사이트의 최종 설정. 브라우저까지 그대로 실려 간다
+   * (@see lib/site-config-context.tsx).
+   */
+  config: ResolvedSiteConfig
+  /** 설정에서 파생되는 값이라 `config.site`와 같다. react-notion-x 쪽 호환용으로 남긴다 */
   site?: Site
   recordMap?: ExtendedRecordMap
   pageId?: string

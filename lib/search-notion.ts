@@ -2,7 +2,12 @@ import ExpiryMap from 'expiry-map'
 import pMemoize from 'p-memoize'
 
 import type * as types from './types'
-import { api } from './config'
+
+/**
+ * 검색 API 경로. 사이트마다 달라지지 않는 우리 라우트라 설정에서 받지 않는다
+ * (@see lib/site-config-resolve.ts의 `api`).
+ */
+const SEARCH_NOTION_PATH = '/api/search-notion'
 
 export const searchNotion = pMemoize(searchNotionImpl, {
   cacheKey: (args) => args[0]?.query,
@@ -12,7 +17,7 @@ export const searchNotion = pMemoize(searchNotionImpl, {
 async function searchNotionImpl(
   params: types.SearchParams
 ): Promise<types.SearchResults> {
-  return fetch(api.searchNotion, {
+  return fetch(SEARCH_NOTION_PATH, {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {
@@ -30,10 +35,4 @@ async function searchNotionImpl(
       throw error
     })
     .then((res) => res.json() as Promise<types.SearchResults>)
-
-  // return ky
-  //   .post(api.searchNotion, {
-  //     json: params
-  //   })
-  //   .json()
 }

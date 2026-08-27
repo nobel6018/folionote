@@ -1,7 +1,7 @@
 import { type GetStaticProps } from 'next'
 
 import { NotionPage } from '@/components/NotionPage'
-import { domain, pageUrlOverrides } from '@/lib/config'
+import { loadSiteConfig } from '@/lib/load-site-config'
 import { resolveNotionPage } from '@/lib/resolve-notion-page'
 import { type PageProps, type Params } from '@/lib/types'
 
@@ -9,9 +9,10 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
   context
 ) => {
   const rawPageId = context.params?.pageId as string
+  const config = loadSiteConfig()
 
   try {
-    const props = await resolveNotionPage(domain, rawPageId)
+    const props = await resolveNotionPage(config, rawPageId)
 
     return {
       props,
@@ -21,7 +22,7 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
       revalidate: props.error ? 30 : 600
     }
   } catch (err) {
-    console.error('page error', domain, rawPageId, err)
+    console.error('page error', config.domain, rawPageId, err)
 
     // we don't want to publish the error version of this page, so
     // let next.js know explicitly that incremental SSG failed
@@ -39,7 +40,7 @@ export async function getStaticPaths() {
   // 나머지(글 상세)는 한 장씩이라 싸므로 계속 lazy SSG + ISR로 둔다.
   // 전체를 미리 만들면 수백 페이지를 동시에 요청해 Notion API 429를 맞는다.
   return {
-    paths: Object.keys(pageUrlOverrides).map((uri) => ({
+    paths: Object.keys(loadSiteConfig().pageUrlOverrides).map((uri) => ({
       params: { pageId: uri.replace(/^\//, '') }
     })),
     fallback: 'blocking'

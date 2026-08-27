@@ -1,8 +1,11 @@
-import { api, host } from './config'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
-export function getSocialImageUrl(pageId: string | undefined) {
+export function getSocialImageUrl(
+  config: ResolvedSiteConfig,
+  pageId: string | undefined
+) {
   try {
-    const url = new URL(api.getSocialImage, host)
+    const url = new URL(config.api.getSocialImage, config.host)
 
     if (pageId) {
       url.searchParams.set('id', pageId)

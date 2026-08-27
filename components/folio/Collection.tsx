@@ -3,7 +3,7 @@ import { getBlockCollectionId, getBlockValue } from 'notion-utils'
 import * as React from 'react'
 import { Collection as NotionCollection } from 'react-notion-x/build/third-party/collection'
 
-import { isCollectionSearchEnabled } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import { CollectionSearch } from './CollectionSearch'
 
@@ -48,6 +48,7 @@ const ITEM_SELECTOR =
   '.notion-collection-card, .notion-list-item, .notion-table-row'
 
 export function Collection({ block, className, ctx }: CollectionProps) {
+  const { isCollectionSearchEnabled } = useSiteConfig()
   const [query, setQuery] = React.useState('')
   const containerRef = React.useRef<HTMLDivElement>(null)
 

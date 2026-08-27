@@ -2,7 +2,7 @@ import { IoArrowUpOutline } from '@react-icons/all-files/io5/IoArrowUpOutline'
 import cs from 'classnames'
 import * as React from 'react'
 
-import { backToTop } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import { useScrollState } from './use-scroll-state'
 
@@ -13,6 +13,7 @@ import { useScrollState } from './use-scroll-state'
  * @see ScrollProgressBar
  */
 export function ScrollWidgets() {
+  const { backToTop } = useSiteConfig()
   const { scrollY, isScrollingUp } = useScrollState()
 
   // 레퍼런스 서비스 동작: 위로 스크롤할 때만 올라오고, 아래로 내리거나 최상단에서는 숨는다.

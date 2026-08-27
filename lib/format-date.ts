@@ -1,5 +1,3 @@
-import { dateFormat } from './config'
-
 const MONTHS_SHORT = [
   'Jan',
   'Feb',
@@ -31,7 +29,7 @@ const MONTHS_LONG = [
 ]
 
 /**
- * Notion date 속성을 site.config.ts의 `dateFormat`에 맞춰 문자열로 만든다.
+ * Notion date 속성을 사이트 설정의 `dateFormat`에 맞춰 문자열로 만든다.
  *
  * Notion API는 date 속성의 표시 형식을 스키마에 담아주지 않는다. 그래서
  * `notion-utils`의 formatDate는 항상 영문 로케일로 렌더하고, 한국어 사이트에서
@@ -42,7 +40,7 @@ const MONTHS_LONG = [
  */
 export function formatNotionDate(
   value: string | number,
-  format: string = dateFormat
+  format: string
 ): string {
   const date = new Date(value)
 

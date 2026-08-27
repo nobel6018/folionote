@@ -5,41 +5,8 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true'
 })
 
-/* eslint-disable no-process-env */
-const {
-  NOTION_ROOT_PAGE_ID,
-  SITE_NAME,
-  SITE_AUTHOR,
-  SITE_DOMAIN,
-  VERCEL_PROJECT_PRODUCTION_URL,
-  VERCEL_URL
-} = process.env
-/* eslint-enable no-process-env */
-
 export default withBundleAnalyzer({
   staticPageGenerationTimeout: 300,
-
-  // site.config.ts 대신 환경변수로 사이트 설정을 받는 경로 (@see lib/config.ts).
-  //
-  // 이 값들은 브라우저에서도 필요하다. 사이트 이름과 도메인은 헤더와 canonical URL을
-  // 그리는 코드를 타고 클라이언트 번들까지 들어간다. Next는 NEXT_PUBLIC_ 접두사가
-  // 붙은 변수만 자동으로 내보내므로, 접두사 없는 이름을 쓰려면 여기 적어야 한다.
-  // 빌드 시점에 문자열로 박히니 값을 바꾸면 재배포가 필요하다.
-  env: {
-    NOTION_ROOT_PAGE_ID: NOTION_ROOT_PAGE_ID ?? '',
-    SITE_NAME: SITE_NAME ?? '',
-    SITE_AUTHOR: SITE_AUTHOR ?? '',
-    // 도메인은 배포가 끝나야 정해져서 미리 물어볼 수가 없다. Vercel이 주입하는
-    // 호스트명을 대신 쓴다. PRODUCTION_URL은 프로덕션 도메인으로 고정이고,
-    // VERCEL_URL은 배포마다 달라지는 프리뷰 주소다. 둘 다 프로토콜이 없는
-    // 호스트명이라 그대로 넣는다.
-    //
-    // VERCEL_URL을 그 이름으로 내보내지 않고 여기서 접는 이유가 있다. 그 이름이
-    // 브라우저에 박히면 lib/config.ts의 apiHost가 클라이언트에서도 배포별 주소를
-    // 가리켜, 커스텀 도메인으로 들어온 방문자가 다른 오리진으로 API를 부른다.
-    SITE_DOMAIN:
-      SITE_DOMAIN || VERCEL_PROJECT_PRODUCTION_URL || VERCEL_URL || ''
-  },
 
   images: {
     remotePatterns: [
