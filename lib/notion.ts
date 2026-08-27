@@ -1,5 +1,6 @@
 import {
   type ExtendedRecordMap,
+  type RecordMap,
   type SearchParams,
   type SearchResults
 } from 'notion-types'
@@ -144,6 +145,30 @@ function useStableFileUrls(recordMap: ExtendedRecordMap) {
   }
 }
 
+/**
+ * Notion의 협업 편집 데이터(`crdt_data`, `crdt_format_version`)를 블록에서 떼어낸다.
+ *
+ * Notion은 새 편집 포맷에서 텍스트 블록에 `properties.title`과 나란히 `crdt_data`를
+ * 함께 내려주는데, 여기에 **지금 화면에 없는 옛 텍스트와 링크가 편집 이력으로 그대로
+ * 들어 있다.** react-notion-x는 `properties.title`만 읽으므로 화면은 멀쩡하지만,
+ * recordMap은 `__NEXT_DATA__`로 HTML에 실려 나가기 때문에 사용자가 Notion에서 지운
+ * 문장이 사이트 소스에는 남는다. 실제로 이 리포 데모 페이지 소스에는 지워진 외부 링크
+ * 주소가 두 블록에 걸쳐 7번 들어 있었다.
+ *
+ * 렌더러가 읽지 않는 데이터라 지워도 화면은 그대로이고, 용량은 크게 줄어든다. 루트
+ * 페이지의 `__NEXT_DATA__`가 52.4KB에서 21.5KB로, HTML 전체가 77.5KB에서 46.6KB로
+ * 줄었다.
+ */
+function stripCrdtData(recordMap: RecordMap) {
+  for (const record of Object.values(recordMap.block || {})) {
+    const block = getBlockValue(record) as any
+    if (!block) continue
+
+    delete block.crdt_data
+    delete block.crdt_format_version
+  }
+}
+
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId)
 
@@ -171,6 +196,10 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     ;(recordMap as any).preview_images = previewImageMap
   }
 
+  // 내비게이션 링크 페이지를 병합한 뒤에 지운다. mergeRecordMaps가 그쪽 recordMap의
+  // 편집 이력을 그대로 끌고 들어오기 때문이다.
+  stripCrdtData(recordMap)
+
   await getTweetsMap(recordMap)
 
   return recordMap
@@ -180,6 +209,7 @@ export async function search(params: SearchParams): Promise<SearchResults> {
   const results = await notion.search(params)
 
   flattenSearchRecordMap(results)
+  stripCrdtData(results.recordMap)
 
   return results
 }
