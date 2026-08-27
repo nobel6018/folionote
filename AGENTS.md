@@ -44,7 +44,7 @@ API가 없어서 브라우저에서만 되는 일이 셋이다. 대신 하려 �
 ### 1. 어느 길로 갈지 고른다
 
 설정값을 넣는 경로가 둘이고, `site.config.ts`에 값이 있으면 파일이 환경변수를 이긴다
-(`lib/get-config-value.ts`). 사용자가 리포를 고칠 생각이 없다면 파일을 건드리지 않는
+(`lib/site-config-resolve.ts`). 사용자가 리포를 고칠 생각이 없다면 파일을 건드리지 않는
 쪽이 짧다.
 
 **파일 없이 가는 길**: 필요한 환경변수는 `NOTION_ROOT_PAGE_ID`와 `SITE_NAME` 두 개다.
@@ -172,8 +172,11 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
   `for path in ...` 같은 코드를 쓰지 않는다.
 - Vercel 환경변수는 배포 시점에 값이 박힌다. 바꾼 뒤에는 재배포해야 한다
   (`vercel redeploy <배포URL>`).
-- `next.config.js`의 `env`로 브라우저 번들까지 내보내는 값(`SITE_NAME`, `SITE_DOMAIN` 등)도
-  같은 이유로 빌드 시점 고정이다. 런타임에 바꿀 수 없다.
+- `SITE_NAME`, `SITE_DOMAIN` 같은 값은 이제 서버에서만 읽는다. 예전에는
+  `next.config.js`의 `env`로 브라우저 번들에까지 박아 빌드 시점에 고정됐지만, 지금은
+  `lib/load-site-config.ts`가 런타임에 읽어 props로 내려보낸다
+  (@see docs/architecture.md). Vercel 환경변수를 바꾼 뒤 재배포가 필요한 것은
+  그대로다. 값이 빌드 산출물에 남아서가 아니라 함수가 새 환경변수로 다시 떠야 하기 때문이다.
 - Vercel Deploy 버튼은 fork가 아니라 복제된 새 리포를 만든다. upstream과 연결이 없어서
   이 리포의 업데이트가 자동으로 오지 않는다. 업데이트를 받을 생각이면 fork로 간다.
 - Vercel Hobby 플랜은 비상업용이다. 수익이 붙는 사이트라면 요금제를 확인하라고 알린다.
@@ -190,6 +193,7 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - `docs/customization.md` 디자인 토큰과 자체 컴포넌트로 외형 바꾸기
 - `docs/custom-code.md` 스크립트/CSS 주입, 페이지별 SEO 덮어쓰기
 - `docs/deployment.md` Vercel 배포, DNS(Cloudflare/Route 53), 도메인 이전과 ISR 캐시 전략
+- `docs/architecture.md` 설정이 흐르는 길(site.config.ts → loadSiteConfig → PageProps.config → useSiteConfig)과 패키지 경계
 - `docs/admin-deploy.md` 배포 어드민의 동작과 보안 설계, 관련 코드 위치
 - `docs/cloudflare-migration.md` Workers 이전 실측과 접은 이유
 - `docs/feature-parity.md` 상용 서비스 기능 대조표

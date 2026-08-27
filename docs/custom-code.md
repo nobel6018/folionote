@@ -99,7 +99,7 @@ pageMeta: {
 | 파일                           | 역할                                        |
 | ------------------------------ | ------------------------------------------- |
 | `lib/site-config.ts`           | `CustomCodeConfig`, `PageMetaOverride` 타입 |
-| `lib/config.ts`                | `customCode`, `pageMeta` 해석               |
+| `lib/site-config-resolve.ts`   | `customCode`, `pageMeta` 해석               |
 | `lib/page-meta.ts`             | ID 정규화 조회, `isNoindexPage`             |
 | `pages/_document.tsx`          | bodyStart/bodyEnd/css/metaTags 주입         |
 | `components/NotionPage.tsx`    | 제목·설명·공유 이미지 덮어쓰기 적용         |

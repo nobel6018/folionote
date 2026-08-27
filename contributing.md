@@ -15,7 +15,7 @@ pnpm install
 ```
 
 렌더할 Notion 페이지를 지정해야 사이트가 뜹니다. 경로가 둘이고, `site.config.ts`에 값이
-있으면 파일이 환경변수를 이깁니다(`lib/get-config-value.ts`).
+있으면 파일이 환경변수를 이깁니다(`lib/site-config-resolve.ts`).
 
 - `.env`에 `NOTION_ROOT_PAGE_ID`와 `SITE_NAME` 두 값만 넣는 방법. 리포 파일을 건드리지
   않으니 upstream과 충돌이 없습니다. `NOTION_ROOT_PAGE_ID`에는 32자 ID 대신 Notion 페이지
