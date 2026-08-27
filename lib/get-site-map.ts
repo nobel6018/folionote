@@ -8,15 +8,15 @@ import {
 import pMemoize from 'p-memoize'
 
 import type * as types from './types'
-import * as config from './config'
-import { includeNotionIdInUrls } from './config'
 import { getCanonicalPageId } from './get-canonical-page-id'
 import { notion } from './notion-api'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
-const uuid = !!includeNotionIdInUrls
-
-export async function getSiteMap(): Promise<types.SiteMap> {
+export async function getSiteMap(
+  config: ResolvedSiteConfig
+): Promise<types.SiteMap> {
   const partialSiteMap = await getAllPages(
+    config,
     config.rootNotionPageId,
     config.rootNotionSpaceId ?? undefined
   )
@@ -27,8 +27,13 @@ export async function getSiteMap(): Promise<types.SiteMap> {
   } as types.SiteMap
 }
 
+/**
+ * 캐시 키에 설정의 루트 페이지 ID를 넣는다. 설정 객체를 통째로 직렬화하면 키가
+ * 수십 KB가 되고, 값이 조금만 달라도 캐시가 새로 잡힌다.
+ */
 const getAllPages = pMemoize(getAllPagesImpl, {
-  cacheKey: (...args) => JSON.stringify(args)
+  cacheKey: ([config, ...rest]) =>
+    JSON.stringify([config.rootNotionPageId, ...rest])
 })
 
 /**
@@ -109,6 +114,7 @@ const createGetPage = (deadline: number, stats: { budgetSkipped: number }) => {
 }
 
 async function getAllPagesImpl(
+  config: ResolvedSiteConfig,
   rootNotionPageId: string,
   rootNotionSpaceId?: string,
   {
@@ -157,8 +163,8 @@ async function getAllPagesImpl(
         return map
       }
 
-      const canonicalPageId = getCanonicalPageId(pageId, recordMap, {
-        uuid
+      const canonicalPageId = getCanonicalPageId(config, pageId, recordMap, {
+        uuid: !!config.includeNotionIdInUrls
       })!
 
       if (map[canonicalPageId]) {

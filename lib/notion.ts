@@ -8,22 +8,22 @@ import { getBlockValue, mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
-import {
-  isPreviewImageSupportEnabled,
-  navigationLinks,
-  navigationStyle
-} from './config'
 import { getTweetsMap } from './get-tweets'
 import { notion } from './notion-api'
 import { getPreviewImageMap } from './preview-images'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
+/**
+ * 캐시 키에 루트 페이지 ID를 넣는다. 한 프로세스가 사이트 여러 개를 그릴 때
+ * 인자 없는 memoize는 먼저 그린 사이트의 내비게이션을 뒤 사이트에도 붙여 버린다.
+ */
 const getNavigationLinkPages = pMemoize(
-  async (): Promise<ExtendedRecordMap[]> => {
-    const navigationLinkPageIds = (navigationLinks || [])
+  async (config: ResolvedSiteConfig): Promise<ExtendedRecordMap[]> => {
+    const navigationLinkPageIds = (config.navigationLinks || [])
       .map((link) => link?.pageId)
       .filter(Boolean)
 
-    if (navigationStyle !== 'default' && navigationLinkPageIds.length) {
+    if (config.navigationStyle !== 'default' && navigationLinkPageIds.length) {
       return pMap(
         navigationLinkPageIds,
         async (navigationLinkPageId) =>
@@ -40,7 +40,8 @@ const getNavigationLinkPages = pMemoize(
     }
 
     return []
-  }
+  },
+  { cacheKey: ([config]) => config.rootNotionPageId }
 )
 
 /**
@@ -169,18 +170,21 @@ function stripCrdtData(recordMap: RecordMap) {
   }
 }
 
-export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
+export async function getPage(
+  config: ResolvedSiteConfig,
+  pageId: string
+): Promise<ExtendedRecordMap> {
   let recordMap = await notion.getPage(pageId)
 
   fillEmptyCollectionViewNames(recordMap)
   renderUserMentionsAsText(recordMap)
   useStableFileUrls(recordMap)
 
-  if (navigationStyle !== 'default') {
+  if (config.navigationStyle !== 'default') {
     // ensure that any pages linked to in the custom navigation header have
     // their block info fully resolved in the page record map so we know
     // the page title, slug, etc.
-    const navigationLinkRecordMaps = await getNavigationLinkPages()
+    const navigationLinkRecordMaps = await getNavigationLinkPages(config)
 
     if (navigationLinkRecordMaps?.length) {
       recordMap = navigationLinkRecordMaps.reduce(
@@ -191,8 +195,8 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     }
   }
 
-  if (isPreviewImageSupportEnabled) {
-    const previewImageMap = await getPreviewImageMap(recordMap)
+  if (config.isPreviewImageSupportEnabled) {
+    const previewImageMap = await getPreviewImageMap(config, recordMap)
     ;(recordMap as any).preview_images = previewImageMap
   }
 
@@ -200,7 +204,7 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   // 편집 이력을 그대로 끌고 들어오기 때문이다.
   stripCrdtData(recordMap)
 
-  await getTweetsMap(recordMap)
+  await getTweetsMap(config, recordMap)
 
   return recordMap
 }

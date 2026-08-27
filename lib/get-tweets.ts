@@ -5,9 +5,11 @@ import pMemoize from 'p-memoize'
 import { getTweet as getTweetData } from 'react-tweet/api'
 
 import type { ExtendedTweetRecordMap } from './types'
-import { db } from './db'
+import { getDb } from './db'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 export async function getTweetsMap(
+  config: ResolvedSiteConfig,
   recordMap: ExtendedRecordMap
 ): Promise<void> {
   const tweetIds = getPageTweetIds(recordMap)
@@ -16,7 +18,7 @@ export async function getTweetsMap(
     await pMap(
       tweetIds,
       async (tweetId: string) => {
-        return [tweetId, await getTweet(tweetId)]
+        return [tweetId, await getTweet(config, tweetId)]
       },
       {
         concurrency: 8
@@ -27,9 +29,13 @@ export async function getTweetsMap(
   ;(recordMap as ExtendedTweetRecordMap).tweets = tweetsMap
 }
 
-async function getTweetImpl(tweetId: string): Promise<any> {
+async function getTweetImpl(
+  config: ResolvedSiteConfig,
+  tweetId: string
+): Promise<any> {
   if (!tweetId) return null
 
+  const db = getDb(config)
   const cacheKey = `tweet:${tweetId}`
 
   try {
@@ -59,4 +65,7 @@ async function getTweetImpl(tweetId: string): Promise<any> {
   }
 }
 
-export const getTweet = pMemoize(getTweetImpl)
+/** 트윗은 사이트와 무관하지만 캐시 저장소는 설정마다 다르다 */
+export const getTweet = pMemoize(getTweetImpl, {
+  cacheKey: ([config, tweetId]) => `${config.isRedisEnabled}:${tweetId}`
+})

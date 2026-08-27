@@ -3,11 +3,11 @@ import { parsePageId } from 'notion-utils'
 
 import type { PageProps } from './types'
 import * as acl from './acl'
-import { environment, pageUrlAdditions, pageUrlOverrides, site } from './config'
-import { db } from './db'
+import { getDb } from './db'
 import { getSiteMap } from './get-site-map'
 import { getPage } from './notion'
 import { classifyNotionError } from './notion-errors'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 /**
  * 페이지를 읽되, 사용자가 고칠 수 있는 실패는 던지지 않고 안내용 props로 바꾼다.
@@ -20,10 +20,11 @@ import { classifyNotionError } from './notion-errors'
  * 그 경우는 잠깐 뒤에 다시 시도하는 것이 맞고, 오류 화면을 캐시하면 안 된다.
  */
 async function getPageOrError(
+  config: ResolvedSiteConfig,
   pageId: string
 ): Promise<{ recordMap: ExtendedRecordMap } | { error: PageProps['error'] }> {
   try {
-    return { recordMap: await getPage(pageId) }
+    return { recordMap: await getPage(config, pageId) }
   } catch (err) {
     const known = classifyNotionError(err)
     if (known) {
@@ -35,9 +36,10 @@ async function getPageOrError(
 }
 
 export async function resolveNotionPage(
-  domain: string,
+  config: ResolvedSiteConfig,
   rawPageId?: string
 ): Promise<PageProps> {
+  const { site, domain, environment } = config
   let pageId: string | undefined
   let recordMap: ExtendedRecordMap
 
@@ -48,13 +50,14 @@ export async function resolveNotionPage(
       // check if the site configuration provides an override or a fallback for
       // the page's URI
       const override =
-        pageUrlOverrides[rawPageId] || pageUrlAdditions[rawPageId]
+        config.pageUrlOverrides[rawPageId] || config.pageUrlAdditions[rawPageId]
 
       if (override) {
         pageId = parsePageId(override)!
       }
     }
 
+    const db = getDb(config)
     const useUriToPageIdCache = true
     const cacheKey = `uri-to-page-id:${domain}:${environment}:${rawPageId}`
     // TODO: should we use a TTL for these mappings or make them permanent?
@@ -74,13 +77,15 @@ export async function resolveNotionPage(
     }
 
     if (pageId) {
-      const result = await getPageOrError(pageId)
-      if ('error' in result) return { site, pageId, error: result.error }
+      const result = await getPageOrError(config, pageId)
+      if ('error' in result) {
+        return { config, site, pageId, error: result.error }
+      }
       recordMap = result.recordMap
     } else {
       // handle mapping of user-friendly canonical page paths to Notion page IDs
       // e.g., /developer-x-entrepreneur versus /71201624b204481f862630ea25ce62fe
-      const siteMap = await getSiteMap()
+      const siteMap = await getSiteMap(config)
       pageId = siteMap?.canonicalPageMap[rawPageId]
 
       if (pageId) {
@@ -88,8 +93,10 @@ export async function resolveNotionPage(
         // cached aggressively
         // recordMap = siteMap.pageMap[pageId]
 
-        const result = await getPageOrError(pageId)
-        if ('error' in result) return { site, pageId, error: result.error }
+        const result = await getPageOrError(config, pageId)
+        if ('error' in result) {
+          return { config, site, pageId, error: result.error }
+        }
         recordMap = result.recordMap
 
         if (useUriToPageIdCache) {
@@ -106,6 +113,7 @@ export async function resolveNotionPage(
       } else {
         // note: we're purposefully not caching URI to pageId mappings for 404s
         return {
+          config,
           error: {
             message: `Not found "${rawPageId}"`,
             statusCode: 404
@@ -116,11 +124,13 @@ export async function resolveNotionPage(
   } else {
     pageId = site.rootNotionPageId
 
-    const result = await getPageOrError(pageId)
-    if ('error' in result) return { site, pageId, error: result.error }
+    const result = await getPageOrError(config, pageId)
+    if ('error' in result) {
+      return { config, site, pageId, error: result.error }
+    }
     recordMap = result.recordMap
   }
 
-  const props: PageProps = { site, recordMap, pageId }
+  const props: PageProps = { config, site, recordMap, pageId }
   return { ...props, ...(await acl.pageAcl(props)) }
 }

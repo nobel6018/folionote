@@ -1,40 +1,45 @@
 import { type ExtendedRecordMap } from 'notion-types'
 import { parsePageId, uuidToId } from 'notion-utils'
 
-import { includeNotionIdInUrls } from './config'
 import { getCanonicalPageId } from './get-canonical-page-id'
-import { type Site } from './types'
-
-// include UUIDs in page URLs during local development but not in production
-// (they're nice for debugging and speed up local dev)
-const uuid = !!includeNotionIdInUrls
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 export const mapPageUrl =
-  (site: Site, recordMap: ExtendedRecordMap, searchParams: URLSearchParams) =>
+  (
+    config: ResolvedSiteConfig,
+    recordMap: ExtendedRecordMap,
+    searchParams: URLSearchParams
+  ) =>
   (pageId = '') => {
+    // 로컬 개발에서는 URL에 UUID를 붙여 둔다. 디버깅이 쉽고 canonical 조회를 건너뛴다
+    const uuid = !!config.includeNotionIdInUrls
     const pageUuid = parsePageId(pageId, { uuid: true })!
 
-    if (uuidToId(pageUuid) === site.rootNotionPageId) {
+    if (uuidToId(pageUuid) === config.rootNotionPageId) {
       return createUrl('/', searchParams)
     } else {
       return createUrl(
-        `/${getCanonicalPageId(pageUuid, recordMap, { uuid })}`,
+        `/${getCanonicalPageId(config, pageUuid, recordMap, { uuid })}`,
         searchParams
       )
     }
   }
 
 export const getCanonicalPageUrl =
-  (site: Site, recordMap: ExtendedRecordMap) =>
+  (config: ResolvedSiteConfig, recordMap: ExtendedRecordMap) =>
   (pageId = '') => {
+    const uuid = !!config.includeNotionIdInUrls
     const pageUuid = parsePageId(pageId, { uuid: true })!
 
-    if (uuidToId(pageId) === site.rootNotionPageId) {
-      return `https://${site.domain}`
+    if (uuidToId(pageId) === config.rootNotionPageId) {
+      return `https://${config.domain}`
     } else {
-      return `https://${site.domain}/${getCanonicalPageId(pageUuid, recordMap, {
-        uuid
-      })}`
+      return `https://${config.domain}/${getCanonicalPageId(
+        config,
+        pageUuid,
+        recordMap,
+        { uuid }
+      )}`
     }
   }
 

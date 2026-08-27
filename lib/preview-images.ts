@@ -9,17 +9,22 @@ import { getPageImageUrls, normalizeUrl } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
-import { defaultPageCover, defaultPageIcon } from './config'
-import { db } from './db'
-import { mapImageUrl } from './map-image-url'
+import { getDb } from './db'
+import { createMapImageUrl } from './map-image-url'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 export async function getPreviewImageMap(
+  config: ResolvedSiteConfig,
   recordMap: ExtendedRecordMap
 ): Promise<PreviewImageMap> {
   const urls: string[] = getPageImageUrls(recordMap, {
-    mapImageUrl
+    mapImageUrl: createMapImageUrl(config)
   })
-    .concat([defaultPageIcon, defaultPageCover].filter(Boolean))
+    .concat(
+      [config.defaultPageIcon, config.defaultPageCover].filter(
+        Boolean
+      ) as string[]
+    )
     .filter(Boolean)
 
   const previewImagesMap = Object.fromEntries(
@@ -27,7 +32,7 @@ export async function getPreviewImageMap(
       urls,
       async (url) => {
         const cacheKey = normalizeUrl(url)
-        return [cacheKey, await getPreviewImage(url, { cacheKey })]
+        return [cacheKey, await getPreviewImage(config, url, { cacheKey })]
       },
       {
         concurrency: 8
@@ -39,9 +44,12 @@ export async function getPreviewImageMap(
 }
 
 async function createPreviewImage(
+  config: ResolvedSiteConfig,
   url: string,
   { cacheKey }: { cacheKey: string }
 ): Promise<PreviewImage | null> {
+  const db = getDb(config)
+
   try {
     try {
       const cachedPreviewImage = await db.get(cacheKey)
@@ -77,4 +85,10 @@ async function createPreviewImage(
   }
 }
 
-export const getPreviewImage = pMemoize(createPreviewImage)
+/**
+ * 캐시 키에 사이트 루트 페이지 ID를 섞는다. 한 프로세스가 사이트 여러 개를 그릴 때
+ * URL만으로 키를 잡으면 서로 다른 사이트가 같은 항목을 나눠 쓰게 된다.
+ */
+export const getPreviewImage = pMemoize(createPreviewImage, {
+  cacheKey: ([config, url]) => `${config.rootNotionPageId}:${url}`
+})

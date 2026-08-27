@@ -6,7 +6,7 @@ export async function pageAcl({
   site,
   recordMap,
   pageId
-}: PageProps): Promise<PageProps | undefined> {
+}: PageProps): Promise<Partial<PageProps> | undefined> {
   if (!site) {
     return {
       error: {

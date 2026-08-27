@@ -1,6 +1,7 @@
 import Redis from 'ioredis'
 
-import { isRedisEnabled, pageViewCount, redisUrl } from './config'
+import { getRedisSettings } from './server-env'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 /**
  * 페이지뷰 카운터 저장소 (레퍼런스 서비스 어드민의 "페이지뷰 카운트").
@@ -15,14 +16,21 @@ import { isRedisEnabled, pageViewCount, redisUrl } from './config'
 
 let client: Redis | null = null
 
-export const isPageViewCountAvailable = pageViewCount.enabled && isRedisEnabled
+export function isPageViewCountAvailable(config: ResolvedSiteConfig): boolean {
+  return config.pageViewCount.enabled && config.isRedisEnabled
+}
 
-function getClient(): Redis | null {
-  if (!isPageViewCountAvailable || !redisUrl) {
+function getClient(config: ResolvedSiteConfig): Redis | null {
+  if (!isPageViewCountAvailable(config)) {
     return null
   }
 
-  client ??= new Redis(redisUrl, {
+  const { url } = getRedisSettings(config.isRedisEnabled)
+  if (!url) {
+    return null
+  }
+
+  client ??= new Redis(url, {
     // 카운터는 부가 기능이다. 오래 매달리지 않고 실패하면 조용히 포기한다
     maxRetriesPerRequest: 1,
     connectTimeout: 5000,
@@ -42,10 +50,10 @@ function getClient(): Redis | null {
  * 타임존을 설정에서 받는다. UTC로 고정하면 한국 사이트에서 오전 9시에 날짜가
  * 바뀌어 운영자가 보는 "Today"와 어긋난다.
  */
-function todayKey(): string {
+function todayKey(config: ResolvedSiteConfig): string {
   // en-CA 로케일이 YYYY-MM-DD를 준다
   return new Intl.DateTimeFormat('en-CA', {
-    timeZone: pageViewCount.timeZone,
+    timeZone: config.pageViewCount.timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
@@ -60,12 +68,13 @@ const DAILY_TTL_SECONDS = 8 * 24 * 60 * 60
 export type PageViewCounts = { today: number; total: number }
 
 export async function incrementPageView(
+  config: ResolvedSiteConfig,
   pageId: string
 ): Promise<PageViewCounts | null> {
-  const redis = getClient()
+  const redis = getClient(config)
   if (!redis) return null
 
-  const dailyKey = `${DAILY_PREFIX}${pageId}:${todayKey()}`
+  const dailyKey = `${DAILY_PREFIX}${pageId}:${todayKey(config)}`
 
   try {
     const [today, total] = (await redis
@@ -86,14 +95,15 @@ export async function incrementPageView(
 }
 
 export async function readPageView(
+  config: ResolvedSiteConfig,
   pageId: string
 ): Promise<PageViewCounts | null> {
-  const redis = getClient()
+  const redis = getClient(config)
   if (!redis) return null
 
   try {
     const [today, total] = await redis.mget(
-      `${DAILY_PREFIX}${pageId}:${todayKey()}`,
+      `${DAILY_PREFIX}${pageId}:${todayKey(config)}`,
       `${TOTAL_PREFIX}${pageId}`
     )
 

@@ -4,9 +4,10 @@ import {
   parsePageId
 } from 'notion-utils'
 
-import { inversePageUrlOverrides } from './config'
+import { type ResolvedSiteConfig } from './site-config-resolve'
 
 export function getCanonicalPageId(
+  config: ResolvedSiteConfig,
   pageId: string,
   recordMap: ExtendedRecordMap,
   { uuid = true }: { uuid?: boolean } = {}
@@ -16,7 +17,7 @@ export function getCanonicalPageId(
     return
   }
 
-  const override = inversePageUrlOverrides[cleanPageId]
+  const override = config.inversePageUrlOverrides[cleanPageId]
   if (override) {
     return override
   } else {
