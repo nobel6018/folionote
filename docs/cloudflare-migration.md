@@ -7,9 +7,10 @@ Vercel 대신 Cloudflare Workers에 올릴 수 있는지 실제로 옮겨서 Wor
 도메인은 Cloudflare에서 사고 DNS도 Cloudflare에 두되, 배포는 Vercel에 남깁니다.
 프록시(주황 구름)만 끄면 됩니다 (@see setup-guide.md).
 
-작업물은 `feat/cloudflare-deploy` 브랜치에 있습니다. 나중에 판단이 바뀌면 거기서
-이어가면 됩니다. main에 병합하지 않은 이유는 `sharp` 추적 제외가 Vercel의
-미리보기 이미지를 깨뜨리기 때문입니다.
+실험 브랜치는 지웠습니다. main에 병합하지 않은 이유는 `sharp` 추적 제외가
+Vercel의 미리보기 이미지를 깨뜨리기 때문입니다. 다시 시도한다면 아래 "필요한
+설정"을 기준으로 처음부터 붙이는 편이 낫습니다. 어댑터와 Next 버전이 계속
+움직이는 영역이라 낡은 설정 파일을 되살리는 것보다 빠릅니다.
 
 ## 동작한 것
 
@@ -69,14 +70,16 @@ Browser Rendering으로 별도 생성해야 합니다. 둘 다 작업량이 상�
 `dist/index.mjs`를 찾습니다. `outputFileTracingIncludes`로 패키지를 통째로 넣어야
 합니다.
 
-## 재현 방법
+## 필요한 설정
 
-```bash
-git checkout feat/cloudflare-deploy
-pnpm install
-pnpm cf:build
-pnpm cf:preview --port 8788
-```
+다시 시도할 때 필요한 것들입니다.
+
+- `@opennextjs/cloudflare` 설치, `open-next.config.ts`와 `wrangler.jsonc` 작성
+- `.npmrc`에 `node-linker=hoisted` (pnpm 심링크 문제)
+- `next.config.js`의 `outputFileTracingExcludes`로 `sharp` 제외,
+  `outputFileTracingIncludes`로 `ofetch` 통째로 포함
+- ISR용 KV 네임스페이스 생성과 바인딩
+- 빌드는 `opennextjs-cloudflare build`, 로컬 확인은 `opennextjs-cloudflare preview`
 
 Worker 안의 오류는 로컬 관측 API로 봅니다. 콘솔에는 500만 찍히고 이유가 안 나옵니다.
 

@@ -39,6 +39,6 @@ yarn-error.log*
 .vercel
 .gstack/
 
-# Cloudflare Workers 빌드 산출물 (feat/cloudflare-deploy 브랜치에서 생성)
+# Cloudflare Workers 빌드 산출물
 .open-next/
 .wrangler/
