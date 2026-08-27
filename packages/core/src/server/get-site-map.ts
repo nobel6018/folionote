@@ -52,7 +52,7 @@ const getAllPages = pMemoize(getAllPagesImpl, {
  * 287개가 429로 실패했다. 고정 지연은 실패한 요청들이 같은 간격으로 함께 몰려
  * 다시 부딪히기 때문에, 대기 시간을 늘리면서 지터로 흩어야 한다.
  *
- * 타임아웃은 전역 `ofetchOptions`에 있다 (@see lib/notion-api.ts). 여기서
+ * 타임아웃은 전역 `ofetchOptions`에 있다 (@see packages/core/src/server/notion-api.ts). 여기서
  * `kyOptions`를 넘기고 있었는데, notion-client가 ky에서 ofetch로 옮긴 뒤로는
  * 조용히 무시되는 값이었다.
  */
@@ -78,7 +78,7 @@ class CrawlBudgetExceededError extends Error {
  * 남은 페이지 없이 완주하는 것보다, 늦지 않게 지금까지 읽은 것을 내놓는 편이 낫다.
  * (예산을 안 두면 444개 크롤이 11분 48초까지 갔다. 함수 한도를 넘겨 504가 된다.)
  *
- * 타임아웃은 전역 `ofetchOptions`에 있다 (@see lib/notion-api.ts). 여기서
+ * 타임아웃은 전역 `ofetchOptions`에 있다 (@see packages/core/src/server/notion-api.ts). 여기서
  * `kyOptions`를 넘기고 있었는데, notion-client가 ky에서 ofetch로 옮긴 뒤로는
  * 조용히 무시되는 값이었다.
  */

@@ -48,7 +48,7 @@ import styles from './styles.module.css'
 // Prism syntax 등록은 react/prism-languages.ts가 정적 import로 처리.
 // react-notion-x default Code는 사용 안 함 (FolioCode로 교체).
 
-// 컬렉션 제목 색상을 살리기 위해 레퍼런스 서비스 래퍼를 사용 (@see components/folio/Collection.tsx)
+// 컬렉션 제목 색상을 살리기 위해 레퍼런스 서비스 래퍼를 사용 (@see packages/core/src/react/components/folio/Collection.tsx)
 const Collection = dynamic(() =>
   import('./folio/Collection').then((m) => m.Collection)
 )
@@ -100,7 +100,7 @@ const createPropertyDateValue =
   (dateFormat: string) =>
   ({ data }: any, defaultFn: () => React.ReactNode) => {
     // react-notion-x 기본 렌더는 영문 로케일 고정이라 한국어 사이트에서 어긋난다.
-    // 사이트 설정의 dateFormat을 따르도록 통일한다. (@see lib/format-date.ts)
+    // 사이트 설정의 dateFormat을 따르도록 통일한다. (@see packages/core/src/shared/format-date.ts)
     const startDate = data?.[0]?.[1]?.[0]?.[1]?.start_date
 
     if (startDate) {
@@ -223,7 +223,7 @@ export function NotionPage({
   }
 
   // 페이지별 SEO 덮어쓰기. 지정한 값이 Notion 속성과 사이트 기본값을 모두 이긴다.
-  // (@see lib/page-meta.ts)
+  // (@see packages/core/src/shared/page-meta.ts)
   const metaOverride = getPageMetaOverride(config, pageId)
 
   const title =

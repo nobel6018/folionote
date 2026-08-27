@@ -8,7 +8,7 @@ import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
  * 복사한 ID에는 하이픈이 붙어 있기도 하고(`392c0343-b4fa-...`), URL에서 딴 값은
  * 붙어 있지 않다. 어느 쪽을 적어도 찾히게 하지 않으면 "설정했는데 안 먹는다"가 된다.
  *
- * @see lib/site-config.ts
+ * @see packages/core/src/config/site-config.ts
  * @see docs/custom-code.md
  */
 

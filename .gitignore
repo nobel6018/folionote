@@ -45,3 +45,6 @@ yarn-error.log*
 # Cloudflare Workers 빌드 산출물
 .open-next/
 .wrangler/
+
+# pnpm pack 산출물
+packages/*/*.tgz

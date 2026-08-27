@@ -23,7 +23,7 @@ export function PageHead({
   image?: string
   url?: string
   isBlogPost?: boolean
-  /** 켜면 검색엔진에서 뺀다 (@see lib/page-meta.ts) */
+  /** 켜면 검색엔진에서 뺀다 (@see packages/core/src/shared/page-meta.ts) */
   noindex?: boolean
 }) {
   const config = useOptionalSiteConfig()

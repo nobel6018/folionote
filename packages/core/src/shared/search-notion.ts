@@ -5,7 +5,8 @@ import type * as types from '../types.js'
 
 /**
  * 검색 API 경로. 사이트마다 달라지지 않는 우리 라우트라 설정에서 받지 않는다
- * (@see lib/site-config-resolve.ts의 `api`).
+ * (@see packages/core/src/config/site-config-resolve.ts의 `api`).
+ * 앱이 이 경로에 라우트를 만들어야 검색이 동작한다 (@see packages/core/README.md).
  */
 const SEARCH_NOTION_PATH = '/api/search-notion'
 

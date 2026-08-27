@@ -17,7 +17,7 @@ import { type PageError, type PageErrorKind } from '../types.js'
  *
  * 여기서 분류된 오류는 페이지 대신 안내 화면으로 렌더된다. 특히 루트 페이지는
  * `next build` 때 미리 만들어지므로, 여기서 잡지 않으면 빌드가 실패하고 사용자는
- * Vercel 빌드 로그에서 원인을 찾아야 한다. (@see lib/resolve-notion-page.ts)
+ * Vercel 빌드 로그에서 원인을 찾아야 한다. (@see packages/core/src/server/resolve-notion-page.ts)
  */
 export function classifyNotionError(err: unknown): PageError | null {
   const e = err as any

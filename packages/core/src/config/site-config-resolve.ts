@@ -536,7 +536,7 @@ export function resolveSiteConfig(
     navigationStyle: pick(input.navigationStyle, 'default'),
     navigationLinks: pick(input.navigationLinks, null),
     logo,
-    // 날짜 표시 형식 (@see lib/format-date.ts)
+    // 날짜 표시 형식 (@see packages/core/src/shared/format-date.ts)
     dateFormat: pick(input.dateFormat, 'YYYY/MM/DD'),
     colorThemeMode,
     customThemeColors,
@@ -544,7 +544,7 @@ export function resolveSiteConfig(
 
     /**
      * 페이지뷰 카운트. 기본은 꺼짐이다. Redis 없이는 셀 수 없어서
-     * (@see lib/pageview-store.ts) 켜려면 REDIS_* 환경변수까지 설정해야 한다.
+     * (@see packages/core/src/server/pageview-store.ts) 켜려면 REDIS_* 환경변수까지 설정해야 한다.
      */
     pageViewCount: {
       enabled: rawPageViewCount?.enabled ?? false,
@@ -595,7 +595,7 @@ export function resolveSiteConfig(
     customCode: pick(input.customCode, {}) ?? {},
     /**
      * 페이지별 SEO 메타 덮어쓰기. 키는 하이픈 없는 32자 페이지 ID다.
-     * @see lib/page-meta.ts
+     * @see packages/core/src/shared/page-meta.ts
      */
     pageMeta: pick(input.pageMeta, {}) ?? {},
 

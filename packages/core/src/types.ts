@@ -10,7 +10,7 @@ export type NavigationStyle = 'default' | 'custom'
 
 /**
  * 사용자가 스스로 고칠 수 있는 실패 종류. 안내 화면이 이 값으로 문구를 고른다.
- * (@see lib/notion-errors.ts, components/Page404.tsx)
+ * (@see packages/core/src/shared/notion-errors.ts, packages/core/src/react/components/Page404.tsx)
  */
 export type PageErrorKind =
   | 'unpublished'
@@ -27,7 +27,7 @@ export interface PageError {
 export interface PageProps {
   /**
    * 이 요청이 그릴 사이트의 최종 설정. 브라우저까지 그대로 실려 간다
-   * (@see lib/site-config-context.tsx).
+   * (@see packages/core/src/react/site-config-context.tsx).
    */
   config: ResolvedSiteConfig
   /** 설정에서 파생되는 값이라 `config.site`와 같다. react-notion-x 쪽 호환용으로 남긴다 */

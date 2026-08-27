@@ -70,7 +70,7 @@ const COMMENTS: Partial<Record<keyof SiteConfig, string>> = {
     'Redis 캐시. 켜면 REDIS_HOST / REDIS_PASSWORD 환경변수가 필요하다.\n페이지뷰 카운트도 이 값이 켜져 있어야 동작한다.',
   pageUrlOverrides:
     'pretty URL 매핑. 키가 경로, 값이 Notion 블록 ID(하이픈 없는 32자 hex).\nnavigationLinks에서 url로 참조하는 경로는 여기에도 반드시 있어야 한다.',
-  dateFormat: '컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)',
+  dateFormat: '컬렉션 카드/속성의 날짜 형식',
   colorTheme:
     "색상 테마. 'system'은 OS 설정을 따르고 헤더에 토글을 노출한다.\n'light'/'dark'로 고정하거나 'custom'으로 색을 직접 지정하면 토글이 사라진다.",
   font: '본문 폰트. 생략하면 Pretendard 한 종. 레지스트리 키는 lib/fonts.ts 참고',
@@ -191,7 +191,7 @@ export function serializeSiteConfig(
 
 // 이 파일은 /admin 화면에서 저장할 때 자동으로 다시 쓰인다.
 // 손으로 편집해도 되지만, 저장하면 포맷과 주석이 이 형식으로 정리된다.
-// @see @folionote/core/src/config/serialize-site-config.ts
+// 이 형식은 @folionote/core의 serializeSiteConfig가 만든다.
 
 export default siteConfig({
 ${blocks.join(',\n\n')}

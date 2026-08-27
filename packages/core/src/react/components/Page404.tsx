@@ -94,7 +94,7 @@ function pickCopy(language: string, error?: types.PageError) {
  *
  * 셋업에서 가장 흔한 실패는 Notion 페이지를 "웹에 게시"하지 않은 것이다. 이 화면이
  * 그 사실과 고치는 순서를 직접 말해준다. README에 적는 것보다 낫다. 막힌 사람은
- * README가 아니라 이 화면을 보고 있다. (@see lib/notion-errors.ts)
+ * README가 아니라 이 화면을 보고 있다. (@see packages/core/src/shared/notion-errors.ts)
  *
  * 루트 페이지가 이 상태면 사이트 주인의 셋업 문제이므로 안내를 크게 보여주고,
  * 하위 페이지면 방문자가 볼 수도 있으니 짧게 둔다. 어느 쪽이든 검색엔진에는

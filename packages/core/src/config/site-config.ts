@@ -161,7 +161,7 @@ export interface ColorTheme {
  * 값은 `lib/fonts.ts`의 레지스트리 키(`'noto-sans-kr'`)이거나,
  * 직접 임베드할 폰트의 `{ family, url }`이다.
  *
- * @see lib/fonts.ts
+ * @see packages/core/src/config/fonts.ts
  */
 export interface FontConfig {
   ko?: FontChoice

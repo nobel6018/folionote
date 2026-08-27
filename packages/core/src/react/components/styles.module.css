@@ -46,7 +46,7 @@
   width: 640px;
 }
 
-/* 고칠 수 있는 실패의 안내 (@see components/Page404.tsx) */
+/* 고칠 수 있는 실패의 안내 (@see packages/core/src/react/components/Page404.tsx) */
 .errorHelp {
   max-width: 560px;
   margin: 0 auto 1.5em;

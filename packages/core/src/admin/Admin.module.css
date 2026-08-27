@@ -819,7 +819,7 @@ select.input:hover {
   color: inherit;
 }
 
-/* 토큰 색은 인라인 CSS 변수로 들어온다 (@see components/admin/CodeView.tsx).
+/* 토큰 색은 인라인 CSS 변수로 들어온다 (@see packages/core/src/admin/CodeView.tsx).
  * 전역 prism 테마에 기대면 사이트 테마를 바꿀 때 어드민 코드 뷰가 같이 흔들린다. */
 .codeBody :global(.token.comment) {
   color: var(--code-comment);
