@@ -1,13 +1,19 @@
 import type * as types from './types'
 import { type FontChoice } from './fonts'
 
+/**
+ * `rootNotionPageId`, `name`, `author`, `domain`은 타입상 optional이지만 사이트가
+ * 뜨려면 값이 있어야 한다. 파일에서 빼고 환경변수로만 넣는 배포(Deploy 버튼)를
+ * 허용하려고 optional로 뒀다. 값을 고르는 순서와 파생 기본값은 lib/config.ts에 있다.
+ * @see docs/configuration.md
+ */
 export interface SiteConfig {
-  rootNotionPageId: string
+  rootNotionPageId?: string
   rootNotionSpaceId?: string | null
 
-  name: string
-  domain: string
-  author: string
+  name?: string
+  domain?: string
+  author?: string
   description?: string
   language?: string
 

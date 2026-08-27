@@ -11,6 +11,30 @@
 | `domain`           | `string` | 운영 도메인 (예: `mysite.com`). canonical URL 생성에 사용.              |
 | `author`           | `string` | 작성자 이름. RSS, OG, footer copyright에 사용.                          |
 
+### 환경변수로도 받는다
+
+네 값은 `site.config.ts`에서 빼고 환경변수로만 줄 수도 있습니다. 리포를 클론해 파일을 고치고 커밋하는 과정 없이, Vercel Deploy 버튼이 띄우는 입력 폼만으로 배포하려고 만든 경로입니다.
+
+| 옵션               | 환경변수              |
+| ------------------ | --------------------- |
+| `rootNotionPageId` | `NOTION_ROOT_PAGE_ID` |
+| `name`             | `SITE_NAME`           |
+| `author`           | `SITE_AUTHOR`         |
+| `domain`           | `SITE_DOMAIN`         |
+
+값을 고르는 순서는 **`site.config.ts` > 환경변수 > 파생 기본값**입니다. 파일에 값이 있으면 환경변수는 무시합니다. 그래서 환경변수로 띄운 사이트에서 `/admin`으로 설정을 저장하면(그때 네 값이 파일에 박힙니다) 이후로는 파일이 기준이 되고, 환경변수를 지워도 사이트는 그대로 돕니다.
+
+`NOTION_ROOT_PAGE_ID`는 32자 ID 대신 Notion 페이지 주소를 통째로 넣어도 됩니다. `https://www.notion.so/My-Page-3bcc0343b4fa81abafd4f7fb22799e14` 같은 주소에서 ID를 뽑아냅니다.
+
+파생 기본값이 있는 값은 둘입니다.
+
+- `author` - 없으면 `name`을 씁니다
+- `domain` - 없으면 Vercel이 주입하는 호스트명(`VERCEL_PROJECT_PRODUCTION_URL`, 없으면 `VERCEL_URL`)을 쓰고, 그것도 없으면 `localhost:3000`입니다
+
+그래서 Deploy 버튼이 반드시 물어야 하는 값은 `NOTION_ROOT_PAGE_ID`와 `SITE_NAME` 두 개입니다. `rootNotionPageId`와 `name`이 파일에도 환경변수에도 없으면 사이트는 어느 쪽에 넣어야 하는지 알려주는 에러로 실패합니다.
+
+환경변수 이름에 `NEXT_PUBLIC_` 접두사가 없는데도 브라우저에서 읽히는 것은 `next.config.js`의 `env`에 적어 뒀기 때문입니다(사이트 이름과 도메인은 클라이언트 번들에도 들어갑니다). 빌드 시점에 값이 박히므로 환경변수를 바꾸면 재배포가 필요합니다.
+
 ## 선택 옵션
 
 ### 메타데이터

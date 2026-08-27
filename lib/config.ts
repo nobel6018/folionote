@@ -10,8 +10,9 @@ import { type PostHogConfig } from 'posthog-js'
 import { quoteFamily, resolveFont } from './fonts'
 import {
   getEnv,
-  getRequiredSiteConfig,
-  getSiteConfig
+  getRequiredSiteConfigOrEnv,
+  getSiteConfig,
+  getSiteConfigOrEnv
 } from './get-config-value'
 import {
   type BackToTopConfig,
@@ -35,8 +36,13 @@ import {
   type Site
 } from './types'
 
+/**
+ * 루트 페이지 ID. 32자 ID뿐 아니라 Notion 페이지 주소를 통째로 넣어도 된다.
+ * parsePageId가 주소 끝의 ID를 뽑아낸다. 환경변수로 받을 때는 브라우저 주소창에서
+ * 복사한 URL을 그대로 붙이는 쪽이 자연스러워서 이 경로가 특히 중요하다.
+ */
 export const rootNotionPageId: string = parsePageId(
-  getSiteConfig('rootNotionPageId'),
+  getRequiredSiteConfigOrEnv('rootNotionPageId'),
   { uuid: false }
 )!
 
@@ -64,9 +70,20 @@ export const environment = process.env.NODE_ENV || 'development'
 export const isDev = environment === 'development'
 
 // general site config
-export const name: string = getRequiredSiteConfig('name')
-export const author: string = getRequiredSiteConfig('author')
-export const domain: string = getRequiredSiteConfig('domain')
+export const name: string = getRequiredSiteConfigOrEnv('name')
+
+/** 작성자. 따로 적지 않으면 사이트 이름을 그대로 쓴다 (RSS, footer 저작권 표기) */
+export const author: string = getSiteConfigOrEnv('author') ?? name
+
+/**
+ * 운영 도메인. canonical URL과 OG 태그에 들어간다.
+ *
+ * Deploy 버튼으로 배포할 때는 도메인이 배포가 끝나야 정해지므로 미리 물어볼 수가
+ * 없다. 그래서 Vercel이 넣어주는 호스트명을 대신 본다. 값을 고르는 순서는
+ * next.config.js의 `env`에 있다(빌드 시점에 확정해야 브라우저 번들에도 같은 값이
+ * 박혀서 서버와 클라이언트가 다른 도메인을 그리지 않는다).
+ */
+export const domain: string = getSiteConfigOrEnv('domain') ?? 'localhost:3000'
 export const description: string = getSiteConfig('description', 'Notion Blog')
 export const language: string = getSiteConfig('language', 'en')
 

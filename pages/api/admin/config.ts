@@ -5,7 +5,7 @@ import { type NextApiRequest, type NextApiResponse } from 'next'
 
 import { commitConfig, targetBranch, targetPath } from '@/lib/admin/github'
 import { getSession, hasValidOrigin } from '@/lib/admin/request'
-import { isDev } from '@/lib/config'
+import { author, domain, isDev, name, rootNotionPageId } from '@/lib/config'
 import { serializeSiteConfig } from '@/lib/serialize-site-config'
 import { type SiteConfig } from '@/lib/site-config'
 
@@ -39,7 +39,18 @@ export default async function handler(
   }
 
   if (req.method === 'GET') {
-    return res.status(200).json(siteConfig)
+    // 필수 4개는 파일에 없어도 환경변수나 파생 기본값으로 사이트가 돌고 있을 수
+    // 있다. 그런 사이트에서 어드민 폼을 파일 내용만으로 채우면 네 칸이 비어 보이고,
+    // 저장하는 순간 값 없는 site.config.ts가 커밋돼 사이트가 죽는다. 지금 실제로
+    // 쓰이는 값을 넣어 준다. rootNotionPageId는 URL을 넣었더라도 파싱된 32자로
+    // 나가므로, 저장하면 파일에는 깔끔한 ID가 박힌다.
+    return res.status(200).json({
+      ...siteConfig,
+      rootNotionPageId,
+      name,
+      author,
+      domain
+    } satisfies SiteConfig)
   }
 
   if (req.method !== 'POST') {
