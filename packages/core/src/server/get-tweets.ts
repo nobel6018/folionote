@@ -4,13 +4,15 @@ import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 import { getTweet as getTweetData } from 'react-tweet/api'
 
-import type { ExtendedTweetRecordMap } from './types'
-import { getDb } from './db'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import type { ExtendedTweetRecordMap } from '../types.js'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { getDb } from './db.js'
+import { type CoreDeps } from './deps.js'
 
 export async function getTweetsMap(
   config: ResolvedSiteConfig,
-  recordMap: ExtendedRecordMap
+  recordMap: ExtendedRecordMap,
+  deps?: CoreDeps
 ): Promise<void> {
   const tweetIds = getPageTweetIds(recordMap)
 
@@ -18,7 +20,7 @@ export async function getTweetsMap(
     await pMap(
       tweetIds,
       async (tweetId: string) => {
-        return [tweetId, await getTweet(config, tweetId)]
+        return [tweetId, await getTweet(config, tweetId, deps)]
       },
       {
         concurrency: 8
@@ -31,11 +33,12 @@ export async function getTweetsMap(
 
 async function getTweetImpl(
   config: ResolvedSiteConfig,
-  tweetId: string
+  tweetId: string,
+  deps?: CoreDeps
 ): Promise<any> {
   if (!tweetId) return null
 
-  const db = getDb(config)
+  const db = getDb(config, deps)
   const cacheKey = `tweet:${tweetId}`
 
   try {

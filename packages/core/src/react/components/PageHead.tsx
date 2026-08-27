@@ -1,8 +1,8 @@
 import Head from 'next/head'
 
-import type * as types from '@/lib/types'
-import { getSocialImageUrl } from '@/lib/get-social-image-url'
-import { useOptionalSiteConfig } from '@/lib/site-config-context'
+import type * as types from '../../types.js'
+import { getSocialImageUrl } from '../../shared/get-social-image-url.js'
+import { useOptionalSiteConfig } from '../site-config-context.js'
 
 /**
  * 설정 없이도 렌더돼야 한다. `/_error`는 페이지 데이터를 만들지 못한 상태라

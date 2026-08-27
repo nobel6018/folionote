@@ -1,6 +1,6 @@
 import { type Block } from 'notion-types'
 
-import { type PageProps } from './types'
+import { type PageProps } from '../types.js'
 
 export async function pageAcl({
   site,

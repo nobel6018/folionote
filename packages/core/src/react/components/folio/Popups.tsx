@@ -2,8 +2,8 @@ import { IoCloseOutline } from '@react-icons/all-files/io5/IoCloseOutline'
 import { useRouter } from 'next/router'
 import * as React from 'react'
 
-import { type PopupConfig } from '@/lib/site-config'
-import { useSiteConfig } from '@/lib/site-config-context'
+import { type PopupConfig } from '../../../config/site-config.js'
+import { useSiteConfig } from '../../site-config-context.js'
 
 const DISMISS_KEY_PREFIX = 'folio-popup-dismissed:'
 

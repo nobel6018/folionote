@@ -1,8 +1,9 @@
 import Keyv from '@keyvhq/core'
 import KeyvRedis from '@keyvhq/redis'
 
-import { getRedisSettings } from './server-env'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { type CoreCacheStore, type CoreDeps } from './deps.js'
+import { getRedisSettings } from './server-env.js'
 
 /**
  * 프리뷰 이미지와 URI→pageId 매핑을 담아 두는 캐시.
@@ -13,10 +14,20 @@ import { type ResolvedSiteConfig } from './site-config-resolve'
  *
  * 설정을 인자로 받는다. 한 프로세스가 사이트 여러 개를 그릴 수 있어야 해서
  * 모듈 상수로 두지 않았다. 실제 연결은 Redis 사용 여부당 하나만 만든다.
+ *
+ * `deps.store`를 넘기면 그것을 그대로 쓴다. 호스팅 서비스는 사이트마다 키가 섞이지
+ * 않게 자기 캐시를 끼운다 (@see packages/core/src/server/deps.ts).
  */
 const instances = new Map<boolean, Keyv>()
 
-export function getDb(config: ResolvedSiteConfig): Keyv {
+export function getDb(
+  config: ResolvedSiteConfig,
+  deps?: CoreDeps
+): CoreCacheStore {
+  if (deps?.store) {
+    return deps.store
+  }
+
   const { isRedisEnabled } = config
 
   let db = instances.get(isRedisEnabled)

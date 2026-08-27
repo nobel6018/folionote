@@ -13,7 +13,13 @@
  */
 import { parsePageId } from 'notion-utils'
 
-import { quoteFamily, resolveFont } from './fonts'
+import {
+  type NavigationStyle,
+  type PageUrlOverridesInverseMap,
+  type PageUrlOverridesMap,
+  type Site
+} from '../types.js'
+import { quoteFamily, resolveFont } from './fonts.js'
 import {
   type BackToTopConfig,
   type BottomNavigationConfig,
@@ -30,13 +36,7 @@ import {
   type ScrollProgressBarConfig,
   type SiteConfig,
   type SiteLogo
-} from './site-config'
-import {
-  type NavigationStyle,
-  type PageUrlOverridesInverseMap,
-  type PageUrlOverridesMap,
-  type Site
-} from './types'
+} from './site-config.js'
 
 /**
  * `site.config.ts`에 값이 없을 때 대신 볼 환경변수들.

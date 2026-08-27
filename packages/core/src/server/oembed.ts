@@ -1,8 +1,9 @@
 import { type User } from 'notion-types'
 import { getPageTitle, parsePageId } from 'notion-utils'
 
-import { getPage } from './notion'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { type CoreDeps } from './deps.js'
+import { getPage } from './notion.js'
 
 export const oembed = async (
   config: ResolvedSiteConfig,
@@ -16,7 +17,8 @@ export const oembed = async (
     maxWidth?: number
     maxHeight?: number
     dark?: boolean
-  }
+  },
+  deps?: CoreDeps
 ) => {
   // TODO: handle pages with no pageId via domain
   const pageId = parsePageId(url)!
@@ -26,7 +28,7 @@ export const oembed = async (
 
   // TODO: handle errors gracefully
 
-  const page = await getPage(config, pageId)
+  const page = await getPage(config, pageId, deps)
   const pageTitle = getPageTitle(page)
   if (pageTitle) title = pageTitle
 

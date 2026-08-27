@@ -1,13 +1,14 @@
 import { type ExtendedRecordMap } from 'notion-types'
 import { parsePageId } from 'notion-utils'
 
-import type { PageProps } from './types'
-import * as acl from './acl'
-import { getDb } from './db'
-import { getSiteMap } from './get-site-map'
-import { getPage } from './notion'
-import { classifyNotionError } from './notion-errors'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import type { PageProps } from '../types.js'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { classifyNotionError } from '../shared/notion-errors.js'
+import * as acl from './acl.js'
+import { getDb } from './db.js'
+import { type CoreDeps } from './deps.js'
+import { getSiteMap } from './get-site-map.js'
+import { getPage } from './notion.js'
 
 /**
  * 페이지를 읽되, 사용자가 고칠 수 있는 실패는 던지지 않고 안내용 props로 바꾼다.
@@ -21,10 +22,11 @@ import { type ResolvedSiteConfig } from './site-config-resolve'
  */
 async function getPageOrError(
   config: ResolvedSiteConfig,
-  pageId: string
+  pageId: string,
+  deps?: CoreDeps
 ): Promise<{ recordMap: ExtendedRecordMap } | { error: PageProps['error'] }> {
   try {
-    return { recordMap: await getPage(config, pageId) }
+    return { recordMap: await getPage(config, pageId, deps) }
   } catch (err) {
     const known = classifyNotionError(err)
     if (known) {
@@ -37,7 +39,8 @@ async function getPageOrError(
 
 export async function resolveNotionPage(
   config: ResolvedSiteConfig,
-  rawPageId?: string
+  rawPageId?: string,
+  deps?: CoreDeps
 ): Promise<PageProps> {
   const { site, domain, environment } = config
   let pageId: string | undefined
@@ -57,7 +60,7 @@ export async function resolveNotionPage(
       }
     }
 
-    const db = getDb(config)
+    const db = getDb(config, deps)
     const useUriToPageIdCache = true
     const cacheKey = `uri-to-page-id:${domain}:${environment}:${rawPageId}`
     // TODO: should we use a TTL for these mappings or make them permanent?
@@ -77,7 +80,7 @@ export async function resolveNotionPage(
     }
 
     if (pageId) {
-      const result = await getPageOrError(config, pageId)
+      const result = await getPageOrError(config, pageId, deps)
       if ('error' in result) {
         return { config, site, pageId, error: result.error }
       }
@@ -85,7 +88,7 @@ export async function resolveNotionPage(
     } else {
       // handle mapping of user-friendly canonical page paths to Notion page IDs
       // e.g., /developer-x-entrepreneur versus /71201624b204481f862630ea25ce62fe
-      const siteMap = await getSiteMap(config)
+      const siteMap = await getSiteMap(config, deps)
       pageId = siteMap?.canonicalPageMap[rawPageId]
 
       if (pageId) {
@@ -93,7 +96,7 @@ export async function resolveNotionPage(
         // cached aggressively
         // recordMap = siteMap.pageMap[pageId]
 
-        const result = await getPageOrError(config, pageId)
+        const result = await getPageOrError(config, pageId, deps)
         if ('error' in result) {
           return { config, site, pageId, error: result.error }
         }
@@ -124,7 +127,7 @@ export async function resolveNotionPage(
   } else {
     pageId = site.rootNotionPageId
 
-    const result = await getPageOrError(config, pageId)
+    const result = await getPageOrError(config, pageId, deps)
     if ('error' in result) {
       return { config, site, pageId, error: result.error }
     }

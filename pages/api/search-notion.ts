@@ -1,7 +1,6 @@
+import type * as types from '@folionote/core/config'
+import { search } from '@folionote/core/server'
 import { type NextApiRequest, type NextApiResponse } from 'next'
-
-import type * as types from '../../lib/types'
-import { search } from '../../lib/notion'
 
 export default async function searchNotion(
   req: NextApiRequest,

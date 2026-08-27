@@ -10,13 +10,12 @@ import { useRouter } from 'next/router'
 import * as React from 'react'
 import { Header, Search, useNotionContext } from 'react-notion-x'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-import { useDarkMode } from '@/lib/use-dark-mode'
-
-import { Breadcrumbs } from './folio/Breadcrumbs'
-import { ScrollProgressBar } from './folio/ScrollProgressBar'
-import { ShareButton } from './folio/ShareButton'
-import { SiteLink } from './folio/SiteLink'
+import { useSiteConfig } from '../site-config-context.js'
+import { useDarkMode } from '../use-dark-mode.js'
+import { Breadcrumbs } from './folio/Breadcrumbs.js'
+import { ScrollProgressBar } from './folio/ScrollProgressBar.js'
+import { ShareButton } from './folio/ShareButton.js'
+import { SiteLink } from './folio/SiteLink.js'
 import styles from './styles.module.css'
 
 function ToggleThemeButton() {

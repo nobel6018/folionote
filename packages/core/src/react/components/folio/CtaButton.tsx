@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { useSiteConfig } from '@/lib/site-config-context'
+import { useSiteConfig } from '../../site-config-context.js'
 
 /**
  * 화면 하단에 떠 있는 CTA 버튼 (레퍼런스 서비스 어드민의 스타일 > CTA 버튼).

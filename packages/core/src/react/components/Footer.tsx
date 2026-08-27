@@ -7,8 +7,7 @@ import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube'
 import { FaZhihu } from '@react-icons/all-files/fa/FaZhihu'
 import * as React from 'react'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
+import { useSiteConfig } from '../site-config-context.js'
 import styles from './styles.module.css'
 
 // TODO: merge the data and icons from PageSocial with the social links in Footer

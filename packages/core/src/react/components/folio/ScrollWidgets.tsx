@@ -2,9 +2,8 @@ import { IoArrowUpOutline } from '@react-icons/all-files/io5/IoArrowUpOutline'
 import cs from 'classnames'
 import * as React from 'react'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
-import { useScrollState } from './use-scroll-state'
+import { useSiteConfig } from '../../site-config-context.js'
+import { useScrollState } from './use-scroll-state.js'
 
 /**
  * 맨 위로 버튼 (레퍼런스 서비스 어드민의 "페이지 맨 위로 버튼").

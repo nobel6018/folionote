@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 
-import { getRedisSettings } from './server-env'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { getRedisSettings } from './server-env.js'
 
 /**
  * 페이지뷰 카운터 저장소 (레퍼런스 서비스 어드민의 "페이지뷰 카운트").

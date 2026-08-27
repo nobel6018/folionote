@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 
 /**
  * 브라우저 쪽에서 설정을 나르는 통로.

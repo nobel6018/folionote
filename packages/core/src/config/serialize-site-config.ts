@@ -1,4 +1,4 @@
-import { type SiteConfig } from './site-config'
+import { type SiteConfig } from './site-config.js'
 
 /**
  * SiteConfig 객체를 `site.config.ts` 소스로 다시 써낸다 (어드민 저장용).
@@ -154,7 +154,16 @@ function quoteKey(key: string): string {
   return /^[A-Za-z_$][\w$]*$/.test(key) ? key : `'${key}'`
 }
 
-export function serializeSiteConfig(config: SiteConfig): string {
+export function serializeSiteConfig(
+  config: SiteConfig,
+  {
+    /**
+     * 생성된 파일이 `siteConfig()`를 어디서 가져올지. 자체 호스팅 앱은 패키지에서
+     * 바로 받으면 되지만, 헬퍼를 자기 리포에 다시 감싼 쪽은 그 경로를 넘긴다.
+     */
+    importFrom = '@folionote/core/config'
+  }: { importFrom?: string } = {}
+): string {
   const keys = Object.keys(config) as Array<keyof SiteConfig>
   const ordered = [
     ...KNOWN_ORDER.filter((key) => keys.includes(key)),
@@ -178,11 +187,11 @@ export function serializeSiteConfig(config: SiteConfig): string {
       )}`
     })
 
-  return `import { siteConfig } from './lib/site-config'
+  return `import { siteConfig } from '${importFrom}'
 
 // 이 파일은 /admin 화면에서 저장할 때 자동으로 다시 쓰인다.
 // 손으로 편집해도 되지만, 저장하면 포맷과 주석이 이 형식으로 정리된다.
-// @see lib/serialize-site-config.ts
+// @see @folionote/core/src/config/serialize-site-config.ts
 
 export default siteConfig({
 ${blocks.join(',\n\n')}

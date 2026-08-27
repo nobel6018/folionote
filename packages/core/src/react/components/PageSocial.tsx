@@ -1,9 +1,8 @@
 import type * as React from 'react'
 import cs from 'classnames'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
-
+import { type ResolvedSiteConfig } from '../../config/site-config-resolve.js'
+import { useSiteConfig } from '../site-config-context.js'
 import styles from './PageSocial.module.css'
 
 interface SocialLink {

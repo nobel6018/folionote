@@ -1,4 +1,4 @@
-import { type PageError, type PageErrorKind } from './types'
+import { type PageError, type PageErrorKind } from '../types.js'
 
 /**
  * Notion 읽기 실패를 사용자가 고칠 수 있는 종류로 가른다.

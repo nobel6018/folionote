@@ -1,7 +1,7 @@
 import { type Block } from 'notion-types'
 import { defaultMapImageUrl } from 'notion-utils'
 
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 
 export type MapImageUrl = (
   url: string | undefined,

@@ -2,9 +2,8 @@ import { useRouter } from 'next/router'
 import * as React from 'react'
 import { cs, useNotionContext } from 'react-notion-x'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
-import { SiteLink } from './SiteLink'
+import { useSiteConfig } from '../../site-config-context.js'
+import { SiteLink } from './SiteLink.js'
 
 /**
  * 모바일 하단 탭바 (레퍼런스 서비스 어드민의 스타일 > 하단 네비게이터, PRO 기능).

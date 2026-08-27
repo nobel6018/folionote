@@ -1,5 +1,5 @@
-import { type PageMetaOverride } from './site-config'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type PageMetaOverride } from '../config/site-config.js'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 
 /**
  * 페이지별 SEO 메타 덮어쓰기 조회.

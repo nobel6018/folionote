@@ -1,6 +1,6 @@
-import Prism from 'prismjs'
 import * as React from 'react'
 
+import { Prism } from '../react/prism-languages.js'
 import styles from './Admin.module.css'
 
 /**
@@ -154,7 +154,7 @@ export function useCodeTheme() {
  *
  * 번호 열은 sticky left라 가로로 스크롤해도 남아 있는다.
  *
- * Prism 문법은 _app.tsx에서 이미 등록된다(prism-typescript 포함).
+ * Prism 문법은 prism-languages 모듈이 등록해 둔다(prism-typescript 포함).
  * @see pages/admin.tsx
  */
 function CodeViewImpl({

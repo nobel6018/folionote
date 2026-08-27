@@ -2,12 +2,11 @@ import { IoCheckmarkOutline } from '@react-icons/all-files/io5/IoCheckmarkOutlin
 import { IoCopyOutline } from '@react-icons/all-files/io5/IoCopyOutline'
 import { type CodeBlock as CodeBlockType } from 'notion-types'
 import { getBlockTitle } from 'notion-utils'
-import Prism from 'prismjs'
 import * as React from 'react'
 import { useNotionContext } from 'react-notion-x'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
+import { Prism } from '../../prism-languages.js'
+import { useSiteConfig } from '../../site-config-context.js'
 import styles from './Code.module.css'
 
 interface CodeProps {

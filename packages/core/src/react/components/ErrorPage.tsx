@@ -1,4 +1,4 @@
-import { PageHead } from './PageHead'
+import { PageHead } from './PageHead.js'
 import styles from './styles.module.css'
 
 export function ErrorPage({ statusCode }: { statusCode: number }) {

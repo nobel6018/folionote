@@ -1,13 +1,12 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import { serializeSiteConfig, type SiteConfig } from '@folionote/core/config'
 import { type NextApiRequest, type NextApiResponse } from 'next'
 
 import { commitConfig, targetBranch, targetPath } from '@/lib/admin/github'
 import { getSession, hasValidOrigin } from '@/lib/admin/request'
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { serializeSiteConfig } from '@/lib/serialize-site-config'
-import { type SiteConfig } from '@/lib/site-config'
 
 import siteConfig from '../../../site.config'
 

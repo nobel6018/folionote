@@ -1,7 +1,7 @@
 import ExpiryMap from 'expiry-map'
 import pMemoize from 'p-memoize'
 
-import type * as types from './types'
+import type * as types from '../types.js'
 
 /**
  * 검색 API 경로. 사이트마다 달라지지 않는 우리 라우트라 설정에서 받지 않는다

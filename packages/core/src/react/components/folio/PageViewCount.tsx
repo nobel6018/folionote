@@ -1,7 +1,7 @@
 import cs from 'classnames'
 import * as React from 'react'
 
-import { useSiteConfig } from '@/lib/site-config-context'
+import { useSiteConfig } from '../../site-config-context.js'
 
 type Counts = { today: number; total: number }
 

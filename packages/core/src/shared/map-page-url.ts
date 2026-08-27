@@ -1,8 +1,8 @@
 import { type ExtendedRecordMap } from 'notion-types'
 import { parsePageId, uuidToId } from 'notion-utils'
 
-import { getCanonicalPageId } from './get-canonical-page-id'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { getCanonicalPageId } from './get-canonical-page-id.js'
 
 export const mapPageUrl =
   (

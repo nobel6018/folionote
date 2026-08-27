@@ -1,10 +1,11 @@
 import type { GetServerSideProps } from 'next'
+import {
+  buildFallbackSitemapXml,
+  buildSitemapXml,
+  getSiteMap
+} from '@folionote/core/server'
 
-import type { SiteMap } from '@/lib/types'
-import { getSiteMap } from '@/lib/get-site-map'
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { isNoindexPage } from '@/lib/page-meta'
-import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
 
 // In-memory cache. Vercel serverless instance가 살아 있는 동안 재사용 (warm start).
 // CDN cache(Cache-Control 8h) + memory cache + fallback의 3-tier 방어.
@@ -14,7 +15,6 @@ const CACHE_TTL_MS = 8 * 60 * 60 * 1000 // 8h
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const config = loadSiteConfig()
-  const { host } = config
 
   if (req.method !== 'GET') {
     res.statusCode = 405
@@ -43,7 +43,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   // 2) fresh fetch
   try {
     const siteMap = await getSiteMap(config)
-    cachedXml = createSitemap(config, siteMap)
+    cachedXml = buildSitemapXml(config, siteMap)
     cachedAt = Date.now()
     res.write(cachedXml)
   } catch (err) {
@@ -51,12 +51,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     // 500 대신 valid XML 응답해서 search engine에 root만이라도 노출. cache는 안 함
     // (다음 요청에 다시 시도해서 full sitemap 만들 기회 줌).
     console.error('sitemap error', err)
-    res.write(`<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${host}</loc></url>
-  <url><loc>${host}/</loc></url>
-</urlset>
-`)
+    res.write(buildFallbackSitemapXml(config))
   }
 
   res.end()
@@ -65,35 +60,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     props: {}
   }
 }
-
-const createSitemap = (config: ResolvedSiteConfig, siteMap: SiteMap) =>
-  `<?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <url>
-      <loc>${config.host}</loc>
-    </url>
-
-    <url>
-      <loc>${config.host}/</loc>
-    </url>
-
-    ${Object.keys(siteMap.canonicalPageMap)
-      // noindex로 표시한 페이지는 사이트맵에서도 뺀다. 넣어두면 "빼달라고 하면서
-      // 목록에는 올리는" 모순된 신호가 된다.
-      .filter(
-        (canonicalPagePath) =>
-          !isNoindexPage(config, siteMap.canonicalPageMap[canonicalPagePath])
-      )
-      .map((canonicalPagePath) =>
-        `
-          <url>
-            <loc>${config.host}/${canonicalPagePath}</loc>
-          </url>
-        `.trim()
-      )
-      .join('')}
-  </urlset>
-`
 
 export default function noop() {
   return null

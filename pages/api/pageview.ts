@@ -1,12 +1,12 @@
-import { type NextApiRequest, type NextApiResponse } from 'next'
-import { parsePageId } from 'notion-utils'
-
-import { loadSiteConfig } from '@/lib/load-site-config'
 import {
   incrementPageView,
   isPageViewCountAvailable,
   readPageView
-} from '@/lib/pageview-store'
+} from '@folionote/core/server'
+import { type NextApiRequest, type NextApiResponse } from 'next'
+import { parsePageId } from 'notion-utils'
+
+import { loadSiteConfig } from '@/lib/load-site-config'
 
 /**
  * 페이지뷰 카운터 (레퍼런스 서비스 어드민의 "페이지뷰 카운트").

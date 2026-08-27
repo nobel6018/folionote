@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import * as React from 'react'
 
-import { useOptionalSiteConfig } from '@/lib/site-config-context'
+import { useOptionalSiteConfig } from '../site-config-context.js'
 
 /**
  * `colorTheme.mode: 'custom'`일 때 배경/글자색을 CSS 변수로 주입한다.

@@ -1,4 +1,4 @@
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 
 export function getSocialImageUrl(
   config: ResolvedSiteConfig,

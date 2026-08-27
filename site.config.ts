@@ -1,4 +1,4 @@
-import { siteConfig } from './lib/site-config'
+import { siteConfig } from '@folionote/core/config'
 
 // 이 파일은 /admin 화면에서 저장할 때 자동으로 다시 쓰인다.
 // 손으로 편집해도 되지만, 저장하면 포맷과 주석이 이 형식으로 정리된다.

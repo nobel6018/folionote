@@ -1,7 +1,6 @@
-import type * as types from '@/lib/types'
-import { useSiteConfig } from '@/lib/site-config-context'
-
-import { PageHead } from './PageHead'
+import type * as types from '../../types.js'
+import { useSiteConfig } from '../site-config-context.js'
+import { PageHead } from './PageHead.js'
 import styles from './styles.module.css'
 
 const ko = {

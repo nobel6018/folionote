@@ -1,5 +1,5 @@
-import type * as types from './types'
-import { type FontChoice } from './fonts'
+import type * as types from '../types.js'
+import { type FontChoice } from './fonts.js'
 
 /**
  * `rootNotionPageId`, `name`, `author`, `domain`은 타입상 optional이지만 사이트가

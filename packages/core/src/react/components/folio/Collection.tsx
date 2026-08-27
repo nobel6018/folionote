@@ -3,9 +3,8 @@ import { getBlockCollectionId, getBlockValue } from 'notion-utils'
 import * as React from 'react'
 import { Collection as NotionCollection } from 'react-notion-x/build/third-party/collection'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
-import { CollectionSearch } from './CollectionSearch'
+import { useSiteConfig } from '../../site-config-context.js'
+import { CollectionSearch } from './CollectionSearch.js'
 
 type CollectionProps = React.ComponentProps<typeof NotionCollection>
 

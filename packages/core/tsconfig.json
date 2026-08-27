@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {},
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    // 타입만 쓰는 import를 tsc가 지우게 둔다. true면 `import { type X } from 'y'`가
+    // `import {} from 'y'`로 남아서, 타입만 빌린 모듈까지 런타임 의존이 된다.
+    // 실제로 types.ts의 `node:querystring`이 edge 번들에 실려 빌드가 깨졌다.
+    "verbatimModuleSyntax": false,
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

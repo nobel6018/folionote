@@ -1,11 +1,9 @@
-import { type GetServerSideProps } from 'next'
-import Head from 'next/head'
-import * as React from 'react'
-
-import styles from '@/components/admin/Admin.module.css'
 import {
   ActiveTabContext,
+  adminStyles as styles,
   CodeArea,
+  CodeThemeSelect,
+  CodeView,
   ColorInput,
   Field,
   ImageInput,
@@ -14,24 +12,24 @@ import {
   Section,
   Select,
   TextInput,
-  Toggle
-} from '@/components/admin/AdminFields'
-import {
-  CodeThemeSelect,
-  CodeView,
+  Toggle,
   useCodeTheme
-} from '@/components/admin/CodeView'
+} from '@folionote/core/admin'
+import {
+  FONT_REGISTRY,
+  type NavigationLink,
+  type PageMetaOverride,
+  serializeSiteConfig,
+  type SiteConfig
+} from '@folionote/core/config'
+import { type GetServerSideProps } from 'next'
+import Head from 'next/head'
+import * as React from 'react'
+
 import { isDeployedAdminEnabled } from '@/lib/admin/env'
 import { repoSlug, targetBranch } from '@/lib/admin/github'
 import { getSession } from '@/lib/admin/request'
-import { FONT_REGISTRY } from '@/lib/fonts'
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { serializeSiteConfig } from '@/lib/serialize-site-config'
-import {
-  type NavigationLink,
-  type PageMetaOverride,
-  type SiteConfig
-} from '@/lib/site-config'
 
 /**
  * 설정 편집 화면. **개발 서버에서만 열린다.**

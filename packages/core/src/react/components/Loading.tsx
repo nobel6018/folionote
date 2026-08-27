@@ -1,4 +1,4 @@
-import { LoadingIcon } from './LoadingIcon'
+import { LoadingIcon } from './LoadingIcon.js'
 import styles from './styles.module.css'
 
 export function Loading() {

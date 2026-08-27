@@ -8,26 +8,32 @@ import { getBlockValue, mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
-import { getTweetsMap } from './get-tweets'
-import { notion } from './notion-api'
-import { getPreviewImageMap } from './preview-images'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { type CoreDeps } from './deps.js'
+import { getTweetsMap } from './get-tweets.js'
+import { getNotion } from './notion-api.js'
+import { getPreviewImageMap } from './preview-images.js'
 
 /**
  * 캐시 키에 루트 페이지 ID를 넣는다. 한 프로세스가 사이트 여러 개를 그릴 때
  * 인자 없는 memoize는 먼저 그린 사이트의 내비게이션을 뒤 사이트에도 붙여 버린다.
  */
 const getNavigationLinkPages = pMemoize(
-  async (config: ResolvedSiteConfig): Promise<ExtendedRecordMap[]> => {
+  async (
+    config: ResolvedSiteConfig,
+    deps?: CoreDeps
+  ): Promise<ExtendedRecordMap[]> => {
+    // 타입 가드를 직접 쓴다. 앱 쪽 `lib/reset.d.ts`(ts-reset)가 붙지 않는 패키지라
+    // `filter(Boolean)`만으로는 undefined가 떨어져 나가지 않는다.
     const navigationLinkPageIds = (config.navigationLinks || [])
       .map((link) => link?.pageId)
-      .filter(Boolean)
+      .filter((pageId): pageId is string => !!pageId)
 
     if (config.navigationStyle !== 'default' && navigationLinkPageIds.length) {
       return pMap(
         navigationLinkPageIds,
         async (navigationLinkPageId) =>
-          notion.getPage(navigationLinkPageId, {
+          getNotion(deps).getPage(navigationLinkPageId, {
             chunkLimit: 1,
             fetchMissingBlocks: false,
             fetchCollections: false,
@@ -172,9 +178,10 @@ function stripCrdtData(recordMap: RecordMap) {
 
 export async function getPage(
   config: ResolvedSiteConfig,
-  pageId: string
+  pageId: string,
+  deps?: CoreDeps
 ): Promise<ExtendedRecordMap> {
-  let recordMap = await notion.getPage(pageId)
+  let recordMap = await getNotion(deps).getPage(pageId)
 
   fillEmptyCollectionViewNames(recordMap)
   renderUserMentionsAsText(recordMap)
@@ -184,7 +191,7 @@ export async function getPage(
     // ensure that any pages linked to in the custom navigation header have
     // their block info fully resolved in the page record map so we know
     // the page title, slug, etc.
-    const navigationLinkRecordMaps = await getNavigationLinkPages(config)
+    const navigationLinkRecordMaps = await getNavigationLinkPages(config, deps)
 
     if (navigationLinkRecordMaps?.length) {
       recordMap = navigationLinkRecordMaps.reduce(
@@ -196,7 +203,7 @@ export async function getPage(
   }
 
   if (config.isPreviewImageSupportEnabled) {
-    const previewImageMap = await getPreviewImageMap(config, recordMap)
+    const previewImageMap = await getPreviewImageMap(config, recordMap, deps)
     ;(recordMap as any).preview_images = previewImageMap
   }
 
@@ -204,13 +211,16 @@ export async function getPage(
   // 편집 이력을 그대로 끌고 들어오기 때문이다.
   stripCrdtData(recordMap)
 
-  await getTweetsMap(config, recordMap)
+  await getTweetsMap(config, recordMap, deps)
 
   return recordMap
 }
 
-export async function search(params: SearchParams): Promise<SearchResults> {
-  const results = await notion.search(params)
+export async function search(
+  params: SearchParams,
+  deps?: CoreDeps
+): Promise<SearchResults> {
+  const results = await getNotion(deps).search(params)
 
   flattenSearchRecordMap(results)
   stripCrdtData(results.recordMap)

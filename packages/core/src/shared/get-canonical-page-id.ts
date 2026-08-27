@@ -4,7 +4,7 @@ import {
   parsePageId
 } from 'notion-utils'
 
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 
 export function getCanonicalPageId(
   config: ResolvedSiteConfig,

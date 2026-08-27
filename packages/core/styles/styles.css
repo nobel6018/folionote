@@ -1,0 +1,20 @@
+/* 이 패키지가 그리는 화면에 필요한 CSS 전부. 소비자는 `_app.tsx`에서 이 한 줄만
+ * 임포트한다: `import '@folionote/core/styles.css'`
+ *
+ * 순서가 결과를 바꾼다. 뒤에 오는 규칙이 앞을 덮으므로 아래 순서를 지킨다.
+ * 1) 서드파티(katex, prism, react-notion-x) 기본값
+ * 2) 폰트 @font-face - 토큰이 참조하기 전에 등록돼야 한다
+ * 3) 디자인 토큰 - react-notion-x 변수를 덮어쓴다
+ * 4) 우리 전역 규칙과 보정
+ *
+ * 소비자가 자기 CSS로 이 규칙을 덮으려면 이 파일보다 뒤에 임포트해야 한다.
+ */
+@import 'katex/dist/katex.min.css';
+@import 'prismjs/themes/prism.css';
+@import 'react-notion-x/src/styles.css';
+@import './fonts.css';
+@import './folio-tokens.css';
+@import './global.css';
+@import './notion.css';
+@import './folio-overrides.css';
+@import './prism-theme.css';

@@ -9,13 +9,15 @@ import { getPageImageUrls, normalizeUrl } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
-import { getDb } from './db'
-import { createMapImageUrl } from './map-image-url'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { createMapImageUrl } from '../shared/map-image-url.js'
+import { getDb } from './db.js'
+import { type CoreDeps } from './deps.js'
 
 export async function getPreviewImageMap(
   config: ResolvedSiteConfig,
-  recordMap: ExtendedRecordMap
+  recordMap: ExtendedRecordMap,
+  deps?: CoreDeps
 ): Promise<PreviewImageMap> {
   const urls: string[] = getPageImageUrls(recordMap, {
     mapImageUrl: createMapImageUrl(config)
@@ -32,7 +34,10 @@ export async function getPreviewImageMap(
       urls,
       async (url) => {
         const cacheKey = normalizeUrl(url)
-        return [cacheKey, await getPreviewImage(config, url, { cacheKey })]
+        return [
+          cacheKey,
+          await getPreviewImage(config, url, { cacheKey }, deps)
+        ]
       },
       {
         concurrency: 8
@@ -46,9 +51,10 @@ export async function getPreviewImageMap(
 async function createPreviewImage(
   config: ResolvedSiteConfig,
   url: string,
-  { cacheKey }: { cacheKey: string }
+  { cacheKey }: { cacheKey: string },
+  deps?: CoreDeps
 ): Promise<PreviewImage | null> {
-  const db = getDb(config)
+  const db = getDb(config, deps)
 
   try {
     try {

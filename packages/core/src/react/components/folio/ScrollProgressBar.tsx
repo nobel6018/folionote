@@ -1,9 +1,8 @@
 import cs from 'classnames'
 import * as React from 'react'
 
-import { useSiteConfig } from '@/lib/site-config-context'
-
-import { useScrollState } from './use-scroll-state'
+import { useSiteConfig } from '../../site-config-context.js'
+import { useScrollState } from './use-scroll-state.js'
 
 function ScrollProgressBarBody({ standalone }: { standalone?: boolean }) {
   const { scrollProgressBar } = useSiteConfig()

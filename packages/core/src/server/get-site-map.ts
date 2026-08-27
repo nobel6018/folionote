@@ -7,18 +7,21 @@ import {
 } from 'notion-utils'
 import pMemoize from 'p-memoize'
 
-import type * as types from './types'
-import { getCanonicalPageId } from './get-canonical-page-id'
-import { notion } from './notion-api'
-import { type ResolvedSiteConfig } from './site-config-resolve'
+import type * as types from '../types.js'
+import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { getCanonicalPageId } from '../shared/get-canonical-page-id.js'
+import { type CoreDeps } from './deps.js'
+import { getNotion } from './notion-api.js'
 
 export async function getSiteMap(
-  config: ResolvedSiteConfig
+  config: ResolvedSiteConfig,
+  deps?: CoreDeps
 ): Promise<types.SiteMap> {
   const partialSiteMap = await getAllPages(
     config,
     config.rootNotionPageId,
-    config.rootNotionSpaceId ?? undefined
+    config.rootNotionSpaceId ?? undefined,
+    deps
   )
 
   return {
@@ -32,8 +35,14 @@ export async function getSiteMap(
  * 수십 KB가 되고, 값이 조금만 달라도 캐시가 새로 잡힌다.
  */
 const getAllPages = pMemoize(getAllPagesImpl, {
-  cacheKey: ([config, ...rest]) =>
-    JSON.stringify([config.rootNotionPageId, ...rest])
+  // deps는 키에 넣지 않는다. 함수나 클라이언트 인스턴스라 직렬화되지 않고, 같은
+  // 사이트를 서로 다른 캐시로 두 번 크롤할 이유도 없다.
+  cacheKey: ([config, rootNotionPageId, rootNotionSpaceId]) =>
+    JSON.stringify([
+      config.rootNotionPageId,
+      rootNotionPageId,
+      rootNotionSpaceId
+    ])
 })
 
 /**
@@ -73,7 +82,11 @@ class CrawlBudgetExceededError extends Error {
  * `kyOptions`를 넘기고 있었는데, notion-client가 ky에서 ofetch로 옮긴 뒤로는
  * 조용히 무시되는 값이었다.
  */
-const createGetPage = (deadline: number, stats: { budgetSkipped: number }) => {
+const createGetPage = (
+  deadline: number,
+  stats: { budgetSkipped: number },
+  deps?: CoreDeps
+) => {
   return async (pageId: string, opts?: any) => {
     if (Date.now() > deadline) {
       stats.budgetSkipped++
@@ -90,7 +103,7 @@ const createGetPage = (deadline: number, stats: { budgetSkipped: number }) => {
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
-        return await notion.getPage(pageId, crawlOpts)
+        return await getNotion(deps).getPage(pageId, crawlOpts)
       } catch (err: any) {
         const status = err?.statusCode ?? err?.status ?? err?.response?.status
         const isRetriable = status === 429 || (status >= 500 && status < 600)
@@ -117,6 +130,7 @@ async function getAllPagesImpl(
   config: ResolvedSiteConfig,
   rootNotionPageId: string,
   rootNotionSpaceId?: string,
+  deps?: CoreDeps,
   {
     maxDepth = 1
   }: {
@@ -129,7 +143,7 @@ async function getAllPagesImpl(
   const pageMap = await getAllPagesInSpace(
     rootNotionPageId,
     rootNotionSpaceId,
-    createGetPage(startedAt + CRAWL_BUDGET_MS, stats),
+    createGetPage(startedAt + CRAWL_BUDGET_MS, stats, deps),
     {
       maxDepth,
       // 라이브러리 기본값. 낮추면 429는 줄지만 예산 안에 읽는 페이지 수도 줄어서,

@@ -19,34 +19,33 @@ import {
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import { useSearchParam } from 'react-use'
 
-import type * as types from '@/lib/types'
-import { formatNotionDate } from '@/lib/format-date'
-import { createMapImageUrl } from '@/lib/map-image-url'
-import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
-import { getPageMetaOverride } from '@/lib/page-meta'
-import { searchNotion } from '@/lib/search-notion'
-import { useDarkMode } from '@/lib/use-dark-mode'
-
-import { BottomNavigation } from './folio/BottomNavigation'
-import { Code as FolioCode } from './folio/Code'
-import { CtaButton } from './folio/CtaButton'
-import { PageViewCount } from './folio/PageViewCount'
-import { Popups } from './folio/Popups'
-import { ScrollWidgets } from './folio/ScrollWidgets'
-import { Footer } from './Footer'
-import { Loading } from './Loading'
-import { NotionImage } from './NotionImage'
-import { NotionPageHeader } from './NotionPageHeader'
-import { Page404 } from './Page404'
-import { PageAside } from './PageAside'
-import { PageHead } from './PageHead'
+import type * as types from '../../types.js'
+import { formatNotionDate } from '../../shared/format-date.js'
+import { createMapImageUrl } from '../../shared/map-image-url.js'
+import { getCanonicalPageUrl, mapPageUrl } from '../../shared/map-page-url.js'
+import { getPageMetaOverride } from '../../shared/page-meta.js'
+import { searchNotion } from '../../shared/search-notion.js'
+import { useDarkMode } from '../use-dark-mode.js'
+import { BottomNavigation } from './folio/BottomNavigation.js'
+import { Code as FolioCode } from './folio/Code.js'
+import { CtaButton } from './folio/CtaButton.js'
+import { PageViewCount } from './folio/PageViewCount.js'
+import { Popups } from './folio/Popups.js'
+import { ScrollWidgets } from './folio/ScrollWidgets.js'
+import { Footer } from './Footer.js'
+import { Loading } from './Loading.js'
+import { NotionImage } from './NotionImage.js'
+import { NotionPageHeader } from './NotionPageHeader.js'
+import { Page404 } from './Page404.js'
+import { PageAside } from './PageAside.js'
+import { PageHead } from './PageHead.js'
 import styles from './styles.module.css'
 
 // -----------------------------------------------------------------------------
 // dynamic imports for optional components
 // -----------------------------------------------------------------------------
 
-// Prism syntax 등록은 _app.tsx에서 정적 import로 처리.
+// Prism syntax 등록은 react/prism-languages.ts가 정적 import로 처리.
 // react-notion-x default Code는 사용 안 함 (FolioCode로 교체).
 
 // 컬렉션 제목 색상을 살리기 위해 레퍼런스 서비스 래퍼를 사용 (@see components/folio/Collection.tsx)

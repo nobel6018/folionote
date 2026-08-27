@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import * as React from 'react'
 
-import { useOptionalSiteConfig } from '@/lib/site-config-context'
+import { useOptionalSiteConfig } from '../site-config-context.js'
 
 /**
  * 선택한 폰트의 스타일시트를 받고 `--folio-font-sans`를 덮는다

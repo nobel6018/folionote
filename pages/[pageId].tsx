@@ -1,9 +1,9 @@
+import { NotionPage } from '@folionote/core'
+import { type PageProps, type Params } from '@folionote/core/config'
+import { resolveNotionPage } from '@folionote/core/server'
 import { type GetStaticProps } from 'next'
 
-import { NotionPage } from '@/components/NotionPage'
 import { loadSiteConfig } from '@/lib/load-site-config'
-import { resolveNotionPage } from '@/lib/resolve-notion-page'
-import { type PageProps, type Params } from '@/lib/types'
 
 export const getStaticProps: GetStaticProps<PageProps, Params> = async (
   context
