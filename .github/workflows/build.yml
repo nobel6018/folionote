@@ -22,12 +22,16 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
 
+      # 워크스페이스 전체를 설치한다. 루트 앱이 @folionote/core를 workspace 링크로
+      # 참조하므로 패키지가 같이 잡혀야 한다.
       - run: pnpm install --frozen-lockfile --strict-peer-dependencies
+
+      # 린트와 포맷 검사. 루트와 packages/* 를 모두 훑는다
       - run: pnpm test
 
-      # TODO Enable those lines below if you use a Redis cache, you'll also need to configure GitHub Repository Secrets
-      # env:
-      #   REDIS_HOST: ${{ secrets.REDIS_HOST }}
-      #   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-      # - name: Build
-      #   run: pnpm build
+      # 타입 검사. 앞에서 packages/core를 빌드하므로 dist의 .d.ts까지 검증된다
+      - run: pnpm typecheck
+
+      # 앱 빌드는 Notion API를 실제로 읽는다. 네트워크가 없거나 429가 나면 흔들리는
+      # 단계라 CI에서는 패키지 빌드까지만 한다. 앱 빌드는 Vercel이 배포 때 돌린다.
+      - run: pnpm core:build
