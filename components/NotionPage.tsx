@@ -20,9 +20,8 @@ import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import { useSearchParam } from 'react-use'
 
 import type * as types from '@/lib/types'
-import * as config from '@/lib/config'
 import { formatNotionDate } from '@/lib/format-date'
-import { mapImageUrl } from '@/lib/map-image-url'
+import { createMapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
 import { getPageMetaOverride } from '@/lib/page-meta'
 import { searchNotion } from '@/lib/search-notion'
@@ -98,17 +97,19 @@ const propertyLastEditedTimeValue = (
   return defaultFn()
 }
 
-const propertyDateValue = ({ data }: any, defaultFn: () => React.ReactNode) => {
-  // react-notion-x 기본 렌더는 영문 로케일 고정이라 한국어 사이트에서 어긋난다.
-  // site.config.ts의 dateFormat을 따르도록 통일한다. (@see lib/format-date.ts)
-  const startDate = data?.[0]?.[1]?.[0]?.[1]?.start_date
+const createPropertyDateValue =
+  (dateFormat: string) =>
+  ({ data }: any, defaultFn: () => React.ReactNode) => {
+    // react-notion-x 기본 렌더는 영문 로케일 고정이라 한국어 사이트에서 어긋난다.
+    // 사이트 설정의 dateFormat을 따르도록 통일한다. (@see lib/format-date.ts)
+    const startDate = data?.[0]?.[1]?.[0]?.[1]?.start_date
 
-  if (startDate) {
-    return formatNotionDate(startDate)
+    if (startDate) {
+      return formatNotionDate(startDate, dateFormat)
+    }
+
+    return defaultFn()
   }
-
-  return defaultFn()
-}
 
 const propertyTextValue = (
   { schema, pageHeader }: any,
@@ -122,6 +123,7 @@ const propertyTextValue = (
 }
 
 export function NotionPage({
+  config,
   site,
   recordMap,
   error,
@@ -129,6 +131,8 @@ export function NotionPage({
 }: types.PageProps) {
   const router = useRouter()
   const lite = useSearchParam('lite')
+
+  const mapImageUrl = React.useMemo(() => createMapImageUrl(config), [config])
 
   const components = React.useMemo<Partial<NotionComponents>>(
     () => ({
@@ -153,9 +157,9 @@ export function NotionPage({
       Header: NotionPageHeader,
       propertyLastEditedTimeValue,
       propertyTextValue,
-      propertyDateValue
+      propertyDateValue: createPropertyDateValue(config.dateFormat)
     }),
-    []
+    [config.dateFormat, mapImageUrl]
   )
 
   // lite mode is for oembed
@@ -168,8 +172,8 @@ export function NotionPage({
     if (lite) params.lite = lite
 
     const searchParams = new URLSearchParams(params)
-    return site ? mapPageUrl(site, recordMap!, searchParams) : undefined
-  }, [site, recordMap, lite])
+    return site ? mapPageUrl(config, recordMap!, searchParams) : undefined
+  }, [config, site, recordMap, lite])
 
   const keys = Object.keys(recordMap?.block || {})
   // react-notion-x v7.10에서 record value 타입이 union으로 확장됨
@@ -221,7 +225,7 @@ export function NotionPage({
 
   // 페이지별 SEO 덮어쓰기. 지정한 값이 Notion 속성과 사이트 기본값을 모두 이긴다.
   // (@see lib/page-meta.ts)
-  const metaOverride = getPageMetaOverride(pageId)
+  const metaOverride = getPageMetaOverride(config, pageId)
 
   const title =
     metaOverride?.title || getBlockTitle(block, recordMap) || site.name
@@ -234,7 +238,7 @@ export function NotionPage({
     recordMap
   })
 
-  if (!config.isServer) {
+  if (typeof window !== 'undefined') {
     // add important objects to the window global for easy debugging
     const g = window as any
     g.pageId = pageId
@@ -244,7 +248,7 @@ export function NotionPage({
 
   const canonicalPageUrl = config.isDev
     ? undefined
-    : getCanonicalPageUrl(site, recordMap)(pageId)
+    : getCanonicalPageUrl(config, recordMap)(pageId)
 
   const socialImage =
     metaOverride?.ogImage ||

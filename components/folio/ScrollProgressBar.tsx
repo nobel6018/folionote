@@ -1,11 +1,12 @@
 import cs from 'classnames'
 import * as React from 'react'
 
-import { scrollProgressBar } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import { useScrollState } from './use-scroll-state'
 
 function ScrollProgressBarBody({ standalone }: { standalone?: boolean }) {
+  const { scrollProgressBar } = useSiteConfig()
   const { progress } = useScrollState()
 
   return (
@@ -42,6 +43,8 @@ function ScrollProgressBarBody({ standalone }: { standalone?: boolean }) {
  * 구독이 걸린다.
  */
 export function ScrollProgressBar({ standalone }: { standalone?: boolean }) {
+  const { scrollProgressBar } = useSiteConfig()
+
   if (!scrollProgressBar.enabled) {
     return null
   }

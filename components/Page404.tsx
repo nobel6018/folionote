@@ -1,5 +1,5 @@
 import type * as types from '@/lib/types'
-import { language } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import { PageHead } from './PageHead'
 import styles from './styles.module.css'
@@ -74,7 +74,7 @@ const en: typeof ko = {
   }
 }
 
-function pickCopy(error?: types.PageError) {
+function pickCopy(language: string, error?: types.PageError) {
   const t = language?.startsWith('ko') ? ko : en
   switch (error?.kind) {
     case 'unpublished':
@@ -101,8 +101,9 @@ function pickCopy(error?: types.PageError) {
  * 하위 페이지면 방문자가 볼 수도 있으니 짧게 둔다. 어느 쪽이든 검색엔진에는
  * 올리지 않는다. 임시 상태를 "없는 페이지"로 색인하면 안 된다.
  */
-export function Page404({ site, pageId, error }: types.PageProps) {
-  const { t, c } = pickCopy(error)
+export function Page404({ site, pageId, error }: Partial<types.PageProps>) {
+  const config = useSiteConfig()
+  const { t, c } = pickCopy(config.language, error)
   const isRoot =
     !!pageId &&
     !!site?.rootNotionPageId &&

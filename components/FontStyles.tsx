@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import * as React from 'react'
 
-import { font } from '@/lib/config'
+import { useOptionalSiteConfig } from '@/lib/site-config-context'
 
 /**
  * 선택한 폰트의 스타일시트를 받고 `--folio-font-sans`를 덮는다
@@ -14,6 +14,13 @@ import { font } from '@/lib/config'
  * link보다 앞에 렌더돼서 같은 `:root`로는 folio-tokens.css에 순서로 밀린다.
  */
 export function FontStyles() {
+  const config = useOptionalSiteConfig()
+
+  if (!config) {
+    return null
+  }
+
+  const { font } = config
   const css = [
     `--folio-font-sans: ${font.sans};`,
     font.mono ? `--folio-font-mono: ${font.mono};` : null

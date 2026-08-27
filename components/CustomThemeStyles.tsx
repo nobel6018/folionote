@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import * as React from 'react'
 
-import { customThemeColors } from '@/lib/config'
+import { useOptionalSiteConfig } from '@/lib/site-config-context'
 
 /**
  * `colorTheme.mode: 'custom'`일 때 배경/글자색을 CSS 변수로 주입한다.
@@ -18,11 +18,13 @@ import { customThemeColors } from '@/lib/config'
  * 특이도를 한 단계 올려 순서와 무관하게 이기게 한다.
  */
 export function CustomThemeStyles() {
-  if (!customThemeColors) {
+  const config = useOptionalSiteConfig()
+
+  if (!config?.customThemeColors) {
     return null
   }
 
-  const { background, foreground } = customThemeColors
+  const { background, foreground } = config.customThemeColors
 
   const css = `:root:root {
   --folio-bg: ${background};

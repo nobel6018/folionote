@@ -7,13 +7,14 @@ import { FaYoutube } from '@react-icons/all-files/fa/FaYoutube'
 import { FaZhihu } from '@react-icons/all-files/fa/FaZhihu'
 import * as React from 'react'
 
-import * as config from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import styles from './styles.module.css'
 
 // TODO: merge the data and icons from PageSocial with the social links in Footer
 
 export function FooterImpl() {
+  const config = useSiteConfig()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -42,7 +43,7 @@ export function FooterImpl() {
           <a
             className={styles.mastodon}
             href={config.mastodon}
-            title={`Mastodon ${config.getMastodonHandle()}`}
+            title={`Mastodon ${config.mastodonHandle}`}
             rel='me'
           >
             <FaMastodon />

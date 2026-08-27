@@ -6,7 +6,7 @@ import Prism from 'prismjs'
 import * as React from 'react'
 import { useNotionContext } from 'react-notion-x'
 
-import { language as siteLanguage } from '@/lib/config'
+import { useSiteConfig } from '@/lib/site-config-context'
 
 import styles from './Code.module.css'
 
@@ -32,6 +32,7 @@ export function Code({
   className
 }: CodeProps) {
   const { recordMap } = useNotionContext()
+  const { language: siteLanguage } = useSiteConfig()
   const code = getBlockTitle(block, recordMap) ?? ''
 
   // Notion이 저장한 표기("TypeScript")를 라벨에 그대로 쓴다. 레퍼런스 서비스도 그렇게 보여준다.
