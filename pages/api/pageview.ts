@@ -1,6 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from 'next'
 import { parsePageId } from 'notion-utils'
 
+import { loadSiteConfig } from '@/lib/load-site-config'
 import {
   incrementPageView,
   isPageViewCountAvailable,
@@ -20,7 +21,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (!isPageViewCountAvailable) {
+  const config = loadSiteConfig()
+
+  if (!isPageViewCountAvailable(config)) {
     return res.status(501).json({ error: 'pageview count is not configured' })
   }
 
@@ -36,8 +39,8 @@ export default async function handler(
 
   const counts =
     req.method === 'POST'
-      ? await incrementPageView(pageId)
-      : await readPageView(pageId)
+      ? await incrementPageView(config, pageId)
+      : await readPageView(config, pageId)
 
   if (!counts) {
     return res.status(503).json({ error: 'pageview store unavailable' })

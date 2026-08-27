@@ -68,29 +68,33 @@ import * as React from 'react'
 
 import { CustomThemeStyles } from '@/components/CustomThemeStyles'
 import { FontStyles } from '@/components/FontStyles'
-import { bootstrap } from '@/lib/bootstrap-client'
 import {
-  colorThemeMode,
   fathomConfig,
   fathomId,
-  isServer,
   posthogConfig,
   posthogId
-} from '@/lib/config'
+} from '@/lib/analytics-env'
+import { bootstrap } from '@/lib/bootstrap-client'
+import { SiteConfigProvider } from '@/lib/site-config-context'
+import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
 
-if (!isServer) {
+if (typeof window !== 'undefined') {
   bootstrap()
 }
 
-const forcedTheme =
-  colorThemeMode === 'light' || colorThemeMode === 'custom'
-    ? 'light'
-    : colorThemeMode === 'dark'
-      ? 'dark'
-      : undefined
-
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
+  // 설정은 페이지가 props로 실어 보낸다. 모듈 상수로 두면 사이트 이름과 도메인이
+  // 브라우저 번들에 박혀서 한 프로세스가 사이트 하나만 그릴 수 있다.
+  // (@see docs/architecture.md)
+  const config = pageProps.config as ResolvedSiteConfig | undefined
+
+  const forcedTheme =
+    config?.colorThemeMode === 'light' || config?.colorThemeMode === 'custom'
+      ? 'light'
+      : config?.colorThemeMode === 'dark'
+        ? 'dark'
+        : undefined
 
   React.useEffect(() => {
     function onRouteChangeComplete() {
@@ -119,22 +123,24 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [router.events])
 
   return (
-    <ThemeProvider
-      attribute='class'
-      defaultTheme='system'
-      enableSystem
-      themes={['light', 'dark']}
-      value={{ light: 'light-mode', dark: 'dark-mode' }}
-      storageKey='theme'
-      disableTransitionOnChange
-      // light/dark로 고정한 경우 그 테마만 쓴다. custom은 다크 팔레트가 끼어들지
-      // 않도록 light에 고정하고 색은 CustomThemeStyles가 덮는다.
-      forcedTheme={forcedTheme}
-    >
-      <FontStyles />
-      <CustomThemeStyles />
+    <SiteConfigProvider config={config}>
+      <ThemeProvider
+        attribute='class'
+        defaultTheme='system'
+        enableSystem
+        themes={['light', 'dark']}
+        value={{ light: 'light-mode', dark: 'dark-mode' }}
+        storageKey='theme'
+        disableTransitionOnChange
+        // light/dark로 고정한 경우 그 테마만 쓴다. custom은 다크 팔레트가 끼어들지
+        // 않도록 light에 고정하고 색은 CustomThemeStyles가 덮는다.
+        forcedTheme={forcedTheme}
+      >
+        <FontStyles />
+        <CustomThemeStyles />
 
-      <Component {...pageProps} />
-    </ThemeProvider>
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </SiteConfigProvider>
   )
 }

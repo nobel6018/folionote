@@ -5,7 +5,7 @@ import { type NextApiRequest, type NextApiResponse } from 'next'
 
 import { commitFile, targetBranch } from '@/lib/admin/github'
 import { getSession, hasValidOrigin } from '@/lib/admin/request'
-import { isDev } from '@/lib/config'
+import { loadSiteConfig } from '@/lib/load-site-config'
 
 /**
  * 로고 등 이미지 업로드. `public/` 아래에 넣는다.
@@ -58,6 +58,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const { isDev } = loadSiteConfig()
+
   const session = getSession(req)
   if (!isDev && !session) {
     return res.status(404).json({ error: 'not found' })

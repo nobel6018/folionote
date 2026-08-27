@@ -5,7 +5,7 @@ import { type NextApiRequest, type NextApiResponse } from 'next'
 
 import { commitConfig, targetBranch, targetPath } from '@/lib/admin/github'
 import { getSession, hasValidOrigin } from '@/lib/admin/request'
-import { author, domain, isDev, name, rootNotionPageId } from '@/lib/config'
+import { loadSiteConfig } from '@/lib/load-site-config'
 import { serializeSiteConfig } from '@/lib/serialize-site-config'
 import { type SiteConfig } from '@/lib/site-config'
 
@@ -31,6 +31,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const { isDev, rootNotionPageId, name, author, domain } = loadSiteConfig()
+
   const session = getSession(req)
   const canEdit = isDev || Boolean(session)
 

@@ -24,8 +24,8 @@ import {
 import { isDeployedAdminEnabled } from '@/lib/admin/env'
 import { repoSlug, targetBranch } from '@/lib/admin/github'
 import { getSession } from '@/lib/admin/request'
-import { isDev } from '@/lib/config'
 import { FONT_REGISTRY } from '@/lib/fonts'
+import { loadSiteConfig } from '@/lib/load-site-config'
 import { serializeSiteConfig } from '@/lib/serialize-site-config'
 import {
   type NavigationLink,
@@ -50,6 +50,8 @@ export const getServerSideProps: GetServerSideProps<AdminPageProps> = async ({
   req,
   query
 }) => {
+  const { isDev } = loadSiteConfig()
+
   // 로컬 개발이 아니고 배포 어드민도 꺼져 있으면 페이지 자체가 없는 것으로 둔다.
   if (!isDev && !isDeployedAdminEnabled) {
     return { notFound: true }

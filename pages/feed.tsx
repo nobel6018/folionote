@@ -9,12 +9,14 @@ import {
 } from 'notion-utils'
 import RSS from 'rss'
 
-import * as config from '@/lib/config'
 import { getSiteMap } from '@/lib/get-site-map'
 import { getSocialImageUrl } from '@/lib/get-social-image-url'
+import { loadSiteConfig } from '@/lib/load-site-config'
 import { getCanonicalPageUrl } from '@/lib/map-page-url'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const config = loadSiteConfig()
+
   if (req.method !== 'GET') {
     res.statusCode = 405
     res.setHeader('Content-Type', 'application/json')
@@ -23,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: {} }
   }
 
-  const siteMap = await getSiteMap()
+  const siteMap = await getSiteMap(config)
   const ttlMinutes = 24 * 60 // 24 hours
   const ttlSeconds = ttlMinutes * 60
 
@@ -63,7 +65,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     const description =
       getPageProperty<string>('Description', block, recordMap) ||
       config.description
-    const url = getCanonicalPageUrl(config.site, recordMap)(pageId)
+    const url = getCanonicalPageUrl(config, recordMap)(pageId)
     const lastUpdatedTime = getPageProperty<number>(
       'Last Updated',
       block,
@@ -75,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       : publishedTime
         ? new Date(publishedTime)
         : new Date()
-    const socialImageUrl = getSocialImageUrl(pageId)
+    const socialImageUrl = getSocialImageUrl(config, pageId)
 
     feed.item({
       title,

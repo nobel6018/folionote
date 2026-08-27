@@ -1,11 +1,31 @@
 import { IconContext } from '@react-icons/all-files'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 
-import { customCode, language } from '@/lib/config'
+import { loadSiteConfig } from '@/lib/load-site-config'
+import { type ResolvedSiteConfig } from '@/lib/site-config-resolve'
+
+/**
+ * 설정을 어디서 읽을지.
+ *
+ * 페이지가 실어 보낸 `pageProps.config`를 먼저 본다. 호스팅 서비스가 한 프로세스로
+ * 사이트 여러 개를 그릴 때는 요청마다 이 값이 달라야 한다. `/_error`처럼 페이지
+ * 데이터를 못 만든 경로에서만 이 리포에 담긴 설정으로 내려간다. `_document`는
+ * 서버에서만 도므로 여기서 파일을 읽어도 브라우저 번들에는 들어가지 않는다.
+ *
+ * @see docs/architecture.md
+ */
+function readConfig(nextData: any): ResolvedSiteConfig {
+  return (
+    (nextData?.props?.pageProps?.config as ResolvedSiteConfig) ??
+    loadSiteConfig()
+  )
+}
 
 // 다크모드 noflash 처리: next-themes(ThemeProvider in _app.tsx)가 자체 inject. 수동 script 불필요.
 export default class MyDocument extends Document {
   override render() {
+    const { language, customCode } = readConfig(this.props.__NEXT_DATA__)
+
     return (
       <IconContext.Provider value={{ style: { verticalAlign: 'middle' } }}>
         {/* 사이트 언어를 따른다. 'en'이 박혀 있어서 한국어 사이트인데도 en으로
