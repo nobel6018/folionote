@@ -46,9 +46,12 @@ export default siteConfig({
 
   // pretty URL 매핑. 키가 경로, 값이 Notion 블록 ID(하이픈 없는 32자 hex).
   // navigationLinks에서 url로 참조하는 경로는 여기에도 반드시 있어야 한다.
-  //
-  // 데모는 한 페이지짜리라 매핑이 없다. 컬렉션을 쓰면 이렇게 적는다.
-  //   pageUrlOverrides: { '/blog': '컬렉션 페이지 ID' }
+  pageUrlOverrides: {
+    '/features': '3c9c0343b4fa813c8767cc49b9d80b70',
+    '/start': '3c9c0343b4fa818d80ccf86fecd830e1',
+    '/examples': '3c9c0343b4fa8167b9e3db792294dc45',
+    '/blog': 'f0e3031653314c6582605013227c2691'
+  },
 
   // 컬렉션 카드/속성의 날짜 형식 (@see lib/format-date.ts)
   dateFormat: 'YYYY/MM/DD',
@@ -73,6 +76,18 @@ export default siteConfig({
 
   // 헤더에 노출할 nav 링크. 외부 주소도 넣을 수 있다.
   navigationLinks: [
+    {
+      title: '기능',
+      pageId: '3c9c0343b4fa813c8767cc49b9d80b70'
+    },
+    {
+      title: '시작하기',
+      pageId: '3c9c0343b4fa818d80ccf86fecd830e1'
+    },
+    {
+      title: '블로그',
+      pageId: 'f0e3031653314c6582605013227c2691'
+    },
     {
       title: 'GitHub',
       url: 'https://github.com/nobel6018/folionote'
