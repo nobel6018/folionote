@@ -893,6 +893,23 @@ svg.notion-page-icon {
   color: var(--folio-collection-title-color, inherit);
 }
 
+/* 뷰 본문을 감싸는 래퍼. react-notion-x가 display를 주지 않아 block으로 남는데,
+ * 표 뷰(.notion-table)는 `width: 100vw; align-self: center`로 그려진다.
+ * align-self는 flex 자식에게만 듣기 때문에 block 부모 아래에서는 무시되고,
+ * 1440px 표가 본문 왼쪽 끝(366px)에서 시작해 오른쪽으로만 732px 넘쳤다.
+ * flex column으로 바꾸면 align-self가 살아나 표가 좌우로 똑같이 넘치면서
+ * 뷰포트 왼쪽 끝(0)에 맞고, 가로 스크롤은 표 자신의 overflow 안에서만 생긴다.
+ *
+ * align-items는 기본값(stretch)으로 둔다. center로 주면 갤러리, 리스트, 보드까지
+ * 내용 폭으로 쪼그라든다. 표만 자기 align-self로 가운데를 가져가면 된다.
+ *
+ * 데모에 전체 페이지 데이터베이스가 생기기 전까지는 인라인 컬렉션만 있었고,
+ * 인라인은 갤러리/리스트라 표의 100vw 전제를 밟을 일이 없어 드러나지 않았다. */
+.notion-collection {
+  display: flex;
+  flex-direction: column;
+}
+
 /* 레퍼런스 서비스 실측: 구분선은 뷰 탭 아래에만 있고 제목에는 없다.
  * 제목은 22px/700, 아이콘과 한 글자 정도 간격. */
 .notion-collection-header {
@@ -956,6 +973,15 @@ svg.notion-page-icon {
   display: flex;
   align-items: center;
   gap: var(--folio-space-1);
+}
+
+/* 갤러리만 폭을 되돌려 준다. react-notion-x는 뷰 4종에 모두 `align-self: center`를
+ * 주는데, 리스트는 `width: 100%`, 표와 보드는 `width: 100vw`를 함께 갖지만
+ * 갤러리에는 폭이 없다. block 부모 아래에서는 폭이 없어도 알아서 꽉 찼지만,
+ * 위에서 .notion-collection을 flex로 바꾼 뒤로는 내용 폭(카드 1장, 280px)까지
+ * 쪼그라들어 2열 그리드가 1열이 됐다. */
+.notion-gallery {
+  width: 100%;
 }
 
 /* ── Collection card (갤러리 뷰) ────────────────────────── */
