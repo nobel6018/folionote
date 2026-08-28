@@ -145,6 +145,10 @@ github.com/nobel6018/folionote 를 fork해서 클론하고, AGENTS.md의 셋업 
 
 </details>
 
+<img src="docs/images/examples-dark.png" alt="다크모드에서 콜아웃, 인용, 구분선이 렌더된 화면" width="800">
+
+Notion에서 고른 콜아웃 색과 제목 색이 다크모드에서도 그대로 나옵니다. 위 화면은 데모의 [블록 렌더링 예시](https://folionote.leedo.me/examples/) 페이지입니다.
+
 ## 기능
 
 | 기능                 | 내용                                                                                                    |
