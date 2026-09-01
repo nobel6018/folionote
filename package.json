@@ -5,6 +5,7 @@
   "description": "Turn a Notion page into a fast static site you host yourself (Next.js + react-notion-x).",
   "author": "nobel6018 <nobel6018@gmail.com>",
   "repository": "nobel6018/folionote",
+  "homepage": "https://folionote.leedo.me",
   "license": "MIT",
   "packageManager": "pnpm@10.11.1",
   "engines": {
