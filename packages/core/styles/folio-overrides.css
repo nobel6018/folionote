@@ -932,6 +932,28 @@ svg.notion-page-icon {
   font-size: 1em;
 }
 
+/* 전체 페이지 데이터베이스에서는 컬렉션 제목을 지운다.
+ *
+ * react-notion-x는 `collection_view_page`를 level 0에서 만나면 `h1.notion-title`로
+ * 페이지 제목을 그린 뒤, 곧바로 Collection을 붙이면서 컬렉션 이름을
+ * `.notion-collection-header`에 한 번 더 그린다. 둘은 같은 문자열이라
+ * /blog/ 상단에 "블로그"가 두 번 나왔다. Notion 원본은 한 번만 보여준다.
+ *
+ * 자식 결합자 `>`가 인라인 컬렉션을 갈라 준다. 전체 페이지 컬렉션일 때
+ * react-notion-x는 `.notion-page-content`를 아예 그리지 않고
+ * (`block.type !== 'collection_view_page' && <div class="notion-page-content">`)
+ * Collection을 `main.notion-full-page`의 직계 자식으로 둔다. 반대로 다른 페이지에
+ * 삽입된 인라인 컬렉션은 본문 블록이라 항상
+ * `.notion-page-content > article.notion-page-content-inner` 안에 들어가므로
+ * `.notion-full-page`의 직계 자식이 되지 못한다. 후손 결합자(공백)로 쓰면
+ * 인라인 컬렉션의 제목까지 사라진다.
+ *
+ * 뷰 탭(.notion-collection-view-tabs-row)과 검색창(.folio-collection-search)은
+ * 이 요소 바깥에 있어 그대로 남는다. */
+.notion-full-page > .folio-collection .notion-collection-header {
+  display: none;
+}
+
 .notion-collection-view-tabs-row {
   display: flex;
   align-items: center;
@@ -997,6 +1019,65 @@ svg.notion-page-icon {
  * 쪼그라들어 2열 그리드가 1열이 됐다. */
 .notion-gallery {
   width: 100%;
+}
+
+/* ── 표 뷰(데이터베이스 table view) ─────────────────────── */
+/* 테두리를 일반 표와 같은 토큰으로 통일한다.
+ *
+ * react-notion-x는 셀 오른쪽, 행 아래, 헤더 위아래 선을 `--fg-color-1`로,
+ * 헤더 셀 오른쪽 선을 `--fg-color-0`으로 긋는다. 그런데 `.dark-mode`에서
+ * `--fg-color-0/1/2`를 셋 다 `--fg-color`(0.9 흰색)로 뭉뚱그려 놓아서
+ * (styles.css 96~98행) 다크에서 거의 흰 선이 그어졌다. 스프레드시트처럼 보인다.
+ * Notion 다크 실측은 배경 rgb(25,25,25)에 구분선 rgb(44,44,43)로 겨우 보이는 정도다.
+ *
+ * `--folio-table-border`가 라이트 rgb(233,233,231), 다크 rgb(63,66,69)를 이미
+ * 갖고 있으므로 테마별 규칙을 따로 쓰지 않는다. 선을 긋는 규칙만 골라 색만 덮고
+ * 굵기와 위치는 건드리지 않는다. */
+.notion-table-cell,
+.notion-table-view-header-cell-inner {
+  border-right-color: var(--folio-table-border);
+}
+
+.notion-table-row {
+  border-bottom-color: var(--folio-table-border);
+}
+
+.notion-table-header-inner {
+  border-top-color: var(--folio-table-border);
+  border-bottom-color: var(--folio-table-border);
+}
+
+/* 제목 셀의 밑줄도 같은 `--fg-color-1`이라 다크에서 흰 줄로 떴다.
+ * 표 구분선이 아니라 링크 밑줄이므로 본문 링크(.notion-link)와 같은
+ * `--folio-border`를 쓴다. 구분선보다 조금 진해서 링크임이 남는다. */
+.notion-table-cell-title .notion-page-title-text {
+  border-bottom-color: var(--folio-border);
+}
+
+/* 셀을 Notion처럼 한 줄로 자른다.
+ *
+ * react-notion-x가 `.notion-table-cell-text`에 `pre-wrap`을 줘서 요약 열이
+ * 네 줄로 감기고 행 높이가 96px까지 늘었다. Notion 실측은 행 44px에 한 줄이고,
+ * 넘치는 글자는 말줄임표 없이 그대로 잘린다(그래서 ellipsis를 넣지 않는다).
+ *
+ * `-text`, `-number`는 `.notion-table-cell`과 같은 요소에 함께 붙는 클래스라
+ * 이 파일이 뒤에 오는 것만으로 이겨야 하지만, 나중에 임포트 순서가 바뀌어도
+ * 깨지지 않게 셋을 함께 적는다.
+ *
+ * `.notion-table`의 `overflow: auto hidden`은 그대로 두어 표 자신의 가로
+ * 스크롤은 살아 있다. 자르기는 셀 안에서만 일어난다. */
+.notion-table-cell,
+.notion-table-cell-text,
+.notion-table-cell-number {
+  white-space: nowrap;
+}
+
+/* 태그 열은 글자가 아니라 칩이라 white-space가 듣지 않는다. 칩이 두 줄로
+ * 접히면 행만 다시 높아지므로 flex 줄바꿈도 함께 막는다. */
+.notion-table-cell .notion-property-multi_select,
+.notion-table-cell .notion-property-select,
+.notion-table-cell .notion-property-status {
+  flex-wrap: nowrap;
 }
 
 /* ── Collection card (갤러리 뷰) ────────────────────────── */
