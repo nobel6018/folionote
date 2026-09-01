@@ -1,5 +1,7 @@
 # folionote
 
+**한국어** | [English](README.en.md)
+
 Notion 페이지를 내 도메인의 정적 사이트로 배포하는 오픈소스입니다. 글은 Notion에서 쓰고, 발행은 내 Vercel 계정과 내 도메인에서 합니다. 구독이 끊겨 사이트가 멈추는 일도, 원하는 기능을 못 넣는 일도 없습니다. 데모는 [folionote.leedo.me](https://folionote.leedo.me)이고, 이 리포를 그대로 배포한 것입니다.
 
 [`nextjs-notion-starter-kit`](https://github.com/transitive-bullshit/nextjs-notion-starter-kit)을 베이스로 삼고 렌더링은 [`react-notion-x`](https://github.com/NotionX/react-notion-x)에 맡깁니다. 디자인은 기존 서비스들을 참고해 자체 구현했습니다.
