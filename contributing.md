@@ -74,6 +74,10 @@ CI(`.github/workflows/build.yml`)가 실행하는 명령은 `pnpm test` 하나�
    달라지는 변경이면 전후 스크린샷을, 수치가 달라지는 변경이면 전후 수치를 넣습니다.
 4. CI가 통과해야 머지합니다. 실패하면 로그의 `eslint`와 `prettier` 출력을 먼저 봅니다.
 
+이슈와 PR은 한국어와 영어 모두 환영합니다. GitHub에서 새로 열면 양식이 자동으로 뜨고
+(`.github/ISSUE_TEMPLATE/`, `.github/pull_request_template.md`), 양식의 항목도 두 언어를
+나란히 적어 뒀습니다. 편한 쪽으로 쓰시면 됩니다.
+
 자기 사이트 값(Notion 페이지 ID, 도메인, 토큰)은 커밋에 넣지 않습니다. 로컬에서
 `site.config.ts`를 자기 값으로 바꿔 뒀다면 PR을 올리기 전에 그 부분만 되돌립니다.
 

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 먼저 읽어 보기 · Read this first
+    url: https://github.com/nobel6018/folionote#%EB%A7%89%ED%9E%88%EB%A9%B4
+    about: README의 "막히면" 절에 자주 나오는 원인이 모여 있습니다. The troubleshooting section of the README covers the common causes.

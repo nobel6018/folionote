@@ -1,0 +1,45 @@
+name: ✋ 셋업이 막혀요 · Setup help
+description: 배포까지 가는 도중에 막혔습니다. You got stuck somewhere on the way to a live site.
+labels: [setup]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        한국어와 영어 모두 환영합니다. Write in Korean or English.
+
+        먼저 두 곳을 봐 주세요. Check these two first.
+
+        - [README의 "막히면"](https://github.com/nobel6018/folionote#%EB%A7%89%ED%9E%88%EB%A9%B4) - 자주 나오는 원인 네 가지와 AI에 붙여 넣을 질문 틀. Four common causes, plus a prompt you can paste into any AI.
+        - [데모의 시작하기 페이지](https://folionote.leedo.me/start) - 게시부터 배포까지의 순서. The publish-to-deploy walkthrough.
+
+        여기 없으면 아래를 채워 주세요. If neither covers it, fill in the fields below.
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: 어느 단계에서 막혔나 · Where you got stuck
+      options:
+        - Notion 웹에 게시 · Publish to web
+        - Vercel Deploy 버튼 · Deploy button
+        - 도메인 연결 · Custom domain
+        - 설정 화면(/admin) · Admin
+        - 기타 · Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-you-see
+    attributes:
+      label: 화면에 보이는 것 그대로 · Exactly what you see
+      description: 오류 문구는 요약하지 말고 그대로 붙여 주세요. Paste error text verbatim. 스크린샷을 함께 올려 주시면 더 빠릅니다.
+    validations:
+      required: true
+
+  - type: input
+    id: deployment-url
+    attributes:
+      label: 배포 URL · Deployment URL
+      description: Vercel이 만들어 준 주소든 내 도메인이든 좋습니다. Either the Vercel address or your own domain.
+      placeholder: https://my-notion-site.vercel.app
+    validations:
+      required: false

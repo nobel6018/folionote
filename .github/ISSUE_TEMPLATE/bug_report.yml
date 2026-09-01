@@ -1,0 +1,65 @@
+name: 🐛 버그 신고 · Bug report
+description: 사이트나 빌드가 예상과 다르게 동작합니다. Something behaves differently than expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        한국어와 영어 모두 환영합니다. Write in Korean or English.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 무엇이 잘못됐나 · What happened
+      description: 화면에 보이는 결과를 그대로 적어 주세요. Describe what you actually saw.
+      placeholder: |
+        블로그 목록의 커버 이미지가 다크모드에서 흰 배경으로 보입니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작 · What you expected
+      description: 대신 무엇이 나와야 했나요. What should have happened instead.
+    validations:
+      required: true
+
+  - type: input
+    id: notion-page
+    attributes:
+      label: 재현되는 공개 Notion 페이지 URL · Public Notion page URL that reproduces it
+      description: 비공개 페이지는 저희가 못 봅니다. We can't see private pages. 문제가 나는 블록만 담은 새 페이지를 만들어 게시해 주셔도 됩니다.
+      placeholder: https://www.notion.so/...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: deploy-method
+    attributes:
+      label: 배포 방식 · How you deployed
+      options:
+        - Vercel Deploy 버튼 · Deploy button
+        - fork 후 직접 · Forked and self-hosted
+        - 로컬 개발 서버 · Local dev
+        - 기타 · Other
+    validations:
+      required: true
+
+  - type: input
+    id: site-url
+    attributes:
+      label: 사이트 URL · Your site URL
+      description: 배포된 사이트가 있으면 주소를 적어 주세요. If your site is live, paste its address.
+      placeholder: https://folionote.leedo.me
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 브라우저·환경과 로그 · Browser, environment, logs
+      description: 브라우저와 OS, Node 버전, 콘솔이나 Vercel 빌드 로그를 붙여 주세요. Browser and OS, Node version, console output or Vercel build logs.
+      render: shell
+    validations:
+      required: false
