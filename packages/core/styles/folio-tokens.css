@@ -254,6 +254,40 @@
   --notion-pink_background_co: var(--notion-pink_background);
   --notion-red_background_co: var(--notion-red_background);
 
+  /* ── 컬렉션 태그 칩 (레퍼런스 서비스 다크 실측) ─────────────────────
+   *
+   * 멀티셀렉트/셀렉트 속성의 칩은 `.notion-item-{색}`이 배경을
+   * `--notion-item-{색}`, 글자를 `--notion-item-text-{색}`으로 그린다
+   * (react-notion-x styles.css 398행 부근). 그런데 이 변수 20개는 :root에만
+   * 정의돼 있고 다크 정의가 없다. 위의 `_background` 계열만 다크로 덮어써 온
+   * 탓에 칩은 다크에서도 라이트 파스텔이 그대로 남았다. green 기준으로 배경
+   * rgb(219,237,219)에 글자 rgb(28,56,41), 어두운 본문 위에 밝은 스티커처럼 떴다.
+   *
+   * 출처는 위 배경 팔레트와 같은 레퍼런스 서비스 프로덕션 번들의 다크 테마 객체다.
+   * 배경을 어둡게 깔고 글자를 같은 계열의 밝은 톤으로 올리는 구성이라
+   * 칩 안쪽 대비가 라이트와 비슷하게 유지된다. */
+  --notion-item-default: rgba(71, 76, 80, 0.7);
+  --notion-item-gray: rgb(62, 66, 69);
+  --notion-item-brown: rgb(91, 71, 57);
+  --notion-item-orange: rgb(102, 64, 54);
+  --notion-item-yellow: rgb(102, 84, 59);
+  --notion-item-green: rgb(52, 79, 64);
+  --notion-item-blue: rgb(43, 77, 103);
+  --notion-item-purple: rgb(78, 61, 102);
+  --notion-item-pink: rgb(99, 56, 86);
+  --notion-item-red: rgb(105, 54, 63);
+
+  --notion-item-text-default: rgba(255, 255, 255, 0.88);
+  --notion-item-text-gray: rgb(234, 235, 235);
+  --notion-item-text-brown: rgb(240, 194, 149);
+  --notion-item-text-orange: rgb(253, 182, 149);
+  --notion-item-text-yellow: rgb(250, 213, 161);
+  --notion-item-text-green: rgb(181, 210, 172);
+  --notion-item-text-blue: rgb(163, 203, 234);
+  --notion-item-text-purple: rgb(205, 177, 228);
+  --notion-item-text-pink: rgb(248, 170, 203);
+  --notion-item-text-red: rgb(254, 172, 165);
+
   /* 본문 드래그 선택 배경.
    *
    * react-notion-x 기본값은 rgba(45,170,219,0.3)이고 다크 본문 배경 위에서

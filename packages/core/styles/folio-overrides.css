@@ -975,6 +975,21 @@ svg.notion-page-icon {
   gap: var(--folio-space-1);
 }
 
+/* 뷰 탭의 svg 아이콘.
+ *
+ * react-notion-x는 fill을 라이트 잉크색 rgba(55,53,47)로 박아 뒀다
+ * (styles.css 1569행 부근, `var(--fg-color)` 줄은 주석 처리된 채다).
+ * 라이트에서는 맞는 색이라 그대로 두고, 다크에서만 되돌린다. 다크 본문 위에서는
+ * 이 색이 배경에 묻혀 글자만 보이고 아이콘은 사라진 것처럼 보였다.
+ *
+ * currentColor로 넘기면 위 탭 규칙이 정한 글자색을 그대로 따라간다.
+ * 비활성 --folio-text-muted, 활성 --folio-text, hover도 마찬가지라
+ * 활성 탭이 더 밝은 명도 차이가 아이콘에도 자동으로 붙는다. 색을 명시하면
+ * 탭 상태 3종을 따로 써야 하고 토큰이 바뀔 때 어긋난다. */
+.dark-mode .notion-collection-view-type-icon {
+  fill: currentColor;
+}
+
 /* 갤러리만 폭을 되돌려 준다. react-notion-x는 뷰 4종에 모두 `align-self: center`를
  * 주는데, 리스트는 `width: 100%`, 표와 보드는 `width: 100vw`를 함께 갖지만
  * 갤러리에는 폭이 없다. block 부모 아래에서는 폭이 없어도 알아서 꽉 찼지만,
