@@ -60,6 +60,39 @@
   }
   ```
 - `pageUrlAdditions` - 추가 매핑 (overrides가 우선)
+- 경로는 여러 단계여도 된다(`/books/1`). 다른 서비스에서 옮겨 올 때 기존 주소를
+  그대로 매핑하면 도메인만 리다이렉트해도 글마다 쌓인 검색 순위가 이어진다
+  (@see `pages/[...pageId].tsx`)
+- `prebuildPaths` - 빌드 때 미리 만들 경로. 생략하면 `pageUrlOverrides` 전부다.
+  매핑이 수백 개면 전부 미리 만들다 Notion API 429를 맞으므로, 렌더가 느린 컬렉션
+  페이지만 적고 나머지는 첫 요청 때 만들게 둔다
+  ```ts
+  prebuildPaths: ['/devs', '/books']
+  ```
+- 주소 끝에 슬래시를 붙이지 않는다(`/about`). 슬래시를 붙인 주소는 308로 넘어간다.
+  canonical, 사이트맵, 내부 링크가 모두 슬래시 없는 주소를 쓴다
+
+### 검색엔진 노출
+
+- `noindex` - 사이트 전체를 검색엔진에서 숨긴다(기본 `false`). 환경변수
+  `SITE_NOINDEX=true`로도 켤 수 있다. 기존 사이트를 둔 채 새 도메인에서 미리 띄워 볼
+  때 쓴다. 켜면 robots.txt가 전부 막고 모든 페이지에 `noindex,nofollow`가 붙는다.
+  이전을 마치면 환경변수를 지우고 재배포한다
+- 특정 페이지만 숨기려면 `pageMeta`의 `noindex`를 쓴다 (@see docs/custom-code.md)
+
+### 댓글
+
+- `comments.utterances` - 글(컬렉션 안의 페이지) 하단에 [utterances](https://utteranc.es)
+  댓글을 붙인다. 리포에 utterances 앱을 설치해 둬야 한다
+  ```ts
+  comments: {
+    utterances: {
+      repo: 'owner/repo',
+      issueTerm: 'pathname', // 기본값. 같은 경로로 옮겨 오면 기존 댓글이 이어진다
+      label: 'comment' // 선택
+    }
+  }
+  ```
 
 ### 헤더 / 네비게이션
 
@@ -91,6 +124,7 @@
 
 | Key                                                             | 용도                         |
 | --------------------------------------------------------------- | ---------------------------- |
+| `SITE_NOINDEX`                                                  | `true`면 사이트 전체 noindex |
 | `NEXT_PUBLIC_FATHOM_ID`                                         | Fathom analytics             |
 | `NEXT_PUBLIC_POSTHOG_ID`                                        | PostHog analytics            |
 | `TWITTER_ACCESS_TOKEN`                                          | 트윗 embed (rate limit 회피) |

@@ -28,6 +28,7 @@ import { searchNotion } from '../../shared/search-notion.js'
 import { useDarkMode } from '../use-dark-mode.js'
 import { BottomNavigation } from './folio/BottomNavigation.js'
 import { Code as FolioCode } from './folio/Code.js'
+import { Comments } from './folio/Comments.js'
 import { CtaButton } from './folio/CtaButton.js'
 import { PageViewCount } from './folio/PageViewCount.js'
 import { Popups } from './folio/Popups.js'
@@ -319,6 +320,13 @@ export function NotionPage({
         // 컨테이너가 렌더돼 본문을 밀어내고 넓은 화면에서 가로 스크롤을 만든다.
         // 레퍼런스 서비스에도 aside가 없다.
         pageAside={showTableOfContents ? pageAside : null}
+        // 댓글은 글(컬렉션 안의 페이지)에만 붙인다. 목록 페이지나 루트에 달리면
+        // 어느 글에 대한 이야기인지 흐려진다.
+        pageFooter={
+          pageId && isBlogPost && !isLiteMode && config.comments ? (
+            <Comments pageId={pageId} isDarkMode={isDarkMode} />
+          ) : null
+        }
         footer={footer}
       />
     </>

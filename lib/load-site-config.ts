@@ -64,7 +64,8 @@ export function loadSiteConfig(): ResolvedSiteConfig {
     SITE_DOMAIN: process.env.SITE_DOMAIN,
     VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL,
     VERCEL_URL: process.env.VERCEL_URL,
-    REDIS_ENABLED: process.env.REDIS_ENABLED
+    REDIS_ENABLED: process.env.REDIS_ENABLED,
+    SITE_NOINDEX: process.env.SITE_NOINDEX
   })
 
   return cached

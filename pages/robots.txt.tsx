@@ -22,7 +22,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   res.setHeader('Content-Type', 'text/plain')
 
   // only allow the site to be crawlable on the production deployment
-  res.write(buildRobotsTxt(config, { allowCrawling: isProductionDeployment() }))
+  // 사이트 전체 noindex를 켜 두면 프로덕션이어도 막는다 (새 도메인 미리 띄워 보기)
+  res.write(
+    buildRobotsTxt(config, {
+      allowCrawling: isProductionDeployment() && !config.noindex
+    })
+  )
   res.end()
 
   return {

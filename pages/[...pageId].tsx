@@ -1,14 +1,27 @@
+import { type ParsedUrlQuery } from 'node:querystring'
+
 import { NotionPage } from '@folionote/core'
-import { type PageProps, type Params } from '@folionote/core/config'
+import { type PageProps } from '@folionote/core/config'
 import { resolveNotionPage } from '@folionote/core/server'
 import { type GetStaticProps } from 'next'
 
 import { loadSiteConfig } from '@/lib/load-site-config'
 
-export const getStaticProps: GetStaticProps<PageProps, Params> = async (
+/**
+ * catch-all 라우트다. pretty URL이 `/books/1`처럼 여러 단계일 수 있어서다.
+ * 다른 서비스에서 옮겨 올 때 기존 주소를 그대로 지켜야 검색 순위가 유지되는데,
+ * 그 서비스들은 `/카테고리/번호` 꼴 주소를 흔히 쓴다. 한 단계짜리 주소와 Notion ID
+ * 주소도 그대로 여기로 들어온다.
+ */
+interface CatchAllParams extends ParsedUrlQuery {
+  pageId: string[]
+}
+
+export const getStaticProps: GetStaticProps<PageProps, CatchAllParams> = async (
   context
 ) => {
-  const rawPageId = context.params?.pageId as string
+  // pageUrlOverrides의 키와 같은 꼴(앞 슬래시 없이 `books/1`)로 맞춘다
+  const rawPageId = (context.params?.pageId ?? []).join('/')
   const config = loadSiteConfig()
 
   try {
@@ -31,7 +44,8 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
 }
 
 export async function getStaticPaths() {
-  // pretty URL로 노출한 페이지만 빌드 시 미리 만든다.
+  // pretty URL로 노출한 페이지만 빌드 시 미리 만든다. 기본은 pageUrlOverrides
+  // 전부이고, 매핑이 많으면 site.config.ts의 prebuildPaths로 줄인다.
   //
   // 이 페이지들은 보통 컬렉션(데이터베이스)이고, 렌더할 때 카드 커버마다 LQIP
   // 프리뷰를 만들기 때문에 한 장에 90초가 넘게 걸린다. fallback으로 요청 중에
@@ -40,8 +54,8 @@ export async function getStaticPaths() {
   // 나머지(글 상세)는 한 장씩이라 싸므로 계속 lazy SSG + ISR로 둔다.
   // 전체를 미리 만들면 수백 페이지를 동시에 요청해 Notion API 429를 맞는다.
   return {
-    paths: Object.keys(loadSiteConfig().pageUrlOverrides).map((uri) => ({
-      params: { pageId: uri.replace(/^\//, '') }
+    paths: loadSiteConfig().prebuildPaths.map((uri) => ({
+      params: { pageId: uri.split('/') }
     })),
     fallback: 'blocking'
   }
