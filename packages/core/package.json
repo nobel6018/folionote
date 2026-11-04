@@ -1,6 +1,6 @@
 {
   "name": "@folionote/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Notion 페이지를 사이트로 그리는 렌더러. Next.js Pages Router용 컴포넌트, 설정 해석기, Notion 읽기 계층.",
   "author": "nobel6018 <nobel6018@gmail.com>",
   "repository": {
