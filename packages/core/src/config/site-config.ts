@@ -270,7 +270,7 @@ export interface ScrollProgressBarConfig {
   color?: string
 }
 
-/** 맨 위로 버튼 (레퍼런스 서비스 어드민의 "페이지 맨 위로 버튼") */
+/** 글 하단 댓글 (@see packages/core/src/react/components/folio/Comments.tsx) */
 export interface CommentsConfig {
   utterances: {
     /** 댓글을 이슈로 저장할 공개 리포. `owner/repo` */
@@ -285,6 +285,7 @@ export interface CommentsConfig {
   }
 }
 
+/** 맨 위로 버튼 (레퍼런스 서비스 어드민의 "페이지 맨 위로 버튼") */
 export interface BackToTopConfig {
   enabled?: boolean
   /** 좌우 위치. 기본 `right` */
