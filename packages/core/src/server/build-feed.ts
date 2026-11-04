@@ -31,10 +31,10 @@ export function buildFeedXml(
   const feed = new RSS({
     title: config.name,
     site_url: config.host,
-    // 자기 자신을 가리키는 주소. 실제 라우트는 /feed/ 다 (trailingSlash: true).
+    // 자기 자신을 가리키는 주소. 실제 라우트는 /feed 다 (trailingSlash: false).
     // /feed.xml로 적어놨는데 그건 rewrite로 넘어오는 별칭일 뿐이라, 리더가
     // 정규 주소로 기억하는 값은 실제 경로여야 한다.
-    feed_url: `${config.host}/feed/`,
+    feed_url: `${config.host}/feed`,
     language: config.language,
     ttl: ttlMinutes
   })

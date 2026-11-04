@@ -29,9 +29,13 @@ export default withBundleAnalyzer({
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
   },
-  trailingSlash: true,
+  // 주소 끝에 슬래시를 붙이지 않는다. canonical, og:url, 사이트맵, 내부 링크가 모두
+  // 슬래시 없는 주소를 내보내는데 true로 두면 그 주소마다 308이 한 번씩 끼어,
+  // 검색엔진이 "대표 주소가 리다이렉트된다"는 엇갈린 신호를 받는다. 예전에 슬래시를
+  // 붙여 공유된 주소는 Next가 슬래시 없는 쪽으로 308 보낸다.
+  trailingSlash: false,
 
-  // RSS는 pages/feed.tsx가 그리므로 실제 경로가 /feed/ 하나뿐이다. 그런데 관행상
+  // RSS는 pages/feed.tsx가 그리므로 실제 경로가 /feed 하나뿐이다. 그런데 관행상
   // /feed.xml과 /rss.xml을 먼저 찾는 리더가 많고, 그 경로가 [pageId] 라우트에
   // 잡혀서 HTML 페이지를 200으로 돌려주고 있었다(피드가 아닌데 성공으로 보인다).
   // 같은 핸들러로 넘긴다.

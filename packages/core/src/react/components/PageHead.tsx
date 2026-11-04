@@ -27,6 +27,8 @@ export function PageHead({
   noindex?: boolean
 }) {
   const config = useOptionalSiteConfig()
+  // 사이트 전체 noindex가 켜져 있으면 페이지 설정과 무관하게 숨긴다
+  noindex = noindex || !!config?.noindex
   const rssFeedUrl = config ? `${config.host}/feed` : null
 
   title = title ?? site?.name

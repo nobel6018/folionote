@@ -39,6 +39,9 @@ const KNOWN_ORDER: Array<keyof SiteConfig> = [
   'includeNotionIdInUrls',
   'pageUrlOverrides',
   'pageUrlAdditions',
+  'prebuildPaths',
+  'noindex',
+  'comments',
   'dateFormat',
   'colorTheme',
   'font',
@@ -70,6 +73,11 @@ const COMMENTS: Partial<Record<keyof SiteConfig, string>> = {
     'Redis 캐시. 켜면 REDIS_HOST / REDIS_PASSWORD 환경변수가 필요하다.\n페이지뷰 카운트도 이 값이 켜져 있어야 동작한다.',
   pageUrlOverrides:
     'pretty URL 매핑. 키가 경로, 값이 Notion 블록 ID(하이픈 없는 32자 hex).\nnavigationLinks에서 url로 참조하는 경로는 여기에도 반드시 있어야 한다.',
+  prebuildPaths:
+    '빌드 때 미리 만들 pretty URL. 생략하면 pageUrlOverrides 전부.\n매핑이 수백 개면 렌더가 느린 컬렉션만 적어 Notion 429를 피한다.',
+  noindex:
+    '사이트 전체를 검색엔진에서 숨긴다. 새 도메인에서 미리 띄워 볼 때 쓴다.\n환경변수 SITE_NOINDEX=true로도 켤 수 있다.',
+  comments: '글 하단 댓글 (utterances)',
   dateFormat: '컬렉션 카드/속성의 날짜 형식',
   colorTheme:
     "색상 테마. 'system'은 OS 설정을 따르고 헤더에 토글을 노출한다.\n'light'/'dark'로 고정하거나 'custom'으로 색을 직접 지정하면 토글이 사라진다.",

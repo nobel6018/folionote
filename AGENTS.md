@@ -196,7 +196,7 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
   안내 화면으로 처리된다. 빌드 때 전체 페이지를 한꺼번에 SSG하지 않는 이유가 이것이다.
   본문 페이지는 `fallback: 'blocking'` 지연 SSG다.
 - ISR 주기는 600초, 오류 화면 상태에서는 30초다(`pages/index.tsx`,
-  `pages/[pageId].tsx`). "Notion에서 고쳤는데 사이트가 그대로"는 대부분 이 주기 문제다.
+  `pages/[...pageId].tsx`). "Notion에서 고쳤는데 사이트가 그대로"는 대부분 이 주기 문제다.
 - 모바일에서 `input`, `select`, `textarea`의 폰트를 16px 미만으로 두지 않는다. iOS
   Safari가 포커스할 때 화면을 확대하고 스스로 돌아오지 않는다. 데스크탑에서는 더 작게
   써도 된다.

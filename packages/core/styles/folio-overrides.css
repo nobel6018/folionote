@@ -1196,3 +1196,18 @@ svg.notion-page-icon {
 .notion-asset-wrapper-image img {
   border-radius: var(--folio-radius-md);
 }
+
+/*
+ * 글 하단 댓글 (@see packages/core/src/react/components/folio/Comments.tsx).
+ * utterances iframe은 자체 최대 폭(760px)이 있어 본문 폭에 맞춰 늘린다.
+ */
+.folio-comments {
+  width: 100%;
+  margin-top: 3em;
+  padding-top: 1.5em;
+  border-top: 1px solid var(--fg-color-0);
+}
+
+.folio-comments .utterances {
+  max-width: 100%;
+}

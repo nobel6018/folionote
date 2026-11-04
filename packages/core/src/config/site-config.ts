@@ -37,6 +37,26 @@ export interface SiteConfig {
   includeNotionIdInUrls?: boolean
   pageUrlOverrides?: types.PageUrlOverridesMap | null
   pageUrlAdditions?: types.PageUrlOverridesMap | null
+  /**
+   * 빌드할 때 미리 만들 pretty URL 경로. 생략하면 `pageUrlOverrides` 전부다.
+   *
+   * 다른 서비스에서 옮겨 오며 글마다 주소를 매핑하면 수백 개가 되는데, 그걸 전부
+   * 빌드 때 만들면 Notion API가 429를 낸다. 여기에는 렌더가 느린 컬렉션 페이지만
+   * 적고, 나머지는 첫 요청 때 만들게 둔다 (@see pages/[...pageId].tsx).
+   */
+  prebuildPaths?: string[] | null
+
+  /**
+   * 사이트 전체를 검색엔진에서 숨긴다. 환경변수 `SITE_NOINDEX=true`로도 켤 수 있다.
+   *
+   * 기존 사이트를 두고 새 도메인에서 미리 띄워 볼 때 쓴다. 켜 두면 robots.txt가
+   * 전부 막고 모든 페이지에 `noindex`가 붙는다. 같은 글이 두 도메인에서 동시에
+   * 수집되는 중복 콘텐츠를 막는다.
+   */
+  noindex?: boolean
+
+  /** 글 하단 댓글. 지금은 utterances(GitHub 이슈 기반)만 지원한다 */
+  comments?: CommentsConfig | null
 
   navigationStyle?: types.NavigationStyle
   navigationLinks?: Array<NavigationLink>
@@ -251,6 +271,20 @@ export interface ScrollProgressBarConfig {
 }
 
 /** 맨 위로 버튼 (레퍼런스 서비스 어드민의 "페이지 맨 위로 버튼") */
+export interface CommentsConfig {
+  utterances: {
+    /** 댓글을 이슈로 저장할 공개 리포. `owner/repo` */
+    repo: string
+    /**
+     * 글과 이슈를 잇는 기준. 기본 `pathname`.
+     * 다른 서비스에서 같은 경로로 옮겨 왔다면 기존 댓글이 그대로 이어진다.
+     */
+    issueTerm?: 'pathname' | 'url' | 'title' | 'og:title'
+    /** 새 이슈에 붙일 라벨 */
+    label?: string
+  }
+}
+
 export interface BackToTopConfig {
   enabled?: boolean
   /** 좌우 위치. 기본 `right` */

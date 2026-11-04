@@ -25,6 +25,7 @@ import {
   type BottomNavigationConfig,
   type BottomNavigationLink,
   type ColorTheme,
+  type CommentsConfig,
   type CtaConfig,
   type CustomCodeConfig,
   type FontConfig,
@@ -60,6 +61,8 @@ export interface ResolveEnv {
   VERCEL_URL?: string
 
   REDIS_ENABLED?: string
+  /** `true`나 `1`이면 사이트 전체에 noindex를 건다 */
+  SITE_NOINDEX?: string
 
   /** 넘기지 않으면 NODE_ENV로 판정한다 */
   isDev?: boolean
@@ -106,6 +109,11 @@ export interface ResolvedSiteConfig {
   pageUrlOverrides: PageUrlOverridesMap
   pageUrlAdditions: PageUrlOverridesMap
   inversePageUrlOverrides: PageUrlOverridesInverseMap
+  /** 빌드 때 미리 만들 경로. 앞 슬래시 없이 `books/1` 꼴 */
+  prebuildPaths: string[]
+  /** 사이트 전체 noindex */
+  noindex: boolean
+  comments: CommentsConfig | null
 
   // --- 실행 환경
   environment: string
@@ -285,6 +293,48 @@ function cleanPageUrlMap(
       [path]: uuid
     }
   }, {})
+}
+
+function resolvePrebuildPaths(
+  prebuildPaths: string[] | null,
+  pageUrlOverrides: PageUrlOverridesMap
+): string[] {
+  if (!prebuildPaths) {
+    return Object.keys(pageUrlOverrides)
+  }
+
+  return prebuildPaths.map((uri) => {
+    const path = uri.replace(/^\/+/, '')
+    if (!pageUrlOverrides[path]) {
+      throw new Error(
+        `Invalid prebuildPaths value "${uri}": pageUrlOverrides에 없는 경로입니다`
+      )
+    }
+    return path
+  })
+}
+
+function resolveComments(
+  comments: CommentsConfig | null
+): CommentsConfig | null {
+  const repo = comments?.utterances?.repo?.trim()
+  if (!repo) {
+    return null
+  }
+
+  if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) {
+    throw new Error(
+      `Invalid comments.utterances.repo "${repo}": "owner/repo" 형식이어야 합니다`
+    )
+  }
+
+  return {
+    utterances: stripUndefined({
+      repo,
+      issueTerm: comments!.utterances.issueTerm ?? 'pathname',
+      label: comments!.utterances.label
+    })
+  }
 }
 
 function invertPageUrlOverrides(
@@ -486,6 +536,13 @@ export function resolveSiteConfig(
     pageUrlOverrides,
     pageUrlAdditions,
     inversePageUrlOverrides: invertPageUrlOverrides(pageUrlOverrides),
+    prebuildPaths: resolvePrebuildPaths(
+      pick(input.prebuildPaths, null),
+      pageUrlOverrides
+    ),
+    noindex:
+      pick(input.noindex, false) || /^(true|1)$/i.test(env.SITE_NOINDEX ?? ''),
+    comments: resolveComments(pick(input.comments, null)),
 
     environment,
     isDev,
