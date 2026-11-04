@@ -3,6 +3,7 @@ import { parsePageId } from 'notion-utils'
 
 import type { PageProps } from '../types.js'
 import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
+import { normalizeRecordMap } from '../shared/normalize-record-map.js'
 import { classifyNotionError } from '../shared/notion-errors.js'
 import * as acl from './acl.js'
 import { getDb } from './db.js'
@@ -133,6 +134,9 @@ export async function resolveNotionPage(
     }
     recordMap = result.recordMap
   }
+
+  // 서버와 브라우저가 같은 모양을 그리도록 렌더 전에 고친다 (hydration #418)
+  normalizeRecordMap(recordMap)
 
   const props: PageProps = { config, site, recordMap, pageId }
   return { ...props, ...(await acl.pageAcl(props)) }
