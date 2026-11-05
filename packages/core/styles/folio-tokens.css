@@ -25,6 +25,10 @@
   --folio-page-max-width: 900px;      /* 페이지 컨테이너 최대 폭 */
   --folio-page-cover-height: 30vh;    /* 페이지 상단 커버 높이 */
   --folio-page-content-padding-bottom: 10vh;
+  /* 본문 좌우 여백. 레퍼런스 서비스 실측: 481px 이상은 Notion과 같은 96px, 이하는 24px.
+   * 넓은 화면에서는 본문이 708px에서 멈추고 가운데 정렬되므로 이 값이 보이지 않고,
+   * 481~900px 구간에서 본문이 화면 끝까지 붙지 않게 하는 역할이다. */
+  --folio-page-gutter: 96px;
 
   /* 사이트 헤더 2행 구조 (레퍼런스 서비스 실측: nav 48px + 브레드크럼 40px) */
   --folio-nav-row-height: 48px;
@@ -37,7 +41,7 @@
    * border-box에 좌우 패딩을 가지므로 "본문 폭 + 거터"를 넣어야 안쪽이
    * --folio-content-max-width(708px)로 떨어진다. 본문 폭만 넣으면 32px 좁아진다. */
   --notion-max-width: calc(
-    var(--folio-content-max-width) + 2 * var(--folio-space-3)
+    var(--folio-content-max-width) + 2 * var(--folio-page-gutter)
   );
   /* 본문 min-height 계산(100vh - 헤더)에 쓰이므로 두 행 합계로 맞춘다 */
   --notion-header-height: calc(
@@ -62,6 +66,9 @@
   --folio-font-size-base: 16px;
   --folio-font-size-h1: 40px;         /* page title (= --page-header-font-size) */
   --folio-page-header-font-size: var(--folio-font-size-h1);
+  /* 본문 heading 2, 3 (레퍼런스 서비스 실측, 모바일 값은 아래 480px 블록) */
+  --folio-font-size-h2: 24px;
+  --folio-font-size-h3: 20px;
   --folio-line-height-tight: 1.3;
   /* 레퍼런스 서비스 실측: 본문 16px에 줄높이 24px = 1.5 */
   --folio-line-height-normal: 1.5;
@@ -99,7 +106,9 @@
   --folio-card-shadow: var(--folio-card-ring), 0 2px 4px rgba(15, 15, 15, 0.1);
   --folio-card-shadow-hover: var(--folio-card-ring), 0 4px 8px rgba(15, 15, 15, 0.14);
   --folio-card-cover-aspect: 16 / 9;
-  --folio-card-min-width: 280px;      /* 이 폭 미만이면 1열로 떨어짐 */
+  /* 이 폭 미만이면 1열로 떨어짐. 레퍼런스 서비스와 Notion 기본(중간 크기) 실측 260px.
+   * 280px이면 전체 페이지 DB(1088px)가 4열이 아니라 3열이 된다. 708px 본문은 둘 다 2열 */
+  --folio-card-min-width: 260px;
   --folio-card-gap: 16px;
   --folio-card-body-padding: 8px 10px 6px;
   --folio-card-title-font-size: 14px;
@@ -179,9 +188,19 @@
 /* ── Mobile overrides (레퍼런스 서비스는 480px / 780px 두 단계만 사용) ────── */
 @media (max-width: 780px) {
   :root {
+    --folio-page-content-padding-bottom: 56px;
+  }
+}
+
+/* 본문 크기는 480px에서 바뀐다. 레퍼런스 서비스를 360~900px 구간에서 실측하면 제목, 커버,
+ * 여백, heading 크기가 모두 480/481px 사이에서 한 번에 바뀌고 780px에서는 그대로다. */
+@media (max-width: 480px) {
+  :root {
+    --folio-page-gutter: 24px;
     --folio-page-header-font-size: 32px;
     --folio-page-cover-height: 200px;
-    --folio-page-content-padding-bottom: 56px;
+    --folio-font-size-h2: 20px;
+    --folio-font-size-h3: 18.72px;
   }
 }
 
