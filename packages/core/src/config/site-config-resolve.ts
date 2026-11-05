@@ -111,6 +111,7 @@ export interface ResolvedSiteConfig {
   inversePageUrlOverrides: PageUrlOverridesInverseMap
   /** 빌드 때 미리 만들 경로. 앞 슬래시 없이 `books/1` 꼴 */
   prebuildPaths: string[]
+  strictPaths: boolean
   /** 사이트 전체 noindex */
   noindex: boolean
   comments: CommentsConfig | null
@@ -536,6 +537,7 @@ export function resolveSiteConfig(
     pageUrlOverrides,
     pageUrlAdditions,
     inversePageUrlOverrides: invertPageUrlOverrides(pageUrlOverrides),
+    strictPaths: pick(input.strictPaths, false) as boolean,
     prebuildPaths: resolvePrebuildPaths(
       pick(input.prebuildPaths, null),
       pageUrlOverrides

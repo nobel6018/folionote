@@ -45,6 +45,17 @@ export interface SiteConfig {
    * 적고, 나머지는 첫 요청 때 만들게 둔다 (@see pages/[...pageId].tsx).
    */
   prebuildPaths?: string[] | null
+  /**
+   * `pageUrlOverrides`(와 `pageUrlAdditions`)에 없는 주소를 크롤 없이 바로 404로 돌린다.
+   *
+   * 끄면 목록에 없는 주소가 올 때마다 그게 어느 페이지 제목 slug인지 찾으려고
+   * 사이트 전체를 Notion에서 읽는다. 페이지가 수백 개면 Notion 429에 걸려 100초를
+   * 넘기고, 봇이 없는 주소를 연달아 두드리면 크롤이 겹쳐 정상 글까지 요청 제한
+   * 화면이 된다. 켜면 목록에 없는 페이지는 Notion ID 주소(`/<32자 ID>`)로 링크되고,
+   * 사이트맵도 크롤 없이 목록만으로 만든다. 다른 서비스에서 주소를 옮겨 와 목록이
+   * 이미 있는 사이트에 맞다.
+   */
+  strictPaths?: boolean
 
   /**
    * 사이트 전체를 검색엔진에서 숨긴다. 환경변수 `SITE_NOINDEX=true`로도 켤 수 있다.

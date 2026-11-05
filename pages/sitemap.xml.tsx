@@ -49,6 +49,13 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: {} }
   }
 
+  // 엄격 모드는 pageUrlOverrides가 공개 주소의 전부라 크롤할 이유가 없다
+  if (config.strictPaths) {
+    res.write(buildFallbackSitemapXml(config))
+    res.end()
+    return { props: {} }
+  }
+
   // 2) fresh fetch. getSiteMap은 메모이즈돼 있어 같은 인스턴스에서 겹친 요청은
   //    크롤 하나를 함께 기다린다.
   const crawl = getSiteMap(config).then((siteMap) => {
