@@ -20,6 +20,10 @@ export function getCanonicalPageId(
   const override = config.inversePageUrlOverrides[cleanPageId]
   if (override) {
     return override
+  } else if (config.strictPaths) {
+    // 엄격 모드는 제목 slug 주소를 받지 않는다(@see SiteConfig.strictPaths). 링크도
+    // ID 주소로 만들어야 목록에 없는 하위 페이지로 가는 링크가 404가 되지 않는다.
+    return cleanPageId
   } else {
     return (
       getCanonicalPageIdImpl(pageId, recordMap, {

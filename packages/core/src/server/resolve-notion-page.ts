@@ -87,6 +87,14 @@ export async function resolveNotionPage(
       }
       recordMap = result.recordMap
     } else {
+      // 엄격 모드는 목록에 없는 주소를 크롤 없이 404로 끝낸다 (@see SiteConfig.strictPaths)
+      if (config.strictPaths) {
+        return {
+          config,
+          error: { message: `Not found "${rawPageId}"`, statusCode: 404 }
+        }
+      }
+
       // handle mapping of user-friendly canonical page paths to Notion page IDs
       // e.g., /developer-x-entrepreneur versus /71201624b204481f862630ea25ce62fe
       const siteMap = await getSiteMap(config, deps)
