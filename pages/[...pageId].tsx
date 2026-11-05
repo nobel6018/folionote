@@ -27,6 +27,14 @@ export const getStaticProps: GetStaticProps<PageProps, CatchAllParams> = async (
   try {
     const props = await resolveNotionPage(config, rawPageId)
 
+    // 없는 주소와 비공개 하위 페이지는 진짜 404로 돌려준다. 안내 화면을 props로
+    // 그리면 상태 코드가 200이라, 검색엔진이 오류 화면을 정상 페이지로 색인한다
+    // (soft 404). 화면은 pages/404.tsx가 그린다. 루트 페이지(pages/index.tsx)는
+    // 셋업 중 "Notion 미공개" 안내가 필요해서 그대로 둔다.
+    if (props.error?.statusCode === 404) {
+      return { notFound: true, revalidate: 30 }
+    }
+
     return {
       props,
       // ISR: 10분마다 backend 재검증. 빌드 시 152개 페이지 동시 SSG → Notion API 429

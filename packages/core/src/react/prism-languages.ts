@@ -40,9 +40,11 @@ import 'prismjs/components/prism-yaml'
 /**
  * 언어가 등록된 Prism.
  *
- * `import './prism-languages'`처럼 부수 효과만 노리는 import는 쓰지 않는다.
- * package.json의 `sideEffects`가 CSS만 부수 효과로 선언하고 있어서, 바인딩 없는
- * import는 번들러가 통째로 지운다. 값을 가져다 쓰면 지워지지 않는다.
+ * 이 파일은 package.json `sideEffects`에 이름을 올려 두어야 한다. 빠지면 번들러가
+ * 이 파일을 "부수 효과 없는 중계"로 보고, `Prism`을 가져가는 쪽을 `prismjs`로
+ * 곧장 이어 버린다. 그러면 위의 언어 import가 한 번도 실행되지 않아 모든 코드 블록이
+ * 강조 없이 나간다. 값을 꺼내 쓰는 것만으로는 막히지 않았다(프로덕션 빌드에서
+ * `.token`이 0개였다).
  *
  * 파일 맨 위의 `import 'prismjs'`가 평가 순서를 잡아 두므로, 여기서 다시 꺼내 써도
  * 언어 파일보다 core가 먼저 돈다.

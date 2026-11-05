@@ -13,7 +13,8 @@
  * `padding: 1em`을 걸어 두는데 같은 1-class 특이도라 로드 순서에 따라 진다. */
 .container.container {
   position: relative;
-  margin: var(--folio-space-3) 0;
+  /* 레퍼런스 서비스 실측: 코드 블록 위아래 4px (Notion 기본) */
+  margin: var(--folio-space-1) 0;
   padding: 0;
   background-color: var(--folio-code-bg);
   border-radius: var(--folio-radius-sm);
