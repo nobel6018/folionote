@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/react/prism-languages.js"
   ],
   "files": [
     "dist",

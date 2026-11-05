@@ -111,7 +111,9 @@ cd folionote && pnpm install
 미공개 상태여도 빌드는 실패하지 않는다. `lib/notion-errors.ts`가 실패를 종류별로 갈라
 안내 화면으로 렌더한다(`components/Page404.tsx`). 그래서 판별이 쉽다. 사이트가 떴는데
 "Notion 페이지가 공개되지 않았습니다"(영문 사이트는 "This Notion page is not
-published")가 보이면 코드나 배포 문제가 아니라 Notion 게시 문제다.
+published")가 보이면 코드나 배포 문제가 아니라 Notion 게시 문제다. 이 안내 화면은 루트
+페이지에서만 나온다. 하위 경로는 없는 주소와 미공개 페이지 모두 HTTP 404(`pages/404.tsx`)를
+돌려준다. 200으로 안내 화면을 그리면 검색엔진이 오류 화면을 정상 페이지로 색인하기 때문이다.
 
 확인: 배포 후 `curl -s https://<배포URL> | grep -c '공개되지 않았습니다'`가 0이면 통과다.
 로컬이면 `PORT=3010 pnpm dev` 후 같은 방법으로 본다. 이 화면이 뜨는 동안 ISR 주기는

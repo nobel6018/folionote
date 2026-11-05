@@ -217,6 +217,32 @@
   font-size: 14px;
 }
 
+/* 좁은 화면에서 경로가 한 줄에 들어오도록 항목마다 말줄임한다. 레퍼런스 서비스 실측:
+ * 상위 항목 제목 최대 160px, 현재 페이지 240px, 자리가 모자라면 모두 함께 줄어든다.
+ * 그동안은 현재 페이지 항목이 줄지 않아 모바일에서 경로 행이 592px로 넘쳤다. */
+.folio-breadcrumb-row .breadcrumb {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.folio-breadcrumb-row .breadcrumb .title {
+  min-width: 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folio-breadcrumb-row .breadcrumb.active .title {
+  max-width: 240px;
+}
+
+.folio-breadcrumb-row .spacer,
+.folio-breadcrumb-row .breadcrumb .notion-page-icon-inline {
+  /* 줄어드는 건 제목 글자뿐이다. 아이콘까지 줄면 이미지 아이콘이 막대처럼 눌린다 */
+  flex-shrink: 0;
+}
+
 /* 인라인 페이지 아이콘이 정사각 박스를 채우게 한다.
  *
  * react-notion-x는 .notion-page-icon-inline을 22x22로 잡고 안의 img를
@@ -326,6 +352,18 @@
   margin-left: var(--folio-page-gutter);
 }
 
+/* 커버와 이모지 아이콘이 있는 글의 제목 위치. react-notion-x는 64px 하나인데
+ * 레퍼런스 서비스 실측은 커버 아래에서 제목까지 481px 이상 72px, 480px 이하 56px이다. */
+.notion-page-has-cover.notion-page-has-icon.notion-page-has-text-icon {
+  padding-top: 72px;
+}
+
+@media (max-width: 480px) {
+  .notion-page-has-cover.notion-page-has-icon.notion-page-has-text-icon {
+    padding-top: 56px;
+  }
+}
+
 /* react-notion-x가 페이지 아이콘에 여러 셀렉터로 border-radius를 부여하므로
  * 해당 셀렉터를 모두 덮어 사각형(4px)으로 맞춘다. */
 .notion-page-icon-hero,
@@ -427,17 +465,19 @@ svg.notion-page-icon {
   margin-top: var(--folio-space-5);
   margin-bottom: var(--folio-space-3);
 }
+/* 위아래 여백은 레퍼런스 서비스 실측(Notion 기본과 같다): h2 22.4px/1px, h3 16px/1px.
+ * 아래 여백을 8px로 두면 제목과 첫 문단 사이가 7px 더 벌어진다. */
 .notion-h2 {
   font-size: var(--folio-font-size-h2);
   font-weight: 600;
-  margin-top: var(--folio-space-4);
-  margin-bottom: var(--folio-space-2);
+  margin-top: 22.4px;
+  margin-bottom: 1px;
 }
 .notion-h3 {
   font-size: var(--folio-font-size-h3);
   font-weight: 600;
   margin-top: var(--folio-space-3);
-  margin-bottom: var(--folio-space-2);
+  margin-bottom: 1px;
 }
 
 /* ── 표 ─────────────────────────────────────────────────── */
@@ -446,6 +486,21 @@ svg.notion-page-icon {
 .notion-simple-table {
   font-size: 16px;
   border-color: var(--folio-table-border);
+  /* 본문보다 넓은 표는 표 안에서만 가로로 스크롤한다. table 그대로 두면 넘친 폭이
+   * 페이지 전체를 밀어서 모바일에서 화면이 옆으로 흔들렸다(390px에서 문서 폭 573px).
+   * display: block이어도 안쪽 tbody가 익명 table 상자를 만들어 표 배치는 유지된다. */
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Notion에 저장된 열 너비를 지킨다. react-notion-x가 td에 인라인으로 width를 넣지만,
+ * 자동 표 배치에서 td width는 최소값이 아니라 희망값이라 공간이 모자라면 무시된다.
+ * 모바일에서 첫 열이 한 글자 폭으로 눌려 "연결 방식"이 세로로 한 글자씩 쓰였다.
+ * 안쪽 div가 td의 너비를 물려받으면 칸이 그보다 좁아지지 못하고, 넘치는 만큼은
+ * 위의 가로 스크롤로 간다. 레퍼런스 서비스와 Notion이 같은 방식으로 보인다. */
+.notion-simple-table td > .notion-simple-table-cell {
+  width: inherit;
 }
 
 /* 칸 안쪽 여백을 왼쪽만 준다.
@@ -477,7 +532,10 @@ svg.notion-page-icon {
 }
 
 /* ── 본문 텍스트 ──────────────────────────────────────── */
+/* 문단 안쪽 여백은 Notion과 레퍼런스 서비스 실측 3px. 베이스였던 starter-kit이 0.5em(8px)을
+ * 걸어 두어서 문단마다 10px씩 벌어졌고, 같은 글이 레퍼런스 서비스보다 5~9% 길었다. */
 .notion-text {
+  padding: 3px 2px;
   line-height: var(--folio-line-height-normal);
 }
 
@@ -487,6 +545,8 @@ svg.notion-page-icon {
  * 색은 블록 색상 클래스(.notion-*_background_co)가 입히므로 여기서 배경을
  * 지정하지 않는다. 색이 없는 콜아웃만 기본 회색으로 채운다. */
 .notion-callout {
+  /* 레퍼런스 서비스 실측 위아래 4px. starter-kit이 남긴 0.75em(12px)을 덮는다 */
+  margin: var(--folio-space-1) 0;
   display: flex;
   gap: var(--folio-space-2);
   align-items: flex-start;
@@ -521,18 +581,29 @@ svg.notion-page-icon {
 .notion-bookmark:hover {
   background-color: var(--folio-surface-muted);
 }
+/* 레퍼런스 서비스 실측: 제목 17px/500, 주소 13px 본문색. 480px 이하에서는 20px, 16px로
+ * 오히려 커진다(카드가 화면 폭을 다 쓰는 만큼 글자를 키운다). */
 .notion-bookmark-title {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 17px;
 }
 .notion-bookmark-description {
   font-size: 12px;
   color: var(--folio-text-muted);
 }
 .notion-bookmark-link-text {
-  font-size: 12px;
-  color: var(--folio-text-subtle);
+  font-size: 13px;
+  color: var(--folio-text);
   letter-spacing: var(--folio-letter-spacing-tight);
+}
+
+@media (max-width: 480px) {
+  .notion-bookmark-title {
+    font-size: 20px;
+  }
+  .notion-bookmark-link-text {
+    font-size: 16px;
+  }
 }
 
 /* ── Code block ─────────────────────────────────────────── */
@@ -1249,6 +1320,13 @@ svg.notion-page-icon {
 }
 .notion-gallery-grid .notion-collection-card-property:not(:first-child) {
   margin-top: var(--folio-space-1);
+}
+
+/* 카드의 태그는 한 줄로 두고 넘치는 칩은 자른다. 레퍼런스 서비스 실측: nowrap + hidden.
+ * 줄을 바꾸면 태그 많은 카드만 길어져 한 행의 카드 높이가 들쭉날쭉해진다. */
+.notion-gallery-grid .notion-property-multi_select {
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 /* 태그 칩: 18px 높이 pill. 배경색은 Notion이 인라인으로 넣어준다 */

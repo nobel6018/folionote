@@ -4,6 +4,7 @@ import {
   buildSitemapXml,
   getSiteMap
 } from '@folionote/core/server'
+import { waitUntil } from '@vercel/functions'
 
 import { loadSiteConfig } from '@/lib/load-site-config'
 
@@ -12,6 +13,14 @@ import { loadSiteConfig } from '@/lib/load-site-config'
 let cachedXml: string | null = null
 let cachedAt = 0
 const CACHE_TTL_MS = 8 * 60 * 60 * 1000 // 8h
+
+/**
+ * 크롤을 기다리는 최대 시간. 캐시가 빈 첫 요청은 사이트 전체를 Notion에서 읽느라
+ * 오래 걸린다(note.leedo.me 207페이지 실측 93초). 검색엔진은 그동안 기다려 주지 않으므로,
+ * 이 시간이 지나면 pageUrlOverrides로 만든 사이트맵을 먼저 주고 크롤은 응답 뒤에
+ * 마저 돌려 메모리 캐시를 채운다.
+ */
+const CRAWL_WAIT_MS = 8000
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const config = loadSiteConfig()
@@ -40,17 +49,37 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: {} }
   }
 
-  // 2) fresh fetch
-  try {
-    const siteMap = await getSiteMap(config)
+  // 2) fresh fetch. getSiteMap은 메모이즈돼 있어 같은 인스턴스에서 겹친 요청은
+  //    크롤 하나를 함께 기다린다.
+  const crawl = getSiteMap(config).then((siteMap) => {
     cachedXml = buildSitemapXml(config, siteMap)
     cachedAt = Date.now()
-    res.write(cachedXml)
+    return cachedXml
+  })
+
+  try {
+    const xml = await Promise.race([
+      crawl,
+      new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), CRAWL_WAIT_MS)
+      )
+    ])
+
+    if (xml) {
+      res.write(xml)
+    } else {
+      // 크롤이 아직 안 끝났다. 응답이 끝나도 함수가 크롤을 마치도록 붙잡아 둔다.
+      // 예비 사이트맵은 CDN에 오래 남지 않게 짧게 캐시한다.
+      waitUntil(crawl.catch((err) => console.error('sitemap crawl error', err)))
+      res.setHeader('Cache-Control', 'public, max-age=300')
+      res.write(buildFallbackSitemapXml(config))
+    }
   } catch (err) {
-    // getSiteMap이 Notion API rate limit 등으로 실패하면 minimal sitemap fallback.
-    // 500 대신 valid XML 응답해서 search engine에 root만이라도 노출. cache는 안 함
-    // (다음 요청에 다시 시도해서 full sitemap 만들 기회 줌).
+    // getSiteMap이 Notion API rate limit 등으로 실패하면 예비 사이트맵을 준다.
+    // 500 대신 유효한 XML이라 검색엔진이 pageUrlOverrides의 주소는 가져간다.
+    // 캐시는 안 함 (다음 요청에 다시 시도해서 전체 사이트맵을 만들 기회를 준다).
     console.error('sitemap error', err)
+    res.setHeader('Cache-Control', 'public, max-age=300')
     res.write(buildFallbackSitemapXml(config))
   }
 

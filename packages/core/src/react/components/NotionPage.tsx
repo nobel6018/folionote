@@ -7,7 +7,8 @@ import {
   formatDate,
   getBlockTitle,
   getBlockValue,
-  getPageProperty
+  getPageProperty,
+  parsePageId
 } from 'notion-utils'
 import * as React from 'react'
 import BodyClassName from 'react-body-classname'
@@ -21,6 +22,7 @@ import { useSearchParam } from 'react-use'
 
 import type * as types from '../../types.js'
 import { formatNotionDate } from '../../shared/format-date.js'
+import { getPageExcerpt } from '../../shared/get-page-excerpt.js'
 import { createMapImageUrl } from '../../shared/map-image-url.js'
 import { getCanonicalPageUrl, mapPageUrl } from '../../shared/map-page-url.js'
 import { getPageMetaOverride } from '../../shared/page-meta.js'
@@ -259,9 +261,16 @@ export function NotionPage({
       block
     )
 
+  const isRootPage =
+    parsePageId(pageId, { uuid: false }) ===
+    parsePageId(site.rootNotionPageId, { uuid: false })
+
+  // 설명 속성이 없는 글은 본문 앞부분으로 채운다. 사이트 설명은 홈처럼 본문이
+  // 비어 있을 때만 쓴다 (@see shared/get-page-excerpt.ts)
   const socialDescription =
     metaOverride?.description ||
     getPageProperty<string>('Description', block, recordMap) ||
+    (isRootPage ? undefined : getPageExcerpt(block, recordMap)) ||
     config.description
 
   return (
