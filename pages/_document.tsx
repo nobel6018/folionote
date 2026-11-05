@@ -37,7 +37,7 @@ export default class MyDocument extends Document {
               rel='icon'
               type='image/png'
               sizes='32x32'
-              href='favicon.png'
+              href='/favicon.png'
             />
 
             <link rel='manifest' href='/manifest.json' />

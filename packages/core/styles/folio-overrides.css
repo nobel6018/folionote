@@ -95,6 +95,22 @@
   color: inherit;
 }
 
+/* 헤더 도구 아이콘(검색, 메뉴 등). 레퍼런스 서비스 실측 20px. react-notion-x 기본은 14px라
+ * 모바일에서 아이콘이 작아 보인다. */
+.notion-header .notion-nav-header-rhs .button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 터치 기기에서 도구 버튼을 44px 이상으로 잡는다. nav 행이 48px이라 들어간다. */
+@media (hover: none), (max-width: 640px) {
+  .notion-header .notion-nav-header-rhs .button {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
 .folio-menu-backdrop {
   position: fixed;
   inset: 0;
@@ -226,6 +242,13 @@
   max-height: 18px;
 }
 
+/* 이모지 아이콘은 글자라 박스를 줄여도 글리프가 그대로다. react-notion-x가 1.1em(19.8px)을
+ * 주므로 18px 박스 밖으로 넘쳐 이미지 아이콘보다 커 보이고 옆 글자를 민다. */
+.notion-header .breadcrumb .notion-page-icon-inline span.notion-page-icon {
+  font-size: 15px;
+  line-height: 18px;
+}
+
 /* 현재 페이지 크럼도 링크라 나머지와 똑같이 반응해야 한다.
  * react-notion-x는 .active를 클릭 대상이 아니라고 보고 cursor: default를 주고
  * hover 배경에서 제외한다(`:not(.active):hover`). 링크로 렌더된 경우에만
@@ -245,8 +268,8 @@
  * (folio-tokens.css 참고) 여기서는 거터와 하단 여백만 맡는다. */
 .notion-page {
   margin: 0 auto;
-  padding-left: var(--folio-space-3);
-  padding-right: var(--folio-space-3);
+  padding-left: var(--folio-page-gutter);
+  padding-right: var(--folio-page-gutter);
   padding-bottom: var(--folio-page-content-padding-bottom);
 }
 
@@ -268,20 +291,39 @@
   margin-right: calc(50% - 50vw);
 }
 
+/* 커버 높이를 토큰으로 받는다. react-notion-x가 같은 셀렉터에 30vh를 !important로
+ * 박아 두어서, 토큰만 정의해서는 모바일 200px(레퍼런스 서비스 실측)이 먹지 않았다. */
+.notion-page-cover-wrapper,
+.notion-page-cover-wrapper span,
+.notion-page-cover-wrapper img,
+.notion-page-cover {
+  height: var(--folio-page-cover-height) !important;
+  min-height: var(--folio-page-cover-height) !important;
+  max-height: var(--folio-page-cover-height) !important;
+}
+
 /* ── 페이지 아이콘 좌측 정렬 + 사각형 (레퍼런스 서비스 스타일) ──── */
 /* react-notion-x 기본은 cover 위 *수평 중앙* + 124x124 큰 원형/이미지.
  * 레퍼런스 서비스는 좌측 + 작은 사각형. */
 .notion-page-icon-hero {
   left: 0;
   transform: none;
-  margin-left: var(--folio-space-3);
+  margin-left: var(--folio-page-gutter);
   justify-content: flex-start;
 }
 
+/* 이미지와 이모지 둘 다 2-class로 받아야 한다. react-notion-x가
+ * `.notion-page-icon-hero.notion-page-icon-span`에 가운데 정렬용 margin-left: -39px을
+ * 걸어 두어서, 위 1-class 규칙만 있으면 이모지 아이콘이 본문 왼쪽 밖으로 39px 밀려난다.
+ * 모바일에서는 화면 밖으로 잘려 보였다. */
 .notion-page-icon-hero.notion-page-icon-image {
   width: 124px;
   height: 124px;
-  margin-left: var(--folio-space-3);
+  margin-left: var(--folio-page-gutter);
+}
+
+.notion-page-icon-hero.notion-page-icon-span {
+  margin-left: var(--folio-page-gutter);
 }
 
 /* react-notion-x가 페이지 아이콘에 여러 셀렉터로 border-radius를 부여하므로
@@ -332,6 +374,13 @@ svg.notion-page-icon {
   line-height: var(--folio-line-height-tight);
 }
 
+/* 속성 목록이 바로 뒤에 오면 제목 아래 여백을 없앤다. 레퍼런스 서비스 실측: 제목과 첫 속성 사이
+ * 9px. react-notion-x의 margin-bottom 20px이 남아 있으면 33px로 벌어진다. 속성이 없는
+ * 일반 페이지는 제목 다음이 본문이라 원래 여백을 둔다. */
+.notion-title:has(+ .notion-collection-page-properties) {
+  margin-bottom: 0;
+}
+
 /* ── 페이지 속성 목록 (Created / Tags 등) ────────────────── */
 /* 레퍼런스 서비스 실측: "이름 | 값" 2열, 좌측 정렬. 이름 열은 172px 고정에 흐린 글자색. */
 .notion-collection-page-properties .notion-collection-row-property {
@@ -379,14 +428,13 @@ svg.notion-page-icon {
   margin-bottom: var(--folio-space-3);
 }
 .notion-h2 {
-  /* 레퍼런스 서비스 실측 24px */
-  font-size: 24px;
+  font-size: var(--folio-font-size-h2);
   font-weight: 600;
   margin-top: var(--folio-space-4);
   margin-bottom: var(--folio-space-2);
 }
 .notion-h3 {
-  font-size: 20px;
+  font-size: var(--folio-font-size-h3);
   font-weight: 600;
   margin-top: var(--folio-space-3);
   margin-bottom: var(--folio-space-2);
@@ -516,6 +564,53 @@ svg.notion-page-icon {
   position: relative;
   width: 100%;
   align-self: stretch;
+}
+
+/* ── 전체 페이지 데이터베이스 ─────────────────────────────── */
+/* 데이터베이스 자체가 페이지인 경우(collection_view_page). react-notion-x는 일반 글과
+ * 똑같이 그려서 708px 폭에 갤러리가 2열로 갇히고 아이콘도 커버용 큰 아이콘이 된다.
+ * 레퍼런스 서비스(그리고 Notion)는 이 페이지를 본문 폭 제한 없이 좌우 여백까지 넓히고,
+ * 아이콘을 32px 제목 왼쪽에 붙인다. 실측: 1280px에서 260px 카드 4열, 제목은 헤더 아래 34px.
+ *
+ * 이 페이지에서만 main 바로 아래에 .folio-collection이 붙는다(일반 글은 .notion-page-content,
+ * 인라인 DB는 그 안쪽). 그래서 :has(> .folio-collection)로 가려낸다. */
+.notion-page:has(> .folio-collection) {
+  --notion-max-width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.notion-page.notion-page-no-cover:has(> .folio-collection) {
+  margin-top: 0 !important;
+  padding-top: 34px;
+}
+
+.notion-page:has(> .folio-collection) > .notion-page-icon-hero.notion-page-icon-span,
+.notion-page:has(> .folio-collection) > .notion-page-icon-hero.notion-page-icon-image {
+  position: static;
+  width: 40px;
+  height: 40px;
+  margin: 0 var(--folio-space-2) 0 0;
+}
+
+.notion-page:has(> .folio-collection)
+  > .notion-page-icon-hero.notion-page-icon-span
+  .notion-page-icon {
+  font-size: 34px;
+  line-height: 40px;
+}
+
+.notion-page:has(> .folio-collection) > .notion-title {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+  font-size: 32px;
+}
+
+.notion-page:has(> .folio-collection) > .folio-collection {
+  flex: 0 0 100%;
+  margin-top: calc(var(--folio-space-2) + var(--folio-space-1));
 }
 
 /* ── 스크롤 프로그레스 바 ────────────────────────────────── */
@@ -1166,10 +1261,13 @@ svg.notion-page-icon {
 }
 
 /* ── Quote ──────────────────────────────────────────────── */
+/* 레퍼런스 서비스 실측: 인용 글자는 본문과 같은 16px. react-notion-x 기본은 1.2em(19.2px)이라
+ * 인용 한 줄이 본문보다 크게 튀고 세로 간격도 늘어난다. */
 .notion-quote {
   border-left: 3px solid var(--folio-text);
   padding-left: var(--folio-space-3);
   font-style: normal;
+  font-size: 1em;
 }
 
 /* ── Divider ────────────────────────────────────────────── */
