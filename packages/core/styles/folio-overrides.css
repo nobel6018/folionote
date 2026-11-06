@@ -317,6 +317,13 @@
   margin-right: calc(50% - 50vw);
 }
 
+/* 100vw에는 스크롤바 폭이 들어가서, 스크롤바가 자리를 차지하는 환경에서는 커버가
+ * 화면보다 넓어져 페이지가 가로로 밀린다. hidden과 달리 clip은 스크롤 컨테이너를 만들지
+ * 않아 sticky 헤더에 영향이 없다. */
+.notion-page-scroller {
+  overflow-x: clip;
+}
+
 /* 커버 높이를 토큰으로 받는다. react-notion-x가 같은 셀렉터에 30vh를 !important로
  * 박아 두어서, 토큰만 정의해서는 모바일 200px(레퍼런스 서비스 실측)이 먹지 않았다. */
 .notion-page-cover-wrapper,
@@ -398,6 +405,14 @@ svg.notion-page-icon {
 .notion-page-content-has-aside .notion-page-content-inner {
   width: 100%;
   max-width: var(--folio-content-max-width);
+}
+
+/* Notion에서 "전체 너비"를 켠 페이지는 708px로 조이지 않는다. react-notion-x가
+ * 컨테이너만 --notion-max-width로 넓히므로, 위 규칙이 남아 있으면 본문이 넓어진
+ * 컨테이너의 왼쪽에 붙고 오른쪽이 빈다. */
+.notion-full-width .notion-page-content-inner,
+.notion-full-width .notion-page-content-has-aside .notion-page-content-inner {
+  max-width: none;
 }
 
 /* ── 페이지 타이틀 ──────────────────────────────────────── */
