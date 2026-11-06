@@ -12,11 +12,7 @@ export type NavigationStyle = 'default' | 'custom'
  * 사용자가 스스로 고칠 수 있는 실패 종류. 안내 화면이 이 값으로 문구를 고른다.
  * (@see packages/core/src/shared/notion-errors.ts, packages/core/src/react/components/Page404.tsx)
  */
-export type PageErrorKind =
-  | 'unpublished'
-  | 'not-found'
-  | 'invalid-id'
-  | 'rate-limited'
+export type PageErrorKind = 'unpublished' | 'not-found' | 'invalid-id'
 
 export interface PageError {
   message?: string

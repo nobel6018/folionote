@@ -194,8 +194,9 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - 커밋 메시지는 한국어 conventional 형식이다. `feat(admin): ...`, `fix(dark): ...`,
   `docs: ...` 형태이고 `git log --oneline`에 실례가 많다. 본문에는 왜 그렇게 했는지와
   무엇으로 검증했는지를 남긴다.
-- Notion 데이터는 비공식 API로 읽는다. 짧은 시간에 많이 읽으면 429가 나고, 이 경우도
-  안내 화면으로 처리된다. 빌드 때 전체 페이지를 한꺼번에 SSG하지 않는 이유가 이것이다.
+- Notion 데이터는 비공식 API로 읽는다. 짧은 시간에 많이 읽으면 429가 난다. 429는 예외로
+  던져서 ISR이 마지막 정상 페이지를 유지하게 한다. 캐시가 없던 페이지는 500이 되고 다음
+  요청에서 다시 만든다. 빌드 때 전체 페이지를 한꺼번에 SSG하지 않는 이유가 이것이다.
   본문 페이지는 `fallback: 'blocking'` 지연 SSG다.
 - ISR 주기는 600초, 오류 화면 상태에서는 30초다(`pages/index.tsx`,
   `pages/[...pageId].tsx`). "Notion에서 고쳤는데 사이트가 그대로"는 대부분 이 주기 문제다.
