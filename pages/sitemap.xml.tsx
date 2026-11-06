@@ -25,7 +25,9 @@ const CRAWL_WAIT_MS = 8000
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const config = loadSiteConfig()
 
-  if (req.method !== 'GET') {
+  // HEAD도 받는다. 사이트맵 검사 도구 중에 HEAD로 먼저 확인하는 것이 있는데, 405를
+  // 주면 사이트맵이 없거나 깨졌다고 판단한다.
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
     res.statusCode = 405
     res.setHeader('Content-Type', 'application/json')
     res.write(JSON.stringify({ error: 'method not allowed' }))
