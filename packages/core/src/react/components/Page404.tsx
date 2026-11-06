@@ -26,11 +26,6 @@ const ko = {
     body: '페이지 ID는 32자리 16진수 문자열입니다. Notion 페이지 주소를 통째로 넣어도 됩니다.',
     steps: []
   },
-  rateLimited: {
-    heading: 'Notion이 요청을 잠시 제한했습니다',
-    body: '짧은 시간에 너무 많이 읽었습니다. 잠시 뒤 새로고침하면 됩니다.',
-    steps: []
-  },
   generic: {
     heading: '페이지를 찾을 수 없습니다',
     body: '주소가 맞는지 확인하세요.',
@@ -61,11 +56,6 @@ const en: typeof ko = {
     body: 'A page ID is a 32-character hex string. Pasting the whole Notion page URL also works.',
     steps: []
   },
-  rateLimited: {
-    heading: 'Notion is rate limiting requests',
-    body: 'Too many reads in a short time. Refresh in a moment.',
-    steps: []
-  },
   generic: {
     heading: 'Page not found',
     body: 'Check that the address is correct.',
@@ -82,8 +72,6 @@ function pickCopy(language: string, error?: types.PageError) {
       return { t, c: t.notFound }
     case 'invalid-id':
       return { t, c: t.invalidId }
-    case 'rate-limited':
-      return { t, c: t.rateLimited }
     default:
       return { t, c: t.generic }
   }

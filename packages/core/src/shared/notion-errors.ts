@@ -48,10 +48,8 @@ export function classifyNotionError(err: unknown): PageError | null {
     return make('invalid-id', 404, 'Notion 페이지 ID 형식이 틀렸습니다')
   }
 
-  if (status === 429) {
-    return make('rate-limited', 503, 'Notion이 요청을 잠시 제한했습니다')
-  }
-
-  // 네트워크 오류, Notion 장애 등. 캐시하면 안 되는 종류라 호출자가 다시 던진다.
+  // 네트워크 오류, Notion 장애, 429 등. 캐시하면 안 되는 종류라 호출자가 다시 던진다.
+  // 429를 안내 화면으로 바꾸면 ISR 재생성 때 멀쩡한 캐시가 HTTP 200 오류 화면으로
+  // 덮인다. 던지면 Next가 마지막 정상 페이지를 계속 내보낸다.
   return null
 }
