@@ -151,13 +151,16 @@ export async function commitFile({
   repoPath,
   content,
   message,
-  login
+  login,
+  via = '/admin 화면'
 }: {
   token: string
   repoPath: string
   content: Buffer | string
   message: string
   login: string
+  /** 커밋 본문에 남길 출처. MCP에서 부르면 'MCP add_page_url'처럼 바꾼다 */
+  via?: string
 }): Promise<CommitResult> {
   const sha = await getFileSha(token, repoPath)
 
@@ -167,7 +170,7 @@ export async function commitFile({
     {
       method: 'PUT',
       body: JSON.stringify({
-        message: `${message}\n\n${login} 님이 /admin 화면에서 저장했습니다.`,
+        message: `${message}\n\n${login} 님이 ${via}에서 저장했습니다.`,
         content: (typeof content === 'string'
           ? Buffer.from(content, 'utf8')
           : content

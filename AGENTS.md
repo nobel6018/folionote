@@ -201,7 +201,8 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - ISR 주기는 600초, 오류 화면 상태에서는 30초다(`pages/index.tsx`,
   `pages/[...pageId].tsx`). "Notion에서 고쳤는데 사이트가 그대로"는 대부분 이 주기 문제다.
   `REVALIDATE_SECRET`을 넣으면 `POST /api/revalidate`로 바로 다시 만들 수 있다
-  (@see docs/deployment.md).
+  (@see docs/deployment.md). `MCP_SECRET`을 넣으면 `/api/mcp`의 `check_freshness`가
+  캐시와 Notion을 블록 단위로 비교해 준다(@see docs/mcp.md).
 - 모바일에서 `input`, `select`, `textarea`의 폰트를 16px 미만으로 두지 않는다. iOS
   Safari가 포커스할 때 화면을 확대하고 스스로 돌아오지 않는다. 데스크탑에서는 더 작게
   써도 된다.
@@ -246,6 +247,7 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - `docs/architecture.md` 설정이 흐르는 길(site.config.ts → loadSiteConfig → PageProps.config → useSiteConfig)과 패키지 경계
 - `packages/core/README.md` `@folionote/core`를 남의 앱에서 쓰는 법, 진입점, deps 주입
 - `docs/admin-deploy.md` 배포 어드민의 동작과 보안 설계, 관련 코드 위치
+- `docs/mcp.md` `/api/mcp` MCP 서버. 켜는 법, 도구 목록, `add_page_url`의 GitHub 토큰
 - `docs/cloudflare-migration.md` Workers 이전 실측과 접은 이유
 - `docs/feature-parity.md` 상용 서비스 기능 대조표
 - `docs/competitor-feature-research.md` 유사 서비스 기능 조사
