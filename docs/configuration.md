@@ -138,3 +138,6 @@
 | `NEXT_PUBLIC_POSTHOG_ID`                                        | PostHog analytics            |
 | `TWITTER_ACCESS_TOKEN`                                          | 트윗 embed (rate limit 회피) |
 | `REDIS_HOST`, `REDIS_PASSWORD`, `REDIS_USER`, `REDIS_NAMESPACE` | preview image cache          |
+| `REVALIDATE_SECRET` | `POST /api/revalidate` 즉시 갱신 (@see docs/deployment.md) |
+| `MCP_SECRET` | `/api/mcp` MCP 서버 (@see docs/mcp.md) |
+| `MCP_GITHUB_TOKEN` | MCP `add_page_url`의 커밋 토큰 |
