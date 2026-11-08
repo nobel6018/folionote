@@ -200,6 +200,8 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
   본문 페이지는 `fallback: 'blocking'` 지연 SSG다.
 - ISR 주기는 600초, 오류 화면 상태에서는 30초다(`pages/index.tsx`,
   `pages/[...pageId].tsx`). "Notion에서 고쳤는데 사이트가 그대로"는 대부분 이 주기 문제다.
+  `REVALIDATE_SECRET`을 넣으면 `POST /api/revalidate`로 바로 다시 만들 수 있다
+  (@see docs/deployment.md).
 - 모바일에서 `input`, `select`, `textarea`의 폰트를 16px 미만으로 두지 않는다. iOS
   Safari가 포커스할 때 화면을 확대하고 스스로 돌아오지 않는다. 데스크탑에서는 더 작게
   써도 된다.

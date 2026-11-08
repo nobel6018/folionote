@@ -126,6 +126,35 @@ curl -I https://mydomain.com
 
 따라서 build 시간 1-2분, Vercel build server에서 rate limit 거의 안 침.
 
+### 즉시 갱신 (on-demand revalidation)
+
+Notion에서 고친 내용은 마지막 재생성에서 10분이 지난 뒤 첫 요청이 와야 사이트에 반영됩니다. 기다리기 싫거나, 파일 블록을 바꿔서 그 사이 옛 다운로드 링크가 깨지는 것을 막고 싶을 때 `POST /api/revalidate`로 바로 다시 만듭니다(`pages/api/revalidate.ts`).
+
+환경변수 `REVALIDATE_SECRET`을 넣고 재배포해야 켜집니다. 없으면 404입니다.
+
+```bash
+openssl rand -base64 32 | vercel env add REVALIDATE_SECRET production
+vercel --prod
+```
+
+주소로 고르거나 Notion 페이지 ID로 고릅니다. 페이지 ID를 주면 그 페이지의 pretty URL과 ID 주소를 함께 다시 만들고, 루트 페이지면 `/`도 넣습니다.
+
+```bash
+curl -X POST https://<도메인>/api/revalidate \
+  -H "Authorization: Bearer $REVALIDATE_SECRET" \
+  -H 'content-type: application/json' \
+  -d '{"paths": ["/resume"]}'
+
+curl -X POST https://<도메인>/api/revalidate \
+  -H "Authorization: Bearer $REVALIDATE_SECRET" \
+  -H 'content-type: application/json' \
+  -d '{"pageId": "https://www.notion.so/My-Page-fed21d8ef474447e932048b30dd0bafe"}'
+```
+
+응답은 `{ "revalidated": [...], "failed": [...] }`입니다. 하나라도 실패하면 502이고, 실패한 주소는 옛 캐시가 그대로 남습니다(대개 Notion 429라 잠시 뒤 다시 부르면 됩니다). 한 번에 10개까지 받고, Notion 429를 피하려고 하나씩 차례로 만듭니다.
+
+비밀은 쿼리스트링이 아니라 `Authorization` 헤더로만 받습니다. 쿼리는 접근 로그에 그대로 남기 때문입니다.
+
 ## Troubleshooting
 
 - **Build fails with 429**: Notion API rate limit. 잠시 후 재시도 또는 Vercel build server에서 retry
