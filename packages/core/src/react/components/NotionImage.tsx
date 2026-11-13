@@ -53,19 +53,69 @@ function isResizableRemoteImage(src: ImageProps['src']): src is string {
 }
 
 /**
+ * 이미지가 화면에 그려지는 폭. 브라우저는 이 값에 기기 픽셀 비율을 곱해 srcset에서
+ * 고른다. 값은 CSS 토큰과 맞춘다.
+ *
+ * - 카드: 708px 본문에 `--folio-card-min-width`(260px) 카드 2열이라 한 장이 346px.
+ *   폭이 좁아 1열로 떨어지면 화면 폭을 다 쓴다
+ * - 본문: `--folio-content-max-width`(708px)
+ * - 상세 페이지 커버: 화면 폭 전체
+ *
+ * react-notion-x는 원본 크기(`width=4016`)만 넘기고 `sizes`를 주지 않는다. 그러면
+ * next/image가 1x/2x 후보를 원본 폭 기준으로 잡아 둘 다 `w=3840`이 된다. 갤러리 카드
+ * 한 장이 7.7MB까지 나왔다(note.leedo.me 홈, 2026-11-13 Lighthouse).
+ */
+const CARD_IMAGE_SIZES = '(max-width: 600px) 100vw, 346px'
+const BODY_IMAGE_SIZES = '(max-width: 740px) 100vw, 708px'
+const PAGE_COVER_IMAGE_SIZES = '100vw'
+
+/**
+ * 컬렉션 카드 안의 이미지인지. react-notion-x가 카드 커버와 본문 이미지에 넘기는
+ * prop이 구분되지 않아서, 컬렉션 래퍼가 이 컨텍스트로 알려 준다
+ * (@see folio/Collection.tsx)
+ */
+export const CollectionImageContext = React.createContext(false)
+
+function getImageSizes({
+  className,
+  isInCollection
+}: {
+  className: ImageProps['className']
+  isInCollection: boolean
+}): string {
+  if (isInCollection) {
+    return CARD_IMAGE_SIZES
+  }
+
+  if (className?.split(' ').includes('notion-page-cover')) {
+    return PAGE_COVER_IMAGE_SIZES
+  }
+
+  return BODY_IMAGE_SIZES
+}
+
+/**
  * react-notion-x에 넘기는 `nextImage`. 원본 서버가 리사이즈를 해주는 이미지에만
- * 위 로더를 물린다.
+ * 위 로더와 `sizes`를 물린다.
  *
  * 전역 `images.loaderFile`로 걸면 로고 같은 로컬 이미지까지 같은 로더를 타서
  * 최적화가 통째로 꺼진다. 그래서 이미지 단위로 `loader` prop을 준다.
  * `loader`가 undefined면 next/image가 기본 로더(Vercel 최적화)를 쓴다.
  */
-export function NotionImage({ src, ...rest }: ImageProps) {
+export function NotionImage({ src, sizes, className, ...rest }: ImageProps) {
+  const isInCollection = React.useContext(CollectionImageContext)
+
+  if (!isResizableRemoteImage(src)) {
+    return <Image {...rest} src={src} sizes={sizes} className={className} />
+  }
+
   return (
     <Image
       {...rest}
       src={src}
-      loader={isResizableRemoteImage(src) ? remoteImageLoader : undefined}
+      className={className}
+      sizes={sizes ?? getImageSizes({ className, isInCollection })}
+      loader={remoteImageLoader}
     />
   )
 }

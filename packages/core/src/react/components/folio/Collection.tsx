@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Collection as NotionCollection } from 'react-notion-x/build/third-party/collection'
 
 import { useSiteConfig } from '../../site-config-context.js'
+import { CollectionImageContext } from '../NotionImage.js'
 import { CollectionSearch } from './CollectionSearch.js'
 
 type CollectionProps = React.ComponentProps<typeof NotionCollection>
@@ -86,8 +87,11 @@ export function Collection({ block, className, ctx }: CollectionProps) {
     return () => observer.disconnect()
   }, [applyFilter])
 
+  // 카드 커버를 카드 폭에 맞는 크기로 받게 한다 (@see NotionImage의 sizes)
   const inner = (
-    <NotionCollection block={block} className={className} ctx={ctx} />
+    <CollectionImageContext.Provider value>
+      <NotionCollection block={block} className={className} ctx={ctx} />
+    </CollectionImageContext.Provider>
   )
 
   // page 타입은 컬렉션 제목이 아니라 페이지 속성 목록이라 색/검색이 필요 없다
