@@ -45,7 +45,7 @@ export const remoteImageLoader: ImageLoader = ({ src, width, quality }) => {
   return src
 }
 
-function isResizableRemoteImage(src: ImageProps['src']): src is string {
+export function isResizableRemoteImage(src: ImageProps['src']): src is string {
   return (
     typeof src === 'string' &&
     (src.startsWith(NOTION_IMAGE_PREFIX) || src.startsWith(UNSPLASH_PREFIX))

@@ -41,6 +41,7 @@ import { NotionImage } from './NotionImage.js'
 import { NotionPageHeader } from './NotionPageHeader.js'
 import { Page404 } from './Page404.js'
 import { PageAside } from './PageAside.js'
+import { PageCover } from './PageCover.js'
 import { PageHead } from './PageHead.js'
 import styles from './styles.module.css'
 
@@ -252,6 +253,22 @@ export function NotionPage({
     ? undefined
     : getCanonicalPageUrl(config, recordMap)(pageId)
 
+  // 커버를 lazy 없이 먼저 받도록 직접 그린다 (@see PageCover).
+  // 커버가 없는 페이지에 요소를 넘기면 react-notion-x가 커버가 있는 것으로 보고
+  // 레이아웃을 잡으므로, 커버가 있을 때만 넘긴다.
+  const hasPageCover = !!(
+    (block as PageBlock).format?.page_cover ?? config.defaultPageCover
+  )
+  const pageCover = hasPageCover ? (
+    <PageCover
+      block={block as PageBlock}
+      recordMap={recordMap}
+      mapImageUrl={mapImageUrl}
+      defaultPageCover={config.defaultPageCover}
+      defaultPageCoverPosition={config.defaultPageCoverPosition}
+    />
+  ) : undefined
+
   const socialImage =
     metaOverride?.ogImage ||
     mapImageUrl(
@@ -324,6 +341,7 @@ export function NotionPage({
         defaultPageCoverPosition={config.defaultPageCoverPosition}
         mapPageUrl={siteMapPageUrl}
         mapImageUrl={mapImageUrl}
+        pageCover={pageCover}
         searchNotion={config.isSearchEnabled ? searchNotion : undefined}
         // 목차를 끄면 aside 자체를 넘기지 않는다. 넘기면 내용이 비어도 362px짜리
         // 컨테이너가 렌더돼 본문을 밀어내고 넓은 화면에서 가로 스크롤을 만든다.
