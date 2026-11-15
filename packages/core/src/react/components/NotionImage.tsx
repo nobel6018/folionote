@@ -45,6 +45,40 @@ export const remoteImageLoader: ImageLoader = ({ src, width, quality }) => {
   return src
 }
 
+/**
+ * 카드 커버를 imgix(unsplash)에서 카드 비율로 잘라 받는 로더를 만든다.
+ *
+ * 카드는 `--folio-card-cover-aspect`(16:9)로 `object-fit: cover`를 걸어 이미지를
+ * 잘라 보여준다. 폭만 줄이면 잘려 나갈 부분까지 다 받는다. 세로 사진(4016x6016)은
+ * `w=750`에서 750x1125를 받아 452KB였고, 16:9로 잘라 받으면 158KB였다
+ * (note.leedo.me 홈, 2026-11-16). 가로 사진도 12~15% 준다.
+ *
+ * 남는 부분이 화면과 같도록 Notion의 커버 위치(`object-position`의 세로 %)를 imgix
+ * 초점(`fp-y`)으로 넘긴다. 노션 이미지 서버는 자르기를 지원하지 않아 그대로 둔다.
+ * CSS 토큰의 비율을 바꾸면 `CARD_COVER_ASPECT`도 바꾼다. 어긋나도 `object-fit: cover`가
+ * 다시 잘라 주므로 깨지지는 않는다.
+ */
+const CARD_COVER_ASPECT = 16 / 9
+
+function createCardCoverLoader(focalY: number): ImageLoader {
+  return ({ src, width, quality }) => {
+    const url = new URL(remoteImageLoader({ src, width, quality }))
+    url.searchParams.set('h', String(Math.round(width / CARD_COVER_ASPECT)))
+    url.searchParams.set('fit', 'crop')
+    url.searchParams.set('crop', 'focalpoint')
+    url.searchParams.set('fp-x', '0.5')
+    url.searchParams.set('fp-y', String(focalY))
+    return url.toString()
+  }
+}
+
+/** `object-position`의 세로 값(`center 30%`)을 0~1로. 없거나 읽지 못하면 가운데 */
+function getFocalY(style: React.CSSProperties | undefined): number {
+  const match = String(style?.objectPosition ?? '').match(/(-?[\d.]+)%\s*$/)
+  const percent = match ? Number(match[1]) : 50
+  return Math.min(1, Math.max(0, percent / 100))
+}
+
 export function isResizableRemoteImage(src: ImageProps['src']): src is string {
   return (
     typeof src === 'string' &&
@@ -102,20 +136,45 @@ function getImageSizes({
  * 최적화가 통째로 꺼진다. 그래서 이미지 단위로 `loader` prop을 준다.
  * `loader`가 undefined면 next/image가 기본 로더(Vercel 최적화)를 쓴다.
  */
-export function NotionImage({ src, sizes, className, ...rest }: ImageProps) {
+export function NotionImage({
+  src,
+  sizes,
+  className,
+  style,
+  ...rest
+}: ImageProps) {
   const isInCollection = React.useContext(CollectionImageContext)
 
   if (!isResizableRemoteImage(src)) {
-    return <Image {...rest} src={src} sizes={sizes} className={className} />
+    return (
+      <Image
+        {...rest}
+        src={src}
+        sizes={sizes}
+        className={className}
+        style={style}
+      />
+    )
   }
+
+  // 카드 커버를 꽉 채워 자르는 경우만. "이미지 맞춤(contain)"은 원본 비율 그대로 보여 준다
+  const isCroppedCardCover =
+    isInCollection &&
+    src.startsWith(UNSPLASH_PREFIX) &&
+    style?.objectFit === 'cover'
 
   return (
     <Image
       {...rest}
       src={src}
       className={className}
+      style={style}
       sizes={sizes ?? getImageSizes({ className, isInCollection })}
-      loader={remoteImageLoader}
+      loader={
+        isCroppedCardCover
+          ? createCardCoverLoader(getFocalY(style))
+          : remoteImageLoader
+      }
     />
   )
 }
