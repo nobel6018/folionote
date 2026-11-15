@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { type ExtendedRecordMap, type PageBlock } from 'notion-types'
 import { getBlockTitle, normalizeUrl } from 'notion-utils'
 import * as React from 'react'
@@ -19,6 +20,10 @@ const COVER_WIDTHS = [640, 750, 828, 1080, 1200, 1920, 2048, 3840]
  * - `loading="eager"`, `fetchPriority="high"`로 가장 먼저 받는다
  * - 원본 서버가 리사이즈해 주는 주소면 화면 폭 기준 srcset을 붙인다 (@see NotionImage)
  * - 프리뷰 블러가 있으면 배경으로 깔아 next/image 경로의 모습을 유지한다
+ * - `<head>`에 같은 srcset으로 preload를 건다. 본문 HTML을 받기 전에 요청이 나간다.
+ *   노션 이미지는 `www.notion.so/image`가 `img.notionusercontent.com`으로 302를 주므로
+ *   그 도메인에도 미리 연결해 둔다. 리다이렉트까지 1.6s가 걸린 측정이 있었다
+ *   (note.leedo.me 홈, 2026-11-14 Lighthouse)
  *
  * DOM과 클래스는 react-notion-x와 같게 둔다. 커버 CSS가 그 클래스에 걸려 있다
  * (@see styles/folio-overrides.css 의 .notion-page-cover-wrapper)
@@ -59,8 +64,28 @@ export function PageCover({
       ).join(', ')
     : undefined
 
+  const isNotionImage = src.startsWith('https://www.notion.so/image/')
+
   return (
     <div className='notion-page-cover-wrapper'>
+      <Head>
+        {isNotionImage && (
+          <link
+            key='folio-cover-preconnect'
+            rel='preconnect'
+            href='https://img.notionusercontent.com'
+          />
+        )}
+        <link
+          key='folio-cover-preload'
+          rel='preload'
+          as='image'
+          href={src}
+          imageSrcSet={srcSet}
+          imageSizes={srcSet ? '100vw' : undefined}
+          fetchPriority='high'
+        />
+      </Head>
       <img
         className='notion-page-cover'
         src={src}

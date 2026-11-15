@@ -13,6 +13,7 @@ import { type CoreDeps } from './deps.js'
 import { getTweetsMap } from './get-tweets.js'
 import { getNotion } from './notion-api.js'
 import { getPreviewImageMap } from './preview-images.js'
+import { pruneRecordMap } from './prune-record-map.js'
 
 /**
  * 캐시 키에 루트 페이지 ID를 넣는다. 한 프로세스가 사이트 여러 개를 그릴 때
@@ -201,6 +202,15 @@ export async function getPage(
       )
     }
   }
+
+  // 화면에 쓰지 않는 블록을 지운다. 미리보기 이미지를 만들기 전에 해야 지운 블록의
+  // 이미지까지 내려받지 않는다 (@see prune-record-map.ts)
+  pruneRecordMap(recordMap, {
+    pageId,
+    keepIds: (config.navigationLinks || [])
+      .map((link) => link?.pageId)
+      .filter((id): id is string => !!id)
+  })
 
   if (config.isPreviewImageSupportEnabled) {
     const previewImageMap = await getPreviewImageMap(config, recordMap, deps)
