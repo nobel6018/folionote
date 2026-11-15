@@ -102,6 +102,18 @@ ResolvedSiteConfig          직렬화 가능한 평범한 객체
 없는 memoize를 그대로 두면 먼저 그린 사이트의 내비게이션이나 프리뷰 이미지가 뒤에
 오는 사이트에 붙는다.
 
+### getPage가 recordMap을 줄이는 이유
+
+`getPage`가 돌려준 recordMap은 `__NEXT_DATA__`로 HTML에 그대로 실린다. notion-client는
+컬렉션 카드로 보이는 글의 본문과 내비게이션 링크 페이지의 본문까지 내려주는데, 화면에는
+쓰이지 않는다. `getPage`는 메뉴 페이지를 합친 뒤 `pruneRecordMap`(`server/prune-record-map.ts`)으로
+현재 페이지를 그리는 데 쓰는 블록만 남긴다. note.leedo.me 홈에서 `__NEXT_DATA__`가
+2.04MB에서 623KB로 줄었다(2026-11-16).
+
+남기는 기준과 남기지 않는 이유는 `pruneRecordMap`의 주석에 있다. 새 블록 타입이나
+렌더러 기능이 다른 블록을 ID로 참조하면 여기서 지워지지 않는지 확인한다. 속성(`properties`)과
+서식(`format`)에 든 ID는 자동으로 따라가므로 대부분은 그대로 동작한다.
+
 ## 사이트 설정이 아닌 것
 
 프로세스 하나에 하나뿐인 값은 설정 객체에 담지 않는다.
