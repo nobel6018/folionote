@@ -112,6 +112,8 @@ export interface ResolvedSiteConfig {
   /** 빌드 때 미리 만들 경로. 앞 슬래시 없이 `books/1` 꼴 */
   prebuildPaths: string[]
   strictPaths: boolean
+  /** 페이지 ISR 재생성 주기(초) */
+  revalidateSeconds: number
   /** 사이트 전체 noindex */
   noindex: boolean
   comments: CommentsConfig | null
@@ -234,6 +236,15 @@ function requireString(
  * `undefined`일 때만 기본값으로 내려간다. `null`은 사용자가 일부러 넣은 값으로 본다.
  * 예전 `getSiteConfig(key, default)`와 같은 규칙이다.
  */
+export const DEFAULT_REVALIDATE_SECONDS = 600
+
+/** 양의 정수가 아니면 기본값. 0이나 음수는 Next가 매 요청 재생성하거나 빌드를 깨뜨린다 */
+function resolveRevalidateSeconds(value: unknown): number {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0
+    ? value
+    : DEFAULT_REVALIDATE_SECONDS
+}
+
 function pick<T>(value: T | undefined, defaultValue: T): T {
   return value === undefined ? defaultValue : value
 }
@@ -538,6 +549,7 @@ export function resolveSiteConfig(
     pageUrlAdditions,
     inversePageUrlOverrides: invertPageUrlOverrides(pageUrlOverrides),
     strictPaths: pick(input.strictPaths, false) as boolean,
+    revalidateSeconds: resolveRevalidateSeconds(input.revalidateSeconds),
     prebuildPaths: resolvePrebuildPaths(
       pick(input.prebuildPaths, null),
       pageUrlOverrides

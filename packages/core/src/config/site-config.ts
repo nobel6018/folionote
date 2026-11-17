@@ -58,6 +58,16 @@ export interface SiteConfig {
   strictPaths?: boolean
 
   /**
+   * 페이지 ISR 재생성 주기(초). 생략하면 600(10분).
+   *
+   * 주기가 지난 페이지는 다음 요청 때 뒤에서 다시 그린다. 그때마다 Notion을 읽고
+   * 렌더링하므로, 봇이 자주 도는 사이트는 짧은 주기가 서버리스 실행 시간을 그대로
+   * 늘린다. Notion 수정을 즉시 갱신(`/api/revalidate`, MCP `revalidate`)으로 반영한다면
+   * 하루(86400)처럼 길게 둬도 된다. Notion 미공개 같은 안내 화면은 이 값과 상관없이 30초다.
+   */
+  revalidateSeconds?: number
+
+  /**
    * 사이트 전체를 검색엔진에서 숨긴다. 환경변수 `SITE_NOINDEX=true`로도 켤 수 있다.
    *
    * 기존 사이트를 두고 새 도메인에서 미리 띄워 볼 때 쓴다. 켜 두면 robots.txt가

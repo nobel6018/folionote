@@ -31,6 +31,7 @@ export function registerReadTools(server: McpServer, ctx: ToolContext) {
         language: config.language,
         rootNotionPageId: config.rootNotionPageId,
         strictPaths: config.strictPaths,
+        revalidateSeconds: config.revalidateSeconds,
         noindex: config.noindex,
         prettyUrlCount: Object.keys(config.pageUrlOverrides).length,
         additionalUrlCount: Object.keys(config.pageUrlAdditions).length,
