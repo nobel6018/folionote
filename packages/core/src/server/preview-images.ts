@@ -8,12 +8,18 @@ import {
 import { getPageImageUrls, normalizeUrl } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
+import sharp from 'sharp'
 
 import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 import { createMapImageUrl } from '../shared/map-image-url.js'
 import { getDb } from './db.js'
 import { type CoreDeps } from './deps.js'
 import { NOTION_FETCH_USER_AGENT } from './notion-api.js'
+
+// sharp(libvips)는 디코딩 결과를 프로세스 전역 캐시에 쥐고 있다. LQIP는 이미지마다 한 번만
+// 디코딩하므로 캐시가 쓸모없고 메모리만 늘린다(로컬 측정, 174장 홈 재생성 최대 1058MB → 767MB, 시간은 그대로).
+// lqip-modern과 같은 sharp를 써야 이 설정이 그쪽에도 걸린다(package.json 버전을 맞춘다).
+sharp.cache(false)
 
 export async function getPreviewImageMap(
   config: ResolvedSiteConfig,
