@@ -9,16 +9,19 @@ import { type CoreDeps } from './deps.js'
  * 모든 런타임(edge 포함)이 대가를 치르고, 호스팅 서비스가 자기 클라이언트로
  * 갈아끼울 자리도 사라진다.
  */
+/**
+ * Notion은 User-Agent가 없는 요청(undici/node fetch 기본값)을 403으로 차단한다.
+ * API(`www.notion.so/api/v3`)와 이미지 프록시(`www.notion.so/image/...`) 둘 다 같다.
+ * 미리보기 이미지(preview-images.ts)도 이 값을 쓴다.
+ */
+export const NOTION_FETCH_USER_AGENT =
+  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+
 export function createNotionClient(): NotionAPI {
   return new NotionAPI({
     apiBaseUrl: process.env.NOTION_API_BASE_URL,
-    // Notion은 User-Agent가 없는 요청(undici/node fetch 기본값)을 403으로 차단한다.
-    // 브라우저 UA를 명시해야 www.notion.so/api/v3 호출이 통과된다.
     ofetchOptions: {
-      headers: {
-        'user-agent':
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-      },
+      headers: { 'user-agent': NOTION_FETCH_USER_AGENT },
       // Notion의 비공식 API는 짧은 시간에 여러 페이지를 읽으면 429를 준다.
       // 사이트맵과 RSS는 전체 페이지를 훑기 때문에 재시도가 없으면 매번 일부를 잃는다.
       // ofetch의 기본 retry는 POST에 0이라(멱등하지 않다고 보기 때문) 명시해야 한다.

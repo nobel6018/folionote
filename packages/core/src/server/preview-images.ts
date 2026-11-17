@@ -13,6 +13,7 @@ import { type ResolvedSiteConfig } from '../config/site-config-resolve.js'
 import { createMapImageUrl } from '../shared/map-image-url.js'
 import { getDb } from './db.js'
 import { type CoreDeps } from './deps.js'
+import { NOTION_FETCH_USER_AGENT } from './notion-api.js'
 
 export async function getPreviewImageMap(
   config: ResolvedSiteConfig,
@@ -67,7 +68,11 @@ async function createPreviewImage(
       console.warn(`redis error get "${cacheKey}"`, err.message)
     }
 
-    const body = await ky(url).arrayBuffer()
+    // 이미지 대부분이 `www.notion.so/image/...` 프록시를 거친다. UA가 없으면 Notion이
+    // 403(HTML 차단 화면)을 주고, Notion 이미지의 흐린 미리보기가 전부 빠진다
+    const body = await ky(url, {
+      headers: { 'user-agent': NOTION_FETCH_USER_AGENT }
+    }).arrayBuffer()
     const result = await lqip(body)
     console.log('lqip', { ...result.metadata, url, cacheKey })
 
