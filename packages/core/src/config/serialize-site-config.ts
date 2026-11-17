@@ -41,6 +41,7 @@ const KNOWN_ORDER: Array<keyof SiteConfig> = [
   'pageUrlAdditions',
   'prebuildPaths',
   'strictPaths',
+  'revalidateSeconds',
   'noindex',
   'comments',
   'dateFormat',
@@ -78,6 +79,8 @@ const COMMENTS: Partial<Record<keyof SiteConfig, string>> = {
     '빌드 때 미리 만들 pretty URL. 생략하면 pageUrlOverrides 전부.\n매핑이 수백 개면 렌더가 느린 컬렉션만 적어 Notion 429를 피한다.',
   strictPaths:
     'pageUrlOverrides에 없는 주소는 크롤 없이 404. 목록에 없는 페이지는 Notion ID 주소로 링크된다',
+  revalidateSeconds:
+    '페이지 ISR 재생성 주기(초). 생략하면 600.\nNotion 수정을 즉시 갱신으로 반영한다면 86400처럼 길게 둬서 재생성 횟수를 줄인다',
   noindex:
     '사이트 전체를 검색엔진에서 숨긴다. 새 도메인에서 미리 띄워 볼 때 쓴다.\n환경변수 SITE_NOINDEX=true로도 켤 수 있다.',
   comments: '글 하단 댓글 (utterances)',

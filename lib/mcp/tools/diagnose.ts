@@ -105,7 +105,7 @@ export function registerDiagnoseTools(server: McpServer, ctx: ToolContext) {
           }
         }),
         ...describeCache(site.headers),
-        revalidateSeconds: 600
+        revalidateSeconds: config.revalidateSeconds
       })
     }
   )
