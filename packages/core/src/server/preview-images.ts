@@ -41,7 +41,10 @@ export async function getPreviewImageMap(
         ]
       },
       {
-        concurrency: 8
+        // 이미지마다 원본 전체를 받아 sharp로 디코딩한다. 컬렉션 페이지는 한 번에 170장이
+        // 넘어서, 많이 겹치면 메모리가 1GB를 넘는다. 3개면 속도는 거의 그대로다
+        // (로컬 측정, 174장 기준 8개와 3개 모두 약 19초).
+        concurrency: 3
       }
     )
   )
