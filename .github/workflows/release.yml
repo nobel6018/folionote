@@ -25,9 +25,6 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-          # changesets/action v2는 NPM_TOKEN으로 .npmrc를 만들어 주지 않는다.
-          # registry-url을 주면 setup-node가 NODE_AUTH_TOKEN을 읽는 .npmrc를 만든다.
-          registry-url: 'https://registry.npmjs.org'
 
       - run: pnpm install --frozen-lockfile
 
@@ -35,12 +32,14 @@ jobs:
 
       # changeset 파일이 쌓여 있으면 버전 올리는 PR을 연다. 그 PR이 머지되면
       # 이 워크플로가 다시 돌면서 publish까지 간다.
-      - uses: changesets/action@v2
+      # v2는 Changesets CLI v3 전용이다. v1도 1.9.0부터 Node 24로 돈다.
+      - uses: changesets/action@v1
         with:
           version: pnpm version-packages
           publish: pnpm release
           commit: 'chore: 릴리스 버전 반영'
           title: 'chore: 릴리스 준비'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
