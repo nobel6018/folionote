@@ -49,5 +49,16 @@ export default withBundleAnalyzer({
   // @folionote/core는 tsc가 만든 그대로 배포된다(번들 없음). CSS 모듈과 JSX가
   // 들어 있어서 Next가 직접 컴파일해야 한다. 이 패키지를 쓰는 앱은 모두 필요하다.
   // react-tweet은 https://react-tweet.vercel.app/next#troubleshooting
-  transpilePackages: ['react-tweet', '@folionote/core']
+  //
+  // @react-icons/all-files는 package.json의 main이 "lib"(디렉터리)라 Node가 루트
+  // index.js로 대신 찾아간다(DEP0128). Turbopack은 이 패키지를 외부 모듈로 두는데,
+  // 배포용 파일 추적은 그 루트 index.js를 챙기지 않아 서버리스 함수에서
+  // `import { IconContext } from '@react-icons/all-files'`(pages/_document.tsx)가
+  // "Cannot find module .../lib"로 죽고 모든 페이지가 500이 된다. 로컬 `next start`는
+  // 패키지 전체가 있어 재현되지 않는다. 번들에 넣어 외부 해석을 없앤다.
+  transpilePackages: [
+    'react-tweet',
+    '@folionote/core',
+    '@react-icons/all-files'
+  ]
 })
