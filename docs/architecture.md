@@ -161,7 +161,9 @@ packages/core     @folionote/core
 `edge`가 따로 있는 이유는 배럴 때문이다. `server`는 한 줄만 가져와도 프리뷰
 이미지(`sharp`)와 Redis 클라이언트를 끌고 온다. edge 번들은 `node:` 내장 모듈을
 못 읽어서 그 자리에서 빌드가 깨진다. `pages/api/social-image.tsx`가 실제로 그렇게
-깨졌고, 그래서 `edge` 진입점을 뒀다.
+깨졌고, 그래서 `edge` 진입점을 뒀다. 지금 이 라우트는 표지 변환에 `sharp`를 쓰려고
+Node 런타임으로 옮겼지만, edge에서 도는 코드를 위해 진입점은 그대로 둔다
+(@see docs/social-image.md).
 
 ### 왜 번들하지 않는가
 
