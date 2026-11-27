@@ -16,7 +16,8 @@ export function PageHead({
   image,
   url,
   isBlogPost,
-  noindex
+  noindex,
+  socialImageVersion
 }: Partial<types.PageProps> & {
   title?: string
   description?: string
@@ -25,6 +26,8 @@ export function PageHead({
   isBlogPost?: boolean
   /** 켜면 검색엔진에서 뺀다 (@see packages/core/src/shared/page-meta.ts) */
   noindex?: boolean
+  /** og:image 캐시를 가르는 값. 보통 페이지 수정 시각 */
+  socialImageVersion?: number
 }) {
   const config = useOptionalSiteConfig()
   // 사이트 전체 noindex가 켜져 있으면 페이지 설정과 무관하게 숨긴다
@@ -35,7 +38,8 @@ export function PageHead({
   description = description ?? site?.description
 
   const socialImageUrl =
-    (config ? getSocialImageUrl(config, pageId) : null) || image
+    (config ? getSocialImageUrl(config, pageId, socialImageVersion) : null) ||
+    image
 
   return (
     <Head>

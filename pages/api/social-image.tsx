@@ -1,47 +1,145 @@
+import { type PageError, type ResolvedSiteConfig } from '@folionote/core/config'
 import {
-  type NotionPageInfo,
-  type PageError,
-  type ResolvedSiteConfig
-} from '@folionote/core/config'
-import { createMapImageUrl, getNotion } from '@folionote/core/edge'
+  createMapImageUrl,
+  getNotion,
+  NOTION_FETCH_USER_AGENT
+} from '@folionote/core/edge'
 import ky from 'ky'
 import { type NextApiRequest, type NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
-import { type Block, type PageBlock } from 'notion-types'
 import {
-  getBlockIcon,
+  type Block,
+  type ExtendedRecordMap,
+  type PageBlock
+} from 'notion-types'
+import {
   getBlockTitle,
+  getBlockValue,
   getPageProperty,
-  isUrl,
   parsePageId
 } from 'notion-utils'
+import sharp from 'sharp'
 
 import interSemiBoldFont from '@/lib/fonts/inter-semibold'
+import { loadCjkFonts } from '@/lib/fonts/load-cjk-fonts'
 import { loadSiteConfig } from '@/lib/load-site-config'
 
-export const runtime = 'edge'
+// Node 런타임에서 돈다. 표지를 sharp로 변환하는데 sharp는 네이티브 모듈이라 edge에서
+// 못 돈다. Node에서도 next/og는 그대로 동작하고, 응답만 res로 직접 쓴다. 결과는 1년
+// immutable로 캐시되므로 함수가 실제로 도는 일은 드물다.
+// @see docs/social-image.md
+
+const WIDTH = 1200
+const HEIGHT = 630
+// 이 비율보다 넓은 이미지는 꽉 채워도 잘리는 부분이 적다. 더 좁은 이미지(책 표지 등)는
+// 잘라 내면 무엇인지 알아볼 수 없어서 흐린 배경 위에 통째로 올린다.
+const FULL_BLEED_MIN_RATIO = 1.5
+
+type OgImage = { dataUrl: string; width: number; height: number }
+
+type OgPage =
+  | { kind: 'site'; title: string; detail?: string; image?: OgImage }
+  | { kind: 'image'; image: OgImage; backdrop?: string }
+  | { kind: 'title'; title: string; detail?: string }
 
 export default async function OGImage(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const config = loadSiteConfig()
-  const { searchParams } = new URL(req.url!)
-  const pageId = parsePageId(searchParams.get('id') || config.rootNotionPageId)
+  const id = typeof req.query.id === 'string' ? req.query.id : undefined
+  const pageId = parsePageId(id || config.rootNotionPageId)
   if (!pageId) {
-    return new Response('Invalid notion page id', { status: 400 })
+    return res.status(400).send('Invalid notion page id')
   }
 
-  const pageInfoOrError = await getNotionPageInfo(config, { pageId })
-  if (pageInfoOrError.type === 'error') {
-    return res.status(pageInfoOrError.error.statusCode).send({
-      error: pageInfoOrError.error.message
-    })
+  const pageOrError = await getOgPage(config, pageId)
+  if ('error' in pageOrError) {
+    return res
+      .status(pageOrError.error.statusCode)
+      .send({ error: pageOrError.error.message })
   }
-  const pageInfo = pageInfoOrError.data
-  console.log(pageInfo)
+  const page = pageOrError
 
-  return new ImageResponse(
+  const text = page.kind === 'image' ? '' : `${page.title}${page.detail ?? ''}`
+  const cjkFonts = await loadCjkFonts(text)
+
+  const image = new ImageResponse(renderPage(page), {
+    width: WIDTH,
+    height: HEIGHT,
+    fonts: [
+      {
+        name: 'Inter',
+        data: interSemiBoldFont,
+        style: 'normal',
+        weight: 700
+      },
+      ...cjkFonts
+    ]
+  })
+
+  // ImageResponse가 정한 Content-Type, Cache-Control을 그대로 옮긴다. 1년 immutable
+  // 캐시라 og:image 주소에 수정 시각(v)이 붙어 있다 (@see get-social-image-url.ts)
+  for (const [key, value] of image.headers) {
+    res.setHeader(key, value)
+  }
+  res.status(image.status).send(Buffer.from(await image.arrayBuffer()))
+}
+
+function renderPage(page: OgPage) {
+  if (page.kind === 'image') {
+    const { image, backdrop } = page
+    if (!backdrop) {
+      return (
+        <div style={{ display: 'flex', width: '100%', height: '100%' }}>
+          <img
+            src={image.dataUrl}
+            width={WIDTH}
+            height={HEIGHT}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+      )
+    }
+
+    const maxHeight = HEIGHT - 80
+    const maxWidth = WIDTH - 160
+    const scale = Math.min(maxHeight / image.height, maxWidth / image.width)
+    const width = Math.round(image.width * scale)
+    const height = Math.round(image.height * scale)
+    return (
+      <div
+        style={{
+          position: 'relative',
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#1F2027'
+        }}
+      >
+        <img
+          src={backdrop}
+          width={WIDTH}
+          height={HEIGHT}
+          style={{ position: 'absolute', top: 0, left: 0 }}
+        />
+        <img
+          src={image.dataUrl}
+          width={width}
+          height={height}
+          style={{
+            borderRadius: 6,
+            boxShadow: '0 12px 40px rgba(0,0,0,0.45)'
+          }}
+        />
+      </div>
+    )
+  }
+
+  const background = page.kind === 'site' ? page.image : undefined
+  return (
     <div
       style={{
         position: 'relative',
@@ -55,27 +153,16 @@ export default async function OGImage(
         color: 'black'
       }}
     >
-      {pageInfo.image && (
+      {background && (
         <img
-          src={pageInfo.image}
+          src={background.dataUrl}
+          width={WIDTH}
+          height={HEIGHT}
           style={{
             position: 'absolute',
             width: '100%',
             height: '100%',
             objectFit: 'cover'
-            // TODO: satori doesn't support background-size: cover and seems to
-            // have inconsistent support for filter + transform to get rid of the
-            // blurred edges. For now, we'll go without a blur filter on the
-            // background, but Satori is still very new, so hopefully we can re-add
-            // the blur soon.
-
-            // backgroundImage: pageInfo.image
-            //   ? `url(${pageInfo.image})`
-            //   : undefined,
-            // backgroundSize: '100% 100%'
-            // TODO: pageInfo.imageObjectPosition
-            // filter: 'blur(8px)'
-            // transform: 'scale(1.05)'
           }}
         />
       )}
@@ -88,8 +175,7 @@ export default async function OGImage(
           display: 'flex',
           flexDirection: 'column',
           border: '16px solid rgba(0,0,0,0.3)',
-          borderRadius: 8,
-          zIndex: '1'
+          borderRadius: 8
         }}
       >
         <div
@@ -98,104 +184,60 @@ export default async function OGImage(
             height: '100%',
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-around',
+            justifyContent: 'center',
+            gap: 40,
             backgroundColor: '#fff',
-            padding: 24,
+            padding: 48,
             alignItems: 'center',
             textAlign: 'center'
           }}
         >
-          {pageInfo.detail && (
-            <div style={{ fontSize: 32, opacity: 0 }}>{pageInfo.detail}</div>
-          )}
-
           <div
             style={{
-              fontSize: 70,
+              fontSize: page.title.length > 20 ? 56 : 70,
               fontWeight: 700,
-              fontFamily: 'Inter'
+              fontFamily: 'Inter, Noto Sans KR, Noto Sans SC',
+              lineHeight: 1.3,
+              // 한글이 글자 단위로 줄바꿈되어 단어가 쪼개지지 않게 한다
+              wordBreak: 'keep-all'
             }}
           >
-            {pageInfo.title}
+            {page.title}
           </div>
 
-          {pageInfo.detail && (
-            <div style={{ fontSize: 32, opacity: 0.6 }}>{pageInfo.detail}</div>
+          {page.detail && (
+            <div style={{ fontSize: 32, opacity: 0.6 }}>{page.detail}</div>
           )}
         </div>
       </div>
-
-      {pageInfo.authorImage && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 47,
-            left: 104,
-            height: 128,
-            width: 128,
-            display: 'flex',
-            borderRadius: '50%',
-            border: '4px solid #fff',
-            zIndex: '5'
-          }}
-        >
-          <img
-            src={pageInfo.authorImage}
-            style={{
-              width: '100%',
-              height: '100%'
-              // transform: 'scale(1.04)'
-            }}
-          />
-        </div>
-      )}
-    </div>,
-    {
-      width: 1200,
-      height: 630,
-      fonts: [
-        {
-          name: 'Inter',
-          data: interSemiBoldFont,
-          style: 'normal',
-          weight: 700
-        }
-      ]
-    }
+    </div>
   )
 }
 
-export async function getNotionPageInfo(
+async function getOgPage(
   config: ResolvedSiteConfig,
-  {
-    pageId
-  }: {
-    pageId: string
-  }
-): Promise<
-  | { type: 'success'; data: NotionPageInfo }
-  | { type: 'error'; error: PageError }
-> {
+  pageId: string
+): Promise<OgPage | { error: PageError }> {
   const mapImageUrl = createMapImageUrl(config)
   const recordMap = await getNotion().getPage(pageId)
 
   const keys = Object.keys(recordMap?.block || {})
-  // react-notion-x v7.10 union 타입 narrow.
-  const block = recordMap?.block?.[keys[0]!]?.value as Block | undefined
+  // v7.10부터 record 값이 `Block | { role, value }` union이다. `.value`만 꺼내면
+  // 래퍼가 Block 자리에 들어가 제목과 표지를 못 찾고 사이트 이름으로 떨어진다.
+  const block = getBlockValue(
+    recordMap?.block?.[pageId] ?? recordMap?.block?.[keys[0]!]
+  ) as PageBlock | undefined
 
   if (!block) {
     throw new Error('Invalid recordMap for page')
   }
 
-  const blockSpaceId = block.space_id
-
   if (
-    blockSpaceId &&
+    block.space_id &&
     config.rootNotionSpaceId &&
-    blockSpaceId !== config.rootNotionSpaceId
+    block.space_id !== config.rootNotionSpaceId
   ) {
     return {
-      type: 'error',
       error: {
         statusCode: 400,
         message: `Notion page "${pageId}" belongs to a different workspace.`
@@ -203,116 +245,119 @@ export async function getNotionPageInfo(
     }
   }
 
-  const isBlogPost =
-    block.type === 'page' && block.parent_table === 'collection'
-  const title = getBlockTitle(block, recordMap) || config.name
-
-  const imageCoverPosition =
-    (block as PageBlock).format?.page_cover_position ??
-    config.defaultPageCoverPosition
-  const imageObjectPosition = imageCoverPosition
-    ? `center ${(1 - imageCoverPosition) * 100}%`
-    : undefined
-
-  const imageBlockUrl = mapImageUrl(
-    getPageProperty<string>('Social Image', block, recordMap) ||
-      (block as PageBlock).format?.page_cover,
-    block
-  )
-  const imageFallbackUrl = mapImageUrl(
-    config.defaultPageCover ?? undefined,
-    block
-  )
-
-  const blockIcon = getBlockIcon(block, recordMap)
-  const authorImageBlockUrl = mapImageUrl(
-    blockIcon && isUrl(blockIcon) ? blockIcon : undefined,
-    block
-  )
-  const authorImageFallbackUrl = mapImageUrl(
-    config.defaultPageIcon ?? undefined,
-    block
-  )
-  const [authorImage, image] = await Promise.all([
-    getCompatibleImageUrl(authorImageBlockUrl, authorImageFallbackUrl),
-    getCompatibleImageUrl(imageBlockUrl, imageFallbackUrl)
-  ])
-
   const author =
     getPageProperty<string>('Author', block, recordMap) || config.author
+  const detail = author || config.domain
 
-  // const socialDescription =
-  //   getPageProperty<string>('Description', block, recordMap) ||
-  //   config.description
-
-  // const lastUpdatedTime = getPageProperty<number>(
-  //   'Last Updated',
-  //   block,
-  //   recordMap
-  // )
-  const publishedTime = getPageProperty<number>('Published', block, recordMap)
-  const datePublished = publishedTime ? new Date(publishedTime) : undefined
-  // const dateUpdated = lastUpdatedTime
-  //   ? new Date(lastUpdatedTime)
-  //   : publishedTime
-  //   ? new Date(publishedTime)
-  //   : undefined
-  const date =
-    isBlogPost && datePublished
-      ? `${datePublished.toLocaleString('en-US', {
-          month: 'long'
-        })} ${datePublished.getFullYear()}`
-      : undefined
-  const detail = date || author || config.domain
-
-  const pageInfo: NotionPageInfo = {
-    pageId,
-    title,
-    image,
-    imageObjectPosition,
-    author,
-    authorImage,
-    detail
+  // 메인은 사이트 자체를 소개하는 카드를 유지한다
+  if (pageId === parsePageId(config.rootNotionPageId)) {
+    const cover = await fetchImage(
+      mapImageUrl(block.format?.page_cover ?? undefined, block) ??
+        mapImageUrl(config.defaultPageCover ?? undefined, block)
+    )
+    return {
+      kind: 'site',
+      title: getBlockTitle(block, recordMap) || config.name,
+      detail,
+      image: cover
+    }
   }
 
-  return {
-    type: 'success',
-    data: pageInfo
-  }
-}
-
-async function isUrlReachable(
-  url: string | undefined | null
-): Promise<boolean> {
-  if (!url) {
-    return false
-  }
-
-  try {
-    await ky.head(url)
-    return true
-  } catch {
-    return false
-  }
-}
-
-async function getCompatibleImageUrl(
-  url: string | undefined | null,
-  fallbackUrl: string | undefined | null
-): Promise<string | undefined> {
-  const image = (await isUrlReachable(url)) ? url : fallbackUrl
-
-  if (image) {
-    const imageUrl = new URL(image)
-
-    if (imageUrl.host === 'images.unsplash.com') {
-      if (!imageUrl.searchParams.has('w')) {
-        imageUrl.searchParams.set('w', '1200')
-        imageUrl.searchParams.set('fit', 'max')
-        return imageUrl.toString()
+  // 본문 글은 글을 대표하는 그림을 그대로 보여 준다. 제목은 메신저가 카드 아래에
+  // 따로 적어 주므로 그림 위에 다시 쓰지 않는다. 사이트 기본 표지는 글과 무관해서 쓰지 않는다.
+  const candidates = [
+    getPageProperty<string>('Social Image', block, recordMap),
+    block.format?.page_cover,
+    getFirstBodyImage(block, recordMap)
+  ]
+  for (const candidate of candidates) {
+    const image = await fetchImage(mapImageUrl(candidate ?? undefined, block))
+    if (image) {
+      const isWide = image.width / image.height >= FULL_BLEED_MIN_RATIO
+      return {
+        kind: 'image',
+        image,
+        backdrop: isWide ? undefined : await makeBackdrop(image)
       }
     }
   }
 
-  return image ?? undefined
+  return {
+    kind: 'title',
+    title: getBlockTitle(block, recordMap) || config.name,
+    detail
+  }
+}
+
+function getFirstBodyImage(
+  page: PageBlock,
+  recordMap: ExtendedRecordMap
+): string | undefined {
+  for (const id of page.content ?? []) {
+    const child = getBlockValue(recordMap.block[id]) as Block | undefined
+    if (child?.type === 'image') {
+      const source =
+        child.format?.display_source ??
+        (child.properties as { source?: string[][] } | undefined)
+          ?.source?.[0]?.[0]
+      if (source) {
+        return source
+      }
+    }
+  }
+  return undefined
+}
+
+// satori는 img src를 직접 받으면서 User-Agent를 붙이지 않아 Notion 이미지 프록시가
+// 403(HTML)을 주고, 렌더가 "Image size cannot be determined"로 500이 된다. 여기서
+// UA를 붙여 받고 sharp로 JPEG로 바꿔 data URL로 넘긴다. satori가 못 읽는 WebP도
+// 이 변환으로 해결되고, 1200px로 줄여 렌더 메모리도 아낀다.
+async function fetchImage(
+  url: string | undefined | null
+): Promise<OgImage | undefined> {
+  if (!url) {
+    return undefined
+  }
+
+  try {
+    const source = await ky
+      .get(url, {
+        headers: { 'user-agent': NOTION_FETCH_USER_AGENT },
+        timeout: 10_000
+      })
+      .arrayBuffer()
+    const { data, info } = await sharp(Buffer.from(source))
+      .rotate()
+      .resize({
+        width: WIDTH,
+        height: WIDTH,
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .jpeg({ quality: 82 })
+      .toBuffer({ resolveWithObject: true })
+    return {
+      dataUrl: `data:image/jpeg;base64,${data.toString('base64')}`,
+      width: info.width,
+      height: info.height
+    }
+  } catch {
+    return undefined
+  }
+}
+
+// satori는 CSS filter: blur를 제대로 그리지 못해 흐린 배경을 sharp로 미리 만든다
+async function makeBackdrop(image: OgImage): Promise<string> {
+  const source = Buffer.from(image.dataUrl.split(',')[1]!, 'base64')
+  // sharp 파이프라인은 resize를 하나만 적용하므로 작게 줄여 흐리는 단계와 키우는 단계를 나눈다
+  const small = await sharp(source)
+    .resize(300, 158, { fit: 'cover' })
+    .blur(6)
+    .modulate({ brightness: 0.55 })
+    .toBuffer()
+  const blurred = await sharp(small)
+    .resize(WIDTH, HEIGHT)
+    .jpeg({ quality: 70 })
+    .toBuffer()
+  return `data:image/jpeg;base64,${blurred.toString('base64')}`
 }

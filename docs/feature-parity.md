@@ -31,7 +31,7 @@
 | 호스트네임 플랜                 | 해당 없음 | SaaS 과금 개념                                  |
 | 리다이렉트 주소                 | X         | Vercel 도메인 설정으로 대체                     |
 | 로고 (favicon)                  | 수동      | `public/` 파일 교체                             |
-| 공유 이미지 (og:image)          | 부분      | `defaultPageCover` + 페이지 `Social Image` 속성 |
+| 공유 이미지 (og:image)          | O         | 글의 대표 이미지 (`docs/social-image.md`)       |
 | 노션 커버를 og:image로 덮어쓰기 | O         | 블록 커버를 우선 사용 (`PageHead`)              |
 | 검색 엔진 허용 (robots.txt)     | 토글 없음 | 항상 허용 (`pages/robots.txt.tsx`)              |
 | 사이트맵 (sitemap.xml)          | 토글 없음 | 항상 생성 (`pages/sitemap.xml.tsx`)             |

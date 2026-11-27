@@ -301,6 +301,7 @@ export function NotionPage({
         url={canonicalPageUrl}
         isBlogPost={isBlogPost}
         noindex={metaOverride?.noindex}
+        socialImageVersion={block?.last_edited_time}
       />
 
       {/* lite 모드(oembed 임베드)에서는 위젯이 방해만 되므로 뺀다 */}

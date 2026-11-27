@@ -247,6 +247,7 @@ curl -o /dev/null -s -w '%{http_code}\n' https://<도메인>/api/admin/config   
 - `docs/architecture.md` 설정이 흐르는 길(site.config.ts → loadSiteConfig → PageProps.config → useSiteConfig)과 패키지 경계
 - `packages/core/README.md` `@folionote/core`를 남의 앱에서 쓰는 법, 진입점, deps 주입
 - `docs/admin-deploy.md` 배포 어드민의 동작과 보안 설계, 관련 코드 위치
+- `docs/social-image.md` og:image가 무엇을 그리는지, UA, 폰트, 캐시 함정
 - `docs/mcp.md` `/api/mcp` MCP 서버. 켜는 법, 도구 목록, `add_page_url`의 GitHub 토큰
 - `docs/cloudflare-migration.md` Workers 이전 실측과 접은 이유
 - `docs/feature-parity.md` 상용 서비스 기능 대조표
